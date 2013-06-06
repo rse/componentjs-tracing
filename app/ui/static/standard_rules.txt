@@ -1,0 +1,83 @@
+constraint view-self {
+  rationale {
+    Specifies the calls, allowed for a view performed
+    onto itself.
+  }
+  condition {
+        (sourceType == "V" || sourceType == "M")
+    &&  source == origin  
+  }
+
+  constraint view-self-observe {
+    rationale {
+      Views must only observe their underlying presentation
+      models through direct observation onto themselves.
+    }
+    condition {
+      operation == "observe"
+    }
+
+    result PASS
+  }
+
+  constraint view-self-value {
+    rationale {
+      Views must only access their underlying presentation
+      models through direct value access onto themselves.
+    }
+    condition {
+      operation == "value"
+    }
+
+    result PASS
+  }
+}
+
+constraint service-calls {
+  rationale {
+    Always allow calls to explicit service components.
+  }
+  condition {
+        originType == "S"
+    &&  operation == "call"
+  }
+
+  result PASS
+}
+
+constraint model-models {
+  rationale {
+    Models may define a model onto themselves.
+  }
+  condition {
+        origin == source
+    &&  sourceType == "M"
+    &&  operation == "model"
+  }
+
+  result PASS
+}
+
+constraint view-self-guard {
+  rationale {
+    Views may be able to set guards onto themselves.
+  }
+  condition {
+    operation == "guard"
+  }
+
+  result PASS
+}
+
+constraint register-self {
+  rationale {
+    A service may only be registered onto the component itself and onto a service component.
+  }
+  condition {
+        sourceType == "S"
+    &&  origin == source
+    &&  operation == "register"
+  }
+
+  result PASS
+}

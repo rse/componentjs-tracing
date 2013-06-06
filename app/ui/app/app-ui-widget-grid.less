@@ -1,0 +1,98 @@
+/*
+**  ComponentJS -- Component System for JavaScript <http://componentjs.com>
+**  Copyright (c) 2009-2013 Ralf S. Engelschall <http://engelschall.com>
+**
+**  This Source Code Form is subject to the terms of the Mozilla Public
+**  License, v. 2.0. If a copy of the MPL was not distributed with this
+**  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+*/
+
+.grid {
+    .grid-style;
+}
+
+.grid-style (
+    @color-canvas-bg: #e0e0e0;
+    @color-tab-bg:    #f8f8f8;
+    @color-tab-fg:    #000000;
+    @font-size:       12px;
+) {
+    .table {
+        width:100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+    }
+
+    .traces-body, .traces-head {
+
+        .thead th, .tbody td {
+            text-align  : center;
+            overflow    : hidden;
+            border      : 1px solid darken(@color-canvas-bg, 20%);
+        }
+
+        .tbody td {
+            padding: 0px 0px 0px 2px;
+            text-align  : left;
+            white-space: nowrap;
+        }
+
+        tr:first-child th {
+            border-top  : 0px;
+        }
+
+        tr:last-child td {
+            border-bottom: 0px;
+        }
+
+        tr td:first-child, tr th:first-child {
+            border-left: 0px;
+        }
+
+        tr td:last-child, tr th:last-child {
+            border-right: 0px;
+        }
+    }
+
+    .traces-head {
+
+        .thead {
+            background-color: darken(@color-tab-bg, 15%);
+            position:relative;
+            top:0px;
+        }
+
+        .thead th {
+            height:10px;
+            -webkit-user-select:     none;
+            user-select:             none;
+        }
+    }
+    
+    .traces-body {
+        height: ~"calc(100% - 18px)";
+        overflow-y: scroll;
+
+        tr:first-child td {
+            border-top: 0px;
+        }
+
+        .selectable {
+            cursor: pointer;
+        }
+
+        .selected {
+            background-color: darken(@color-tab-bg, 5%);
+        }
+
+        .tbody {
+            color:#000000;
+            height:50px;
+            margin:0px;
+        }
+
+        .tbody td {
+            height:20px;
+        }
+    }
+}

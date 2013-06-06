@@ -1,0 +1,90 @@
+/*
+**  ComponentJS -- Component System for JavaScript <http://componentjs.com>
+**  Copyright (c) 2009-2013 Ralf S. Engelschall <http://engelschall.com>
+**
+**  This Source Code Form is subject to the terms of the Mozilla Public
+**  License, v. 2.0. If a copy of the MPL was not distributed with this
+**  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+*/
+
+.widget-toolbar {
+    .widget-toolbar-style;
+}
+
+.widget-toolbar-style (
+    @color-canvas-bg: #e0e0e0;
+    @color-tab-bg:    #f8f8f8;
+    @color-tab-fg:    #000000;
+    @font-size:       12px;
+) {
+    height:           100%;
+    width:            100%;
+    border-bottom:    1px solid darken(@color-canvas-bg, 20%);
+    background-color: @color-tab-bg;
+    color:            @color-tab-fg;
+    text-align:       left;
+
+    .items {
+        height:       ~"calc(100% - 1px)";
+        display:      block;
+        padding:      6px 0px 0px 0px;
+        list-style-type:none;
+        margin:       0px 0px 0px 0px;
+
+        .item {
+            display:                 inline;
+            margin:                  0px 0px 0px 2px;
+            height:                  100%;
+            font-size:               @font-size;
+            position:                relative;
+        }
+
+        .toolbar-button {
+            margin:                  3px 0px 3px 2px;
+            padding:                 2px 16px 2px 16px;
+            border-radius:           6px;
+            height:                  (@font-size + 2 + 2);
+            background-color:        darken(@color-tab-bg, 5%);
+            border-top:              1px solid darken(@color-tab-bg, 20%);
+            border-left:             1px solid darken(@color-tab-bg, 20%);
+            border-right:            1px solid darken(@color-tab-bg, 50%);
+            border-bottom:           1px solid darken(@color-tab-bg, 50%);
+            color:                   lighten(@color-tab-fg, 40%);
+            cursor:                  pointer;
+            -webkit-user-select:     none;
+        }
+
+        .toolbar-button:active {
+            top:                     1px;
+        }
+
+        .toolbar-input {
+
+            .textfield {
+                margin:                  0px;
+                vertical-align:          top;
+                position:                relative;
+                top:                     -3px;
+                border-bottom:           1px solid darken(@color-tab-bg, 20%);
+                border-right:            1px solid darken(@color-tab-bg, 20%);
+                border-left:             1px solid darken(@color-tab-bg, 50%);
+                border-top:              1px solid darken(@color-tab-bg, 50%);
+            }
+        }
+
+        .toolbar-text {
+            -webkit-user-select:     none;
+        }
+
+        .toolbar-checkbox {
+            
+            .checkbox {
+                margin:              0px;
+                vertical-align:      top;
+                margin-left:         2px;
+                position:            relative;
+                top:                 1px;
+            }
+        }
+    }
+}

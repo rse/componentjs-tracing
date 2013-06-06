@@ -1,0 +1,15 @@
+{
+    "name": "",
+    "version": "0.0.0",
+    "dependencies": {
+        "node-ini": "*",
+        "dashdash": "*",
+        "express": "*",
+        "express-api-helper": "*",
+        "express-winston": "*",
+        "express.io": "*",
+        "winston": "*",
+        "cors": "*",
+        "http-proxy":"*"
+    }
+}

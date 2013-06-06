@@ -1,0 +1,5 @@
+Name:      Handlebars
+Summary:   HTML Template Engine
+Homepage:  http://handlebarsjs.com/
+Version:   1.0rc3
+License:   MIT

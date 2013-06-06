@@ -1,0 +1,5 @@
+Name:    ComponentJS
+Summary: Component System for JavaScript
+Home:    http://componentjs.com/
+Version: 0.9.9
+License: MPL

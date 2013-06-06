@@ -1,0 +1,5 @@
+Name:      ACE
+Summary:   Code Editor Widget
+Homepage:  http://ace.ajax.org/
+Version:   20130525
+License:   BSD

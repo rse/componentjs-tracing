@@ -1,0 +1,77 @@
+/*
+**  ComponentJS -- Component System for JavaScript <http://componentjs.com>
+**  Copyright (c) 2009-2013 Ralf S. Engelschall <http://engelschall.com>
+**
+**  This Source Code Form is subject to the terms of the Mozilla Public
+**  License, v. 2.0. If a copy of the MPL was not distributed with this
+**  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+*/
+
+.tuple-details {
+    .tuple-details-style;
+}
+
+.tuple-details-style (
+    @color-canvas-bg: #e0e0e0;
+    @color-tab-bg:    #f8f8f8;
+    @color-tab-fg:    #000000;
+    @font-size:       12px;
+) {
+    height:           100%;
+    width:            100%;
+    background-color: @color-tab-bg;
+    color:            @color-tab-fg;
+    text-align:       left;
+
+    .table {
+        height: 100%;
+        width: 100%;
+        border: 0px;
+        table-layout: fixed;
+        border-collapse: collapse;
+
+        tr {
+            height: @font-size;
+        }
+
+        td {
+            padding: 2px 0px 2px 0px;
+        }
+
+        .row-header {
+            width: 100px;
+            background-color: darken(@color-tab-bg, 15%);
+            border:    1px solid darken(@color-canvas-bg, 20%);
+            vertical-align: top;
+            -webkit-user-select:     none;
+            user-select:             none;
+        }
+
+        .row-content {
+            width: ~"calc(100% - 100px)";
+            border:    1px solid darken(@color-canvas-bg, 20%);
+            vertical-align: top;
+            overflow-x: hidden;
+        }
+
+        tr:first-child td {
+            border-top: 0px;
+        }
+
+        tr:last-child td {
+            border-bottom: 0px;
+        }
+
+        tr td:first-child, tr th:first-child {
+            border-left: 0px;
+        }
+
+        tr td:last-child, tr th:last-child {
+            border-right: 0px;
+        }
+
+        .row-final {
+            height: ~"calc(100% - 5 * 18px)";
+        }
+    }
+}

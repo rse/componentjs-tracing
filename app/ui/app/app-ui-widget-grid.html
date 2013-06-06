@@ -1,0 +1,37 @@
+<!--
+**
+**  ComponentJS ~ Component System for JavaScript <http://componentjs.com>
+**  Copyright (c) 2009-2013 Ralf S. Engelschall <http://engelschall.com>
+**
+**  This Source Code Form is subject to the terms of the Mozilla Public
+**  License, v. 2.0. If a copy of the MPL was not distributed with this
+**  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+**
+-->
+
+<markup id="grid">
+    <div class="traces-head" style="margin-right:17px;">
+        <table class="table">
+            <thead class="thead">
+                <tr class="row">
+                    <markup id="column">
+                        <th style="{{style}}">{{label}}</th>
+                    </markup>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="traces-body">
+        <table class="table">
+            <tbody class="tbody">
+                <markup id="row">
+                    <tr class="row" data-i="{{i}}">
+                        <markup id="data">
+                            <td  style="{{style}}">{{label}}</td>
+                        </markup>
+                    </tr>
+                </markup>
+            </tbody>
+        </table>
+    </div>
+</markup>

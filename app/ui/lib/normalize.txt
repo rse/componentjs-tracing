@@ -1,0 +1,5 @@
+Name:    Normalize
+Summary: CSS Normalization
+Home:    http://git.io/normalize
+Version: 2.1.1
+License: MIT

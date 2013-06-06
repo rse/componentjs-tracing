@@ -1,0 +1,76 @@
+/*
+**  ComponentJS -- Component System for JavaScript <http://componentjs.com>
+**  Copyright (c) 2009-2013 Ralf S. Engelschall <http://engelschall.com>
+**
+**  This Source Code Form is subject to the terms of the Mozilla Public
+**  License, v. 2.0. If a copy of the MPL was not distributed with this
+**  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+*/
+
+.widget-panel {
+    .widget-panel-style;
+}
+
+.widget-panel-style (
+    @color-canvas-bg: #e0e0e0;
+    @color-tab-bg:    #f8f8f8;
+    @color-tab-fg:    #000000;
+    @font-size:       12px;
+) {
+    width:            100%;
+    height:           100%;
+    background:       linear-gradient(to bottom, lighten(@color-canvas-bg, 2%) 0%, darken(@color-canvas-bg, 2%) 100%);
+    color:            @color-tab-fg;
+    text-align:       center;
+
+    .tabs {
+        height:       (@font-size + 4 + 4 + 1);
+        display:      block;
+        margin:       0px;
+        padding:      4px 0px 0px 0px;
+
+        .tab {
+            border-top-left-radius:  4px;
+            border-top-right-radius: 4px;
+            display:                 inline-block;
+            height:                  (@font-size - 1);
+            background-color:        darken(@color-tab-bg, 5%);
+            border-top:              1px solid darken(@color-tab-bg, 20%);
+            border-left:             1px solid darken(@color-tab-bg, 20%);
+            border-right:            1px solid darken(@color-tab-bg, 50%);
+            margin:                  0px 2px 0px 0px;
+            padding:                 4px 16px 4px 16px;
+            font-size:               @font-size;
+            color:                   lighten(@color-tab-fg, 40%);
+            -webkit-user-select:     none;
+            user-select:             none;
+            cursor:                  pointer;
+
+            &.active {
+                top:                 1px;
+                position:            relative;
+                padding:             4px 16px 5px 16px;
+                background-color:    @color-tab-bg;
+                border-top:          1px solid darken(@color-tab-bg, 30%);
+                border-left:         1px solid darken(@color-tab-bg, 30%);
+                color:               @color-tab-fg;
+            }
+        }
+    }
+
+    .contents {
+        height: ~"calc(100% - 25px)";
+
+        .content {
+            height:     ~"calc(100% - 1px)";
+            display:    none;
+            border-top: 1px solid darken(@color-tab-bg, 20%);
+
+            &.active {
+                background-color: @color-tab-bg;
+                color:            @color-tab-fg;
+                display:          block;
+            }
+        }
+    }
+}

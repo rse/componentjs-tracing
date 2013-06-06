@@ -1,0 +1,5 @@
+Name:      mode-cjsc
+Summary:   ACE Mode for ComponentJS Constaints
+Homepage:  -
+Version:   -
+License:   MPL

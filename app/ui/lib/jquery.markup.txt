@@ -1,0 +1,5 @@
+Name:      jQuery Markup
+Summary:   Markup Rendering
+Homepage:  https://github.com/rse/jquery-markup
+Version:   1.0.0
+License:   MIT

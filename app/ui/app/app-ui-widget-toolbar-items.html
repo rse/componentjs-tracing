@@ -1,0 +1,35 @@
+<!--
+**
+**  ComponentJS ~ Component System for JavaScript <http://componentjs.com>
+**  Copyright (c) 2009-2013 Ralf S. Engelschall <http://engelschall.com>
+**
+**  This Source Code Form is subject to the terms of the Mozilla Public
+**  License, v. 2.0. If a copy of the MPL was not distributed with this
+**  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+**
+-->
+
+<markup id="toolbar-button">
+    <li class="toolbar-button item">
+        {{label}}
+    </li>
+</markup>
+
+<markup id="toolbar-input">
+    <li class="toolbar-input item">
+        <input class="textfield" type="text" />
+    </li>
+</markup>
+
+<markup id="toolbar-text">
+    <li class="toolbar-text item">
+        {{label}}
+    </li>
+</markup>
+
+<markup id="toolbar-checkbox">
+    <li class="toolbar-checkbox item">
+        <input class="checkbox" type="checkbox" id="{{id}}" value="true" />
+        <label for="{{id}}" style="-webkit-user-select: none;">{{label}}</label>
+    </li>
+</markup>
