@@ -273,8 +273,9 @@ myProxy.on("interceptResponseContent", function (clientResponse, responseBody, c
         clientResponse.headers["content-length"] = length
         clientResponse.headers["content-type"] = 'application/javascript'
         clientResponse.headers["accept-ranges"] = 'bytes'
-        clientResponse.headers["x-cache"] = clientResponse.headers["x-cache"].replace('HIT', 'MISS')
-        clientResponse.headers["x-cache-lookup"] = clientResponse.headers["x-cache-lookup"].replace('HIT', 'MISS')
+        //FIXME only replace HIT with MISS, when present
+        //clientResponse.headers["x-cache"] = clientResponse.headers["x-cache"].replace('HIT', 'MISS')
+        //clientResponse.headers["x-cache-lookup"] = clientResponse.headers["x-cache-lookup"].replace('HIT', 'MISS')
         console.log('Discovered CJS file')
     } else if (clientResponse.req.path.match(cmpFiles) !== null) {
         console.log('Discovered component file')
