@@ -11,5 +11,6 @@
         "winston": "*",
         "cors": "*",
         "http-proxy":"*"
+        "request":"*"
     }
 }
