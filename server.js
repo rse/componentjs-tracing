@@ -260,22 +260,10 @@ var cmpFiles = new RegExp(opts.components)
 myProxy.on("interceptResponseContent", function (clientResponse, responseBody, callback) {
     console.log('interceptResponseContent: ' + clientResponse.req.path)
 
-    var finishModifiedFiles = function (buffer) {
-        var length = buffer.length
-        /*  Make sure the file is never loaded from cache  */
-        clientResponse.statusCode = 200
-        clientResponse.headers['content-length'] = length
-        clientResponse.headers['content-type'] = 'application/javascript'
-        clientResponse.headers['accept-ranges'] = 'bytes'
-        var cacheControl = clientResponse.headers['x-cache']
-        if (cacheControl)
-            cacheControl = cacheControl.replace('HIT', 'MISS')
-        cacheControl = clientResponse.headers['x-cache-lookup']
-        if (cacheControl)
-            cacheControl = cacheControl.replace('HIT', 'MISS')
-    }
     var buffer
+    var injected = false
     if (clientResponse.req.path.match(cjsFile) !== null) {
+        console.log('Discovered CJS file')
         /*  Load the original file to a temporary buffer  */
         buffer = new Buffer(responseBody, 'utf8')
 
@@ -295,18 +283,33 @@ myProxy.on("interceptResponseContent", function (clientResponse, responseBody, c
         }
 
         responseBody = buffer.toString('utf8')
-        finishModifiedFiles(buffer)
-        console.log('Discovered CJS file')
+        console.log('Append necessary plug-ins')
+        injected = true
     } else if (clientResponse.req.path.match(cmpFiles) !== null) {
         console.log('Discovered component file')
-
         /*  read original responseBody, instrument it and write instrumented responseBody  */
         buffer = new Buffer(responseBody, 'utf8')
         //responseBody = buffer.toString('utf8')
         //responseBody = tracing.instrument('ComponentJS', responseBody);
-        finishModifiedFiles(buffer)
 
         console.log('Transpiled component file')
+        injected = true
+    }
+    /*  Did we inject anything? If yes, fix the HTTP properties  */
+    if (injected) {
+        var length = buffer.length
+        /*  Make sure the file is never loaded from cache  */
+        clientResponse.statusCode = 200
+        clientResponse.headers['content-length'] = length
+        clientResponse.headers['content-type'] = 'application/javascript'
+        clientResponse.headers['accept-ranges'] = 'bytes'
+        /*  Take care of the caching headers  */
+        var cacheControl = clientResponse.headers['x-cache']
+        if (cacheControl)
+            cacheControl = cacheControl.replace('HIT', 'MISS')
+        cacheControl = clientResponse.headers['x-cache-lookup']
+        if (cacheControl)
+            cacheControl = cacheControl.replace('HIT', 'MISS')
     }
     callback(clientResponse, responseBody);
 });
