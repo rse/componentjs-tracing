@@ -259,23 +259,37 @@ var cmpFiles = new RegExp(opts.components)
 myProxy.on("interceptResponseContent", function (clientResponse, responseBody, callback) {
     console.log('interceptResponseContent: ' + clientResponse.req.path)
     if (clientResponse.req.path.match(cjsFile) !== null) {
+        /*  Load the original file to a temporary buffer  */
         var buffer = new Buffer(responseBody, 'utf8')
-        var appended = new Buffer('alert("Pommes");', 'utf8')
-        var finalBuffer = new Buffer(buffer.length + appended.length)
 
-        buffer.copy(finalBuffer)
-        appended.copy(finalBuffer, buffer.length)
+        /*  Inject the given files  */
+        var filesToInject = [ './app/assets/component.plugin.tracing.js' , './app/assets/component.plugin.tracing-console.js' ]
+        for (var i = 0; i < filesToInject.length; i++) {
+            /*  Load the file to inject to a temporary buffer  */
+            var append = fs.readFileSync(filesToInject[i])
+            var tmpBuffer = new Buffer(buffer.length + append.length)
 
-        responseBody = finalBuffer.toString('utf8')
-        var length = finalBuffer.length
+            /*  Copy over the already present buffer  */
+            buffer.copy(tmpBuffer)
+            /*  Append the current file  */
+            append.copy(tmpBuffer, buffer.length)
+            /*  Reassign the buffers for the next iteration  */
+            buffer = tmpBuffer
+        }
+
+        responseBody = buffer.toString('utf8')
+        var length = buffer.length
         /*  Make sure the file is never loaded from cache  */
         clientResponse.statusCode = 200
         clientResponse.headers["content-length"] = length
         clientResponse.headers["content-type"] = 'application/javascript'
         clientResponse.headers["accept-ranges"] = 'bytes'
-        //FIXME only replace HIT with MISS, when present
-        //clientResponse.headers["x-cache"] = clientResponse.headers["x-cache"].replace('HIT', 'MISS')
-        //clientResponse.headers["x-cache-lookup"] = clientResponse.headers["x-cache-lookup"].replace('HIT', 'MISS')
+        var cacheControl = clientResponse.headers["x-cache"]
+        if (cacheControl)
+            cacheControl = cacheControl.replace('HIT', 'MISS')
+        cacheControl = clientResponse.headers["x-cache-lookup"]
+        if (cacheControl)
+            cacheControl = cacheControl.replace('HIT', 'MISS')
         console.log('Discovered CJS file')
     } else if (clientResponse.req.path.match(cmpFiles) !== null) {
         console.log('Discovered component file')
