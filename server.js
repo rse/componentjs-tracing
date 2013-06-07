@@ -17,6 +17,7 @@ var basedir = __dirname;
 /*  load required libraries (1/3)  */
 var fs       = require("fs");
 var path     = require("path");
+var tracing  = require("./assets/transpiler/transpiler-lib.js").tracing;
 
 /*  determine path to Node library directory  */
 var libdir = path.resolve(path.join(basedir, "/lib/node_modules/"));
@@ -258,12 +259,28 @@ var cmpFiles = new RegExp(opts.components)
 
 myProxy.on("interceptResponseContent", function (clientResponse, responseBody, callback) {
     console.log('interceptResponseContent: ' + clientResponse.req.path)
+
+    var finishModifiedFiles = function (buffer) {
+        var length = buffer.length
+        /*  Make sure the file is never loaded from cache  */
+        clientResponse.statusCode = 200
+        clientResponse.headers['content-length'] = length
+        clientResponse.headers['content-type'] = 'application/javascript'
+        clientResponse.headers['accept-ranges'] = 'bytes'
+        var cacheControl = clientResponse.headers['x-cache']
+        if (cacheControl)
+            cacheControl = cacheControl.replace('HIT', 'MISS')
+        cacheControl = clientResponse.headers['x-cache-lookup']
+        if (cacheControl)
+            cacheControl = cacheControl.replace('HIT', 'MISS')
+    }
+    var buffer
     if (clientResponse.req.path.match(cjsFile) !== null) {
         /*  Load the original file to a temporary buffer  */
-        var buffer = new Buffer(responseBody, 'utf8')
+        buffer = new Buffer(responseBody, 'utf8')
 
         /*  Inject the given files  */
-        var filesToInject = [ './app/assets/component.plugin.tracing.js' , './app/assets/component.plugin.tracing-console.js' ]
+        var filesToInject = [ './assets/plugins/component.plugin.tracing.js' , './assets/plugins/component.plugin.tracing-console.js' ]
         for (var i = 0; i < filesToInject.length; i++) {
             /*  Load the file to inject to a temporary buffer  */
             var append = fs.readFileSync(filesToInject[i])
@@ -278,26 +295,23 @@ myProxy.on("interceptResponseContent", function (clientResponse, responseBody, c
         }
 
         responseBody = buffer.toString('utf8')
-        var length = buffer.length
-        /*  Make sure the file is never loaded from cache  */
-        clientResponse.statusCode = 200
-        clientResponse.headers["content-length"] = length
-        clientResponse.headers["content-type"] = 'application/javascript'
-        clientResponse.headers["accept-ranges"] = 'bytes'
-        var cacheControl = clientResponse.headers["x-cache"]
-        if (cacheControl)
-            cacheControl = cacheControl.replace('HIT', 'MISS')
-        cacheControl = clientResponse.headers["x-cache-lookup"]
-        if (cacheControl)
-            cacheControl = cacheControl.replace('HIT', 'MISS')
+        finishModifiedFiles(buffer)
         console.log('Discovered CJS file')
     } else if (clientResponse.req.path.match(cmpFiles) !== null) {
         console.log('Discovered component file')
+
+        /*  read original responseBody, instrument it and write instrumented responseBody  */
+        buffer = new Buffer(responseBody, 'utf8')
+        //responseBody = buffer.toString('utf8')
+        //responseBody = tracing.instrument('ComponentJS', responseBody);
+        finishModifiedFiles(buffer)
+
+        console.log('Transpiled component file')
     }
     callback(clientResponse, responseBody);
 });
 
 /*  start the listening on the root server  */
 srv.listen(opts.port, opts.addr, opts.backlog, function () {
-    app.logger.log("info", "listening on http://%s:%d", opts.addr, opts.port);
+    app.logger.log('info', 'listening on http://%s:%d', opts.addr, opts.port);
 });
