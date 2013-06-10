@@ -42,6 +42,11 @@
             /*  regular expression  */
             else if ((m = input.match(/^\/(\\\/|[^\/])*\//)) !== null) {}
 
+            /*  life-cycle functions  */
+            else if (output.match(/(prepare|cleanup|create|destroy|render|release|show|hide):\s*$/) !== null) {
+                m = input.match(/^function\s*\(.*?\)\s*\{/)
+            }
+
             /*  start of function  */
             else if ((m = input.match(/^function\s*\(.*?\)\s*\{/)) !== null) {
                 stack.push("function");
