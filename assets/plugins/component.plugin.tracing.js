@@ -96,6 +96,7 @@ ComponentJS.plugin("tracing", function (_cs, $cs, GLOBAL) {
 
     /*  determine the tracing context
         (by crawling for it backward in the run-time call stack)  */
+        //FIXME - leads to an stackszie exceeded exception
     var resolve = function (name) {
         var annotation = null;
         walkStackTrace(function (func) {
