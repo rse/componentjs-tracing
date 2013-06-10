@@ -10,7 +10,7 @@
         "express.io": "*",
         "winston": "*",
         "cors": "*",
-        "http-proxy":"*",
+        "http-proxy-simple":"*",
         "request":"*"
     }
 }

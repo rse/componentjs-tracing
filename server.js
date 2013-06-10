@@ -22,8 +22,6 @@ var tracing  = require("./assets/transpiler/transpiler-lib.js").tracing;
 /*  determine path to Node library directory  */
 var libdir = path.resolve(path.join(basedir, "/lib/node_modules/"));
 module.paths.unshift(libdir);
-libdir = path.resolve(path.join(basedir, "/lib/local/"));
-module.paths.unshift(libdir);
 
 /*  load required libraries (2/3)  */
 var ini      = require("node-ini");
@@ -74,7 +72,13 @@ var options = [
         help: "Regex matching the url of the ComponentJS file", helpArg: "REGEX" },
     {   names: [ "components", "cmps" ], type: "string", default: ".*/app/.*",
         help: "Regex matching the urls of the components files of the SPA", helpArg: "REGEX" },
-    {   names: [ "app", "A" ], type: "arrayOfString", default: "",
+    {   names: [ "proxyaddr", "A" ], type: "string", default: "127.0.0.1",
+        help: "IP address to listen", helpArg: "ADDRESS" },
+    {   names: [ "proxyport", "P" ], type: "integer", default: 8129,
+        help: "TCP port to listen", helpArg: "PORT" },
+    {   names: [ "proxyfwd", "F" ], type: "string", default: "",
+        help: "host and port of forwarding proxy", helpArg: "HOST:PORT" },
+    {   names: [ "app", "X" ], type: "arrayOfString", default: "",
         help: "application to load", helpArg: "APP" }
 ]
 var parser = dashdash.createParser({
@@ -242,30 +246,31 @@ srv.use(express_winston.errorLogger({
 /*  error logging  */
 srv.use(express.errorHandler({ dumpExceptions: false, showStack: false }));
 
-var hps = require("http-proxy-simple");
-
-var myProxy = hps.createProxyServer({
-    proxyHost: "127.0.0.1",
-    proxyPort: 8129
+app.logger.log("info", "listening on http://%s:%d for PROXY requests", opts.proxyhost, opts.proxyport);
+var proxyserver = require("http-proxy-simple").createProxyServer({
+    host:  opts.proxyhost,
+    port:  opts.proxyport,
+    proxy: opts.proxyfwd
 });
 
-myProxy.on("error", function (error, locationInfo) {
-   console.log("Location: " + locationInfo);
-   console.log("Error: " + error.stack);
+proxyserver.on("http-request", function (cid, request, response) {
+   app.logger.log("info", "proxy: " + cid + ": HTTP request: " + request.url);
 });
 
-var cjsFile = new RegExp(opts.componentjs)
+proxyserver.on("http-error", function (cid, error, request, response) {
+   app.logger.log("info", "proxy: " + cid + ": HTTP error: " + error);
+});
+
+var cjsFile  = new RegExp(opts.componentjs)
 var cmpFiles = new RegExp(opts.components)
 
-myProxy.on("interceptResponseContent", function (clientResponse, responseBody, callback) {
-    console.log('interceptResponseContent: ' + clientResponse.req.path)
-
+proxyserver.on("http-intercept-response", function (cid, request, response, remoteResponse, remoteResponseBody, performResponse) {
     var buffer
     var injected = false
-    if (clientResponse.req.path.match(cjsFile) !== null) {
+    if (remoteResponse.req.path.match(cjsFile) !== null) {
         console.log('Discovered CJS file')
         /*  Load the original file to a temporary buffer  */
-        buffer = new Buffer(responseBody, 'utf8')
+        buffer = new Buffer(remoteResponseBody, 'utf8')
 
         /*  Inject the given files  */
         var filesToInject = [ './assets/plugins/component.plugin.tracing.js' , './assets/plugins/component.plugin.tracing-console.js' ]
@@ -282,15 +287,15 @@ myProxy.on("interceptResponseContent", function (clientResponse, responseBody, c
             buffer = tmpBuffer
         }
 
-        responseBody = buffer.toString('utf8')
+        remoteResponseBody = buffer.toString('utf8')
         console.log('Append necessary plug-ins')
         injected = true
-    } else if (clientResponse.req.path.match(cmpFiles) !== null) {
+    } else if (remoteResponse.req.path.match(cmpFiles) !== null) {
         console.log('Discovered component file')
-        /*  read original responseBody, instrument it and write instrumented responseBody  */
-        buffer = new Buffer(responseBody, 'utf8')
-        //responseBody = buffer.toString('utf8')
-        //responseBody = tracing.instrument('ComponentJS', responseBody);
+        /*  read original remoteResponseBody, instrument it and write instrumented remoteResponseBody  */
+        buffer = new Buffer(remoteResponseBody, 'utf8')
+        //remoteResponseBody = buffer.toString('utf8')
+        //remoteResponseBody = tracing.instrument('ComponentJS', remoteResponseBody);
 
         console.log('Transpiled component file')
         injected = true
@@ -299,22 +304,23 @@ myProxy.on("interceptResponseContent", function (clientResponse, responseBody, c
     if (injected) {
         var length = buffer.length
         /*  Make sure the file is never loaded from cache  */
-        clientResponse.statusCode = 200
-        clientResponse.headers['content-length'] = length
-        clientResponse.headers['content-type'] = 'application/javascript'
-        clientResponse.headers['accept-ranges'] = 'bytes'
+        remoteResponse.statusCode = 200
+        remoteResponse.headers['content-length'] = length
+        remoteResponse.headers['content-type'] = 'application/javascript'
+        remoteResponse.headers['accept-ranges'] = 'bytes'
         /*  Take care of the caching headers  */
-        var cacheControl = clientResponse.headers['x-cache']
+        var cacheControl = remoteResponse.headers['x-cache']
         if (cacheControl)
             cacheControl = cacheControl.replace('HIT', 'MISS')
-        cacheControl = clientResponse.headers['x-cache-lookup']
+        cacheControl = remoteResponse.headers['x-cache-lookup']
         if (cacheControl)
             cacheControl = cacheControl.replace('HIT', 'MISS')
     }
-    callback(clientResponse, responseBody);
+    performResponse(remoteResponse, remoteResponseBody);
 });
 
 /*  start the listening on the root server  */
 srv.listen(opts.port, opts.addr, opts.backlog, function () {
-    app.logger.log('info', 'listening on http://%s:%d', opts.addr, opts.port);
+    app.logger.log("info", "listening on http://%s:%d for ORIGIN requests", opts.addr, opts.port);
 });
+
