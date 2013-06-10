@@ -268,7 +268,7 @@ proxyserver.on("http-intercept-response", function (cid, request, response, remo
     var buffer
     var injected = false
     if (remoteResponse.req.path.match(cjsFile) !== null) {
-        console.log('Discovered CJS file')
+        console.log('Discovered CJS file: ' + request.url)
         /*  Load the original file to a temporary buffer  */
         buffer = new Buffer(remoteResponseBody, 'utf8')
 
@@ -291,13 +291,12 @@ proxyserver.on("http-intercept-response", function (cid, request, response, remo
         console.log('Append necessary plug-ins')
         injected = true
     } else if (remoteResponse.req.path.match(cmpFiles) !== null) {
-        console.log('Discovered component file')
         /*  read original remoteResponseBody, instrument it and write instrumented remoteResponseBody  */
-        buffer = new Buffer(remoteResponseBody, 'utf8')
-        //remoteResponseBody = buffer.toString('utf8')
-        //remoteResponseBody = tracing.instrument('ComponentJS', remoteResponseBody);
+        remoteResponseBody = remoteResponseBody.toString("utf8");
+        remoteResponseBody = tracing.instrument('cs', remoteResponseBody);
+        buffer = { length: remoteResponseBody.length }
 
-        console.log('Transpiled component file')
+        console.log('Transpiled component file: ' + request.url)
         injected = true
     }
     /*  Did we inject anything? If yes, fix the HTTP properties  */
