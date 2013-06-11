@@ -33,26 +33,39 @@ var util     = require("util")
 var dashdash = require("dashdash");
 
 /*  default command-line value loading  */
-var argv = [ process.argv[0], process.argv[1] ];
+var k = 0;
+var argv = [];
+argv.push(process.argv[k++]);
+argv.push(process.argv[k++]);
+var sections = [ "default" ];
+if (k < process.argv.length) {
+    var m = process.argv[k].match(/^--config=(.+)$/);
+    if (m !== null) {
+        sections.push(m[1]);
+        k++;
+    }
+}
 var config = ini.parseSync(path.join(basedir, "/server.ini"));
-if (typeof config.server !== "undefined") {
-    for (var name in config.server) {
-        if (config.server.hasOwnProperty(name)) {
-            if (typeof config.server[name] === "string") {
-                argv.push("--" + name);
-                argv.push(config.server[name]);
-            }
-            else if (config.server[name] instanceof Array) {
-                for (var i = 0; i < config.server[name].length; i++) {
+for (var j = 0; j < sections.length; j++) {
+    if (typeof config[sections[j]] !== "undefined") {
+        for (var name in config[sections[j]]) {
+            if (config[sections[j]].hasOwnProperty(name)) {
+                if (typeof config[sections[j]][name] === "string") {
                     argv.push("--" + name);
-                    argv.push(config.server[name][i]);
+                    argv.push(config[sections[j]][name]);
+                }
+                else if (config[sections[j]][name] instanceof Array) {
+                    for (var i = 0; i < config[sections[j]][name].length; i++) {
+                        argv.push("--" + name);
+                        argv.push(config[sections[j]][name][i]);
+                    }
                 }
             }
         }
     }
 }
-for (var i = 2; i < process.argv.length; i++)
-    argv.push(process.argv[i]);
+while (k < process.argv.length)
+    argv.push(process.argv[k++]);
 
 /*  die the reasonable way  */
 var die = function (msg) {
