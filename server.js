@@ -33,7 +33,7 @@ var util     = require("util")
 var dashdash = require("dashdash");
 
 /*  default command-line value loading  */
-var argv = [];
+var argv = [ process.argv[0], process.argv[1] ];
 var config = ini.parseSync(path.join(basedir, "/server.ini"));
 if (typeof config.server !== "undefined") {
     for (var name in config.server) {
