@@ -250,9 +250,9 @@ srv.use(express_winston.errorLogger({
 /*  error logging  */
 srv.use(express.errorHandler({ dumpExceptions: false, showStack: false }));
 
-app.logger.log("info", "listening on http://%s:%d for PROXY requests", opts.proxyhost, opts.proxyport);
+app.logger.log("info", "listening on http://%s:%d for PROXY requests", opts.proxyaddr, opts.proxyport);
 var proxyserver = require("http-proxy-simple").createProxyServer({
-    host:  opts.proxyhost,
+    host:  opts.proxyaddr,
     port:  opts.proxyport,
     proxy: opts.proxyfwd
 });
