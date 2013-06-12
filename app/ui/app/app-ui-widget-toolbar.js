@@ -44,7 +44,13 @@ app.ui.widget.toolbar.view = cs.clazz({
                         var item = nVal[i];
                         if (item.type === 'button') {
                             var btn =  new app.ui.widget.toolbar.items.button(item.label, item.event)
-                            cs(self).create('button-' + i, btn)
+                            if (!item.id) {
+                                item.id = 'button-' + i
+                            }
+                            cs(self).create(item.id, btn)
+                            if (item.pressedIcon) {
+                                cs(self, item.id).value('data:pressed-icon', item.pressedIcon)
+                            }
                         }
                         else if (item.type === 'input') {
                             var input =  new app.ui.widget.toolbar.items.input(item.data, item.event)

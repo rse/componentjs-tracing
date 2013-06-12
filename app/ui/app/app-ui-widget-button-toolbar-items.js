@@ -24,7 +24,33 @@ app.ui.widget.toolbar.items.button = cs.clazz({
         create: function () {
             var self = this
 
+            cs(self).model({
+                'state:pressed'     : { value: false, valid: 'boolean' },
+                'data:pressed-icon' : { value: '', valid: 'string' }
+            })
+
             var btn = $.markup("toolbar-button", { label: self.label })
+
+            cs(self).observe({
+                name: 'state:pressed', spool: 'created',
+                touch: true,
+                func: function (ev, nVal) {
+                    if (nVal) {
+                        $(btn).addClass('pressed')
+                        $('.pressed-icon', btn).removeClass('invisible')
+                    } else {
+                        $(btn).removeClass('pressed')
+                        $('.pressed-icon', btn).addClass('invisible')
+                    }
+                }
+            })
+
+            cs(self).observe({
+                name: 'data:pressed-icon', spool: 'created',
+                func: function (ev, nVal) {
+                    $('.pressed-icon', btn).attr('src', nVal)
+                }
+            })
 
             $(btn).click(function () {
                 cs(self).value(self.event, true)
@@ -32,7 +58,8 @@ app.ui.widget.toolbar.items.button = cs.clazz({
 
             cs(self).plug(btn);
         },
-        release: function () {
+        destroy: function () {
+            cs(this).unspool('created')
         }
     }
 })
@@ -123,9 +150,18 @@ app.ui.widget.toolbar.items.checkbox = cs.clazz({
                 cs(self).value(self.dataBinding, $('input[type=checkbox]', btn).is(':checked'))
             })
 
+            cs(self).observe({
+                name: self.dataBinding, spool: 'created',
+                touch: true,
+                func: function (ev, nVal) {
+                    $('input[type=checkbox]', btn).attr('checked', nVal)
+                }
+            })
+
             cs(self).plug(btn);
         },
-        release: function () {
+        destroy: function () {
+            cs(this).unspool('created')
         }
     }
 })

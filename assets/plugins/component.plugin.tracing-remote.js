@@ -15,10 +15,13 @@
 /* global ComponentJS:false */
 /* jshint unused:false */
 
-ComponentJS.plugin("tracing-console", function (_cs, $cs, GLOBAL) {
+var websocket = io.connect("http://localhost:8081");
+websocket.emit('join')
+
+ComponentJS.plugin("tracing-remote", function (_cs, $cs, GLOBAL) {
     /*  ensure the tracing plugin is present  */
     if (!$cs.plugin("tracing"))
-        throw _cs.exception("plugin:tracing-console", "sorry, required 'tracing' plugin not found");
+        throw _cs.exception("plugin:tracing-remote", "sorry, required 'tracing' plugin not found");
 
     /*  log the tracing information to the console  */
     _cs.latch("ComponentJS:tracing", function (tracing) {
@@ -48,30 +51,19 @@ ComponentJS.plugin("tracing-console", function (_cs, $cs, GLOBAL) {
             var sourceType = typeofcomp(tracing.sourceType());
             var originType = typeofcomp(tracing.originType());
 
-            /*  stringify parameters  */
-            var params = "";
-            var p = tracing.parameters();
-            for (var name in p) {
-                if (params !== "")
-                    params += ", ";
-                params += name + ": " + JSON.stringify(p[name]);
+            /*  create transferable trace object  */
+            var trace = {
+                id: tracing.id,
+                time: tracing.timestamp(),
+                source: source,
+                sourceType: sourceType,
+                origin: origin,
+                originType: originType,
+                operation: tracing.operation(),
+                parameters: tracing.parameters()
             }
-            if (params !== "")
-                params = "{ " + params + " }";
-            else
-                params = "{}";
 
-            /*  print the tracing tuple to the console  */
-            GLOBAL.console.log("TRACING: " +
-                "#" + tracing.id + ": < " +
-                tracing.timestamp() + ", " +
-                source + ", " +
-                sourceType + ", " +
-                origin + ", " +
-                originType + ", " +
-                tracing.operation() + ", " +
-                params + " >"
-            );
+            websocket.emit('trace', trace);
         }
     });
 });

@@ -290,7 +290,13 @@ proxyserver.on("http-intercept-response", function (cid, request, response, remo
         buffer = new Buffer(remoteResponseBody, 'utf8')
 
         /*  Inject the given files  */
-        var filesToInject = [ './assets/plugins/component.plugin.tracing.js' , './assets/plugins/component.plugin.tracing-console.js' ]
+        var filesToInject = [
+            './assets/plugins/component.plugin.tracing.js',
+            './assets/socket.io.js',
+            './assets/plugins/component.plugin.tracing-remote.js',
+            './assets/plugins/component.plugin.tracing-console.js'
+        ]
+
         for (var i = 0; i < filesToInject.length; i++) {
             /*  Load the file to inject to a temporary buffer  */
             var append = fs.readFileSync(filesToInject[i])
@@ -305,7 +311,7 @@ proxyserver.on("http-intercept-response", function (cid, request, response, remo
         }
 
         remoteResponseBody = buffer.toString('utf8')
-        console.log('Append necessary plug-ins')
+        console.log('Append necessary plug-ins and libraries')
         injected = true
     } else if (remoteResponse.req.path.match(cmpFiles) !== null) {
         /*  read original remoteResponseBody, instrument it and write instrumented remoteResponseBody  */
@@ -339,4 +345,3 @@ proxyserver.on("http-intercept-response", function (cid, request, response, remo
 srv.listen(opts.port, opts.addr, opts.backlog, function () {
     app.logger.log("info", "listening on http://%s:%d for ORIGIN requests", opts.addr, opts.port);
 });
-

@@ -85,18 +85,6 @@
         <link  href="app/app-ui-widget-toolbar-items.html"      rel="markup/handlebars" type="text/html"/>
         <script src="app/app-ui-widget-button-toolbar-items.js" type="text/javascript"></script>
         <script src="app/app-sv.js"                             type="text/javascript"></script>
-        <script src="lib/helper.js"                             type="text/javascript"></script>
-        <script type="text/javascript">
-            $(document).ready(function () {
-                var socket = io.connect();
-
-                socket.emit('join')
-                socket.on('newTrace', function (data) {
-                    alert(JSON.stringify(data))
-                })
-                socket.emit('trace', { timestamp: 1 })
-            });
-        </script>
     </head>
     <body>
     </body>

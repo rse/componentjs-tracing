@@ -9,11 +9,17 @@
 
 app.ui.comp.tracing = cs.clazz({
     mixin: [ cs.marker.controller ],
+    dynamics: {
+        socket: null
+    },
     protos: {
         create: function () {
-            var gridView = new app.ui.widget.grid.view(false)
             cs(this).create('toolbarModel/view', app.ui.widget.toolbar.model, app.ui.widget.toolbar.view)
-            cs(this).create('gridModel/view', app.ui.widget.grid.model, gridView)
+            var gridCtrl = new app.ui.widget.grid.ctrl(false)
+            cs(this).create('grid', gridCtrl)
+
+            this.socket = io.connect('http://localhost:8080')
+            this.socket.emit('join')
 
             cs(this).model({
                 'event:record'          : { value: false, valid: 'boolean', autoreset: true },
@@ -22,7 +28,8 @@ app.ui.comp.tracing = cs.clazz({
                 'event:clear'           : { value: false, valid: 'boolean', autoreset: true },
                 'event:filterKeyUp'     : { value: -1, valid: 'number', autoreset: true },
                 'event:check-journal'   : { value: false, valid: 'boolean', autoreset: true },
-                'data:continuous'       : { value: false, valid: 'boolean' },
+                'state:record'          : { value: true, valid: 'boolean' },
+                'data:continuous'       : { value: false, valid: 'boolean', store: true },
                 'data:filter'           : { value: '', valid: 'string' }
             })
         },
@@ -30,7 +37,9 @@ app.ui.comp.tracing = cs.clazz({
             var toolbarItems = [{
                 label: 'Record',
                 event: 'event:record',
-                type: 'button'
+                type: 'button',
+                pressedIcon: './static/img/record.png',
+                id: 'recordBtn'
             }, {
                 label: 'Load',
                 event: 'event:load',
@@ -67,14 +76,14 @@ app.ui.comp.tracing = cs.clazz({
             var columns = [
                 { label: 'Time', dataIndex: 'time', width: 50, align: 'center' },
                 { label: 'Source', dataIndex: 'source' },
-                { label: 'ST', dataIndex: 'sourceType', width: 50, align: 'center' },
+                { label: 'ST', dataIndex: 'sourceType', width: 20, align: 'center' },
                 { label: 'Origin', dataIndex: 'origin' },
-                { label: 'OT', dataIndex: 'originType', width: 50, align: 'center' },
-                { label: 'Operation', dataIndex: 'operation', width: 100, align: 'center' },
+                { label: 'OT', dataIndex: 'originType', width: 20, align: 'center' },
+                { label: 'Operation', dataIndex: 'operation', width: 60, align: 'center' },
                 { label: 'Parameters', dataIndex: 'parameters' }
             ]
 
-            cs(this, 'gridModel').value('data:columns', columns)
+            cs(this, 'grid').call('columns', columns)
         },
         render: function () {
             var self = this
@@ -86,11 +95,21 @@ app.ui.comp.tracing = cs.clazz({
             })
 
             cs(self).socket({
-                scope: 'gridModel/view',
+                scope: 'grid',
                 ctx: $('.grid', content)
             })
 
             cs(self).plug(content)
+
+            self.socket.on('newTrace', function (data) {
+                if (!cs(self).value('state:record')) {
+                    return
+                }
+                cs(self, 'grid').call('unshift', data)
+                if (cs(self).value('data:continuous')) {
+                    cs(self).publish('checkTrace', data)
+                }
+            })
 
             $('#tracing_upload').change(function (evt) {
                 var files = evt.target.files;
@@ -101,7 +120,7 @@ app.ui.comp.tracing = cs.clazz({
                         return function (e) {
                             var content = e.target.result.split('\n')
                             var tuples = cs('/sv').call('parseLogfile', content)
-                            cs(self, 'gridModel').value('data:rows', tuples, true)
+                            cs(self, 'grid').call('tuples', tuples)
                         }
                     })(f)
 
@@ -113,23 +132,14 @@ app.ui.comp.tracing = cs.clazz({
             cs(self).observe({
                 name: 'data:filter', spool: 'rendered',
                 func: function (ev, nVal) {
-                    cs(self, 'gridModel').value('state:filter', nVal)
-                }
-            })
-
-            cs(self).subscribe({
-                name: 'receivedTrace', spool: 'rendered',
-                func: function (ev, trace) {
-                    var tuples = cs(self, 'gridModel').value('data:rows')
-                    tuples = tuples.concat(cs('/sv').call('parseLogfile', [ trace ]))
-                    cs(self, 'gridModel').value('data:rows', tuples, true)
+                    cs(self, 'grid').call('filter', nVal)
                 }
             })
 
             cs(self).observe({
                 name: 'event:record', spool: 'rendered',
                 func: function () {
-                    console.log('record now')
+                    cs(self).value('state:record', !cs(self).value('state:record'))
                 }
             })
 
@@ -143,21 +153,14 @@ app.ui.comp.tracing = cs.clazz({
             cs(self).observe({
                 name: 'event:save', spool: 'rendered',
                 func: function () {
-                    window.location = 'data:application/octet-stream;base64,' + btoa(cs(self, 'gridModel').value('data:savable'))
+                    cs(self, 'grid').call('save')
                 }
             })
 
             cs(self).observe({
                 name: 'event:clear', spool: 'rendered',
                 func: function () {
-                    cs(this, 'gridModel').value('data:rows', [])
-                }
-            })
-
-            cs(self).observe({
-                name: 'data:continuous', spool: 'rendered',
-                func: function (ev, nVal, oVal) {
-                    console.log('nVal: ' + nVal + ', oVal:' + oVal)
+                    cs(this, 'grid').call('clear')
                 }
             })
 
@@ -170,17 +173,33 @@ app.ui.comp.tracing = cs.clazz({
                 }
             })
 
+            cs(self).register({
+                name: 'tuples', spool: 'rendered',
+                func: function () {
+                    return cs(self, 'grid').call('tuples')
+                }
+            })
+
             cs(self).observe({
                 name: 'event:check-journal', spool: 'rendered',
                 func: function () {
-                    var tuples = cs(self, 'gridModel').value('data:rows')
-                    var constraintSet = cs(self, '../constraints').call('retrieveConstraintset')
-
-                    var resTuples = cs('/sv').call('checkTuples', tuples, constraintSet)
-
-                    cs(self, '../checking').call('displayTuples', resTuples)
+                    cs(self).publish('checkJournal')
                 }
             })
+        },
+        show: function () {
+            var self = this
+
+            cs(self).observe({
+                name: 'state:record', spool: 'shown',
+                touch: true,
+                func: function (ev, nVal) {
+                    cs(self, 'toolbarModel/view/recordBtn').value('state:pressed', nVal)
+                }
+            })
+        },
+        hide: function () {
+            cs(this).unspool('shown')
         },
         release: function () {
             cs(this).unspool('rendered')

@@ -12,7 +12,7 @@ app.ui.comp.checking = cs.clazz({
     protos: {
         create: function () {
             cs(this).create('toolbarModel/view', app.ui.widget.toolbar.model, app.ui.widget.toolbar.view)
-            cs(this).create('gridModel/view', app.ui.widget.grid.model, app.ui.widget.grid.view)
+            cs(this).create('grid', app.ui.widget.grid.ctrl)
             cs(this).create('detailsModel/view', app.ui.widget.tuple.details.model, app.ui.widget.tuple.details.view)
             cs(this).create('rationalesModel/view', app.ui.widget.rationales.model, app.ui.widget.rationales.view)
 
@@ -34,20 +34,27 @@ app.ui.comp.checking = cs.clazz({
             cs(self, 'toolbarModel').value('data:items', toolbarItems)
 
             var columns = [
-                { label: 'Time', dataIndex: 'time' },
+                { label: 'Time', dataIndex: 'time', width: 50, align: 'center' },
                 { label: 'Source', dataIndex: 'source' },
-                { label: 'ST', dataIndex: 'sourceType' },
+                { label: 'ST', dataIndex: 'sourceType', width: 20, align: 'center' },
                 { label: 'Origin', dataIndex: 'origin' },
-                { label: 'OT', dataIndex: 'originType' },
-                { label: 'Operation', dataIndex: 'operation' }
+                { label: 'OT', dataIndex: 'originType', width: 20, align: 'center'},
+                { label: 'Operation', dataIndex: 'operation', width: 60, align: 'center' }
             ]
 
-            cs(self, 'gridModel').value('data:columns', columns)
+            cs(self, 'grid').call('columns', columns)
 
             cs(self).register({
                 name: 'displayTuples', spool: 'prepared',
                 func: function (tuples) {
-                    cs(self, 'gridModel').value('data:rows', tuples)
+                    cs(self, 'grid').call('tuples', tuples)
+                }
+            })
+
+            cs(self).register({
+                name: 'unshift', spool: 'prepared',
+                func: function (tuple) {
+                    cs(self, 'grid').call('unshift', tuple)
                 }
             })
 
@@ -60,8 +67,8 @@ app.ui.comp.checking = cs.clazz({
             })
         },
         render: function () {
-            var content = $.markup("checking-content")
             var self = this
+            var content = $.markup("checking-content")
 
             cs(self).socket({
                 scope: 'toolbarModel/view',
@@ -69,7 +76,7 @@ app.ui.comp.checking = cs.clazz({
             })
 
             cs(self).socket({
-                scope: 'gridModel/view',
+                scope: 'grid',
                 ctx: $('.grid', content)
             })
 
@@ -102,14 +109,13 @@ app.ui.comp.checking = cs.clazz({
             cs(self).observe({
                 name: 'event:clear', spool: 'rendered',
                 func: function () {
-                    cs(self, 'gridModel').value('data:rows', [])
+                    cs(self, 'grid').call('clear')
                     cs(self, 'rationalesModel').value('data:rationales', [])
                 }
             })
 
-            cs(self, 'gridModel').observe({
-                name: 'data:selected-obj', spool: '..:rendered',
-                touch: true,
+            cs(self).subscribe({
+                name: 'objectSelected', spool: 'rendered',
                 func: function (ev, nVal) {
                     cs(self, 'detailsModel').value('data:tuple', nVal)
                     cs(self, 'rationalesModel').value('data:tuple', nVal)

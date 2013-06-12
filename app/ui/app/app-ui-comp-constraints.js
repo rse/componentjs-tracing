@@ -42,13 +42,6 @@ app.ui.comp.constraints = cs.clazz({
             }]
 
             cs(self, 'toolbarModel').value('data:items', toolbarItems)
-
-            cs(self).register({
-                name: 'retrieveConstraintset', spool: 'rendered',
-                func: function () {
-                    return cs(self, 'constraintset').call('parseConstraintsets')
-                }
-            })
         },
         render: function () {
             var self = this

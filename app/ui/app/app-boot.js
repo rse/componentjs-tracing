@@ -14,15 +14,17 @@ cs.ns("app.ui.comp");
 cs.ns("app.ui.widget");
 cs.debug(0);
 if (cs.plugin("debugger")) {
-    cs.debug(9);
-    cs.debug_window({
-        enable:    true,
-        natural:   true,
-        autoclose: false,
-        name:      "ComponentJS Chrome Extension",
-        width:     800,
-        height:    1000
-    });
+    if (cs.debug_instrumented()) {
+        cs.debug(9)
+        cs.debug_window({
+            enable:    true,
+            natural:   true,
+            autoclose: false,
+            name:      "ComponentJS Chrome Extension",
+            width:     800,
+            height:    1000
+        })
+    }
 }
 
 /*  once the DOM is ready...  */

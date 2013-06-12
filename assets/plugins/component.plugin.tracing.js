@@ -96,7 +96,6 @@ ComponentJS.plugin("tracing", function (_cs, $cs, GLOBAL) {
 
     /*  determine the tracing context
         (by crawling for it backward in the run-time call stack)  */
-        //FIXME - leads to an stackszie exceeded exception
     var resolve = function (name) {
         var annotation = null;
         walkStackTrace(function (func) {
@@ -136,8 +135,6 @@ ComponentJS.plugin("tracing", function (_cs, $cs, GLOBAL) {
             source = _cs.internal;
         else {
             source = resolve("tracing:source");
-            if (source === null)
-                source = _cs.none;
         }
 
         /*  wrap original function and annotate it with tracing source  */
@@ -201,10 +198,10 @@ ComponentJS.plugin("tracing", function (_cs, $cs, GLOBAL) {
 
     var compType = function (comp) {
         var type = {};
-        type.view       = $cs.marked(comp.obj(), "view");
-        type.model      = $cs.marked(comp.obj(), "model");
-        type.controller = $cs.marked(comp.obj(), "controller");
-        type.service    = $cs.marked(comp.obj(), "service");
+        type.view       = $cs.marked(comp === null ? _cs.none.obj() : comp.obj(), "view");
+        type.model      = $cs.marked(comp === null ? _cs.none.obj() : comp.obj(), "model");
+        type.controller = $cs.marked(comp === null ? _cs.none.obj() : comp.obj(), "controller");
+        type.service    = $cs.marked(comp === null ? _cs.none.obj() : comp.obj(), "service");
         return type;
     }
 
@@ -215,8 +212,6 @@ ComponentJS.plugin("tracing", function (_cs, $cs, GLOBAL) {
         protos[method] = function () {
             /*  on-the-fly make an implicit tracing source  */
             var source = resolve("tracing:source");
-            if (source === null)
-                source = _cs.none;
 
             /*  act on all non-internal sources  */
             if (source !== _cs.internal) {

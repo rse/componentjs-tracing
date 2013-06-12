@@ -15,7 +15,7 @@ app.ui.widget.rationales.model = cs.clazz({
         create: function () {
             /*  presentation model for items  */
             cs(this).model({
-                'data:tuple': { value: null, valid: '(null | {time: number, source: string, sourceType: string, origin: string, originType: string, operation: string, parameters: any, result: string, checks: any})'},
+                'data:tuple': { value: null, valid: '(null | { id?: number, time: number, source: string, sourceType: string, origin: string, originType: string, operation: string, parameters: any, result: string, checks: any })'},
                 'data:rationales' : { value: [], valid: '[any*]'}
             })
         }
