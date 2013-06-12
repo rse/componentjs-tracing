@@ -18,12 +18,13 @@ app.ui.comp.panel = cs.clazz({
 
             cs(self).create(
                 'panel/panel/' +
-                '{tracing,checking,constraints}',
+                '{tracing,checking,constraints,statusbar}',
                 app.ui.widget.panel.model,
                 app.ui.widget.panel.view,
                 app.ui.comp.tracing,
                 app.ui.comp.checking,
-                app.ui.comp.constraints
+                app.ui.comp.constraints,
+                app.ui.widget.statusbar
             )
 
             cs(self).property('ComponentJS:state-auto-increase', true)
@@ -55,6 +56,27 @@ app.ui.comp.panel = cs.clazz({
                     }
                     cs(self, 'panel/panel/checking').call('unshift', resTuples[0])
                 }
+            })
+
+            cs(self, 'panel/panel/statusbar').publish('message', 'Connecting ...')
+            cs(self, 'panel/panel/statusbar').publish('color', 'yellow')
+
+            var socket = io.connect('http://localhost:8081')
+            socket.on('connect', function () {
+                cs(self, 'panel/panel/statusbar').publish('message', 'Connected')
+                cs(self, 'panel/panel/statusbar').publish('color', 'green')
+            })
+            socket.on('reconnect', function () {
+                cs(self, 'panel/panel/statusbar').publish('message', 'Reconnected')
+                cs(self, 'panel/panel/statusbar').publish('color', 'green')
+            })
+            socket.on('disconnect', function () {
+                cs(self, 'panel/panel/statusbar').publish('message', 'Trying to reconnect ...')
+                cs(self, 'panel/panel/statusbar').publish('color', 'yellow')
+            })
+
+            socket.on('newTrace', function (data) {
+                cs(self, 'panel/panel/tracing').publish('event:new-trace', data)
             })
         },
         prepare: function () {
