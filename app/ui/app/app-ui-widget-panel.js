@@ -34,6 +34,11 @@ app.ui.widget.panel.view = cs.clazz({
             var ui = $.markup("widget-panel")
             cs(self).plug(ui);
 
+            cs(this).socket({
+                ctx: $('#statusbar-container'),
+                scope: 'statusbar'
+            })
+
             /*  render tabs  */
             var tab2socket = []
             cs(self).observe({
