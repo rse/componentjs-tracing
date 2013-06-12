@@ -20,9 +20,9 @@ if (cs.plugin("debugger")) {
             enable:    true,
             natural:   true,
             autoclose: false,
-            name:      "ComponentJS Chrome Extension",
+            name:      "ComponentJS Tracing Proxy",
             width:     800,
-            height:    1000
+            height:    800
         })
     }
 }
