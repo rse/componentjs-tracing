@@ -75,27 +75,27 @@ var die = function (msg) {
 
 /*  command-line argument parsing  */
 var options = [
-    {   name: "version", type: "bool", default: false,
+    {   name: "version", type: "bool", "default": false,
         help: "Print tool version and exit." },
-    {   names: [ "help", "h" ], type: "bool", default: false,
+    {   names: [ "help", "h" ], type: "bool", "default": false,
         help: "Print this help and exit." },
-    {   names: [ "addr", "a" ], type: "string", default: "127.0.0.1",
+    {   names: [ "addr", "a" ], type: "string", "default": "127.0.0.1",
         help: "IP address to listen", helpArg: "ADDRESS" },
-    {   names: [ "port", "p" ], type: "integer", default: 8080,
+    {   names: [ "port", "p" ], type: "integer", "default": 8080,
         help: "TCP port to listen", helpArg: "PORT" },
-    {   names: [ "backlog", "b" ], type: "integer", default: 511,
+    {   names: [ "backlog", "b" ], type: "integer", "default": 511,
         help: "TCP socket connection backlog", helpArg: "CONNECTIONS" },
-    {   names: [ "componentjs" , "cjs" ], type: "string", default: ".*\/component.js",
+    {   names: [ "componentjs" , "cjs" ], type: "string", "default": ".*\/component.js",
         help: "Regex matching the url of the ComponentJS file", helpArg: "REGEX" },
-    {   names: [ "components", "cmps" ], type: "string", default: ".*/app/.*",
+    {   names: [ "components", "cmps" ], type: "string", "default": ".*/app/.*",
         help: "Regex matching the urls of the components files of the SPA", helpArg: "REGEX" },
-    {   names: [ "proxyaddr", "A" ], type: "string", default: "127.0.0.1",
+    {   names: [ "proxyaddr", "A" ], type: "string", "default": "127.0.0.1",
         help: "IP address to listen", helpArg: "ADDRESS" },
-    {   names: [ "proxyport", "P" ], type: "integer", default: 8129,
+    {   names: [ "proxyport", "P" ], type: "integer", "default": 8129,
         help: "TCP port to listen", helpArg: "PORT" },
-    {   names: [ "proxyfwd", "F" ], type: "string", default: "",
+    {   names: [ "proxyfwd", "F" ], type: "string", "default": "",
         help: "host and port of forwarding proxy", helpArg: "HOST:PORT" },
-    {   names: [ "app", "X" ], type: "arrayOfString", default: "",
+    {   names: [ "app", "X" ], type: "arrayOfString", "default": "",
         help: "application to load", helpArg: "APP" }
 ]
 var parser = dashdash.createParser({
@@ -120,11 +120,8 @@ else if (opts.version) {
     console.log(util.format("%s %s (%s)", app.name, app.vers, app.date))
     process.exit(0)
 }
-// console.log("opts:", opts)
-// console.log("args:", opts._args)
 
 /*  load required libraries (3/3)  */
-var path            = require("path");
 var util            = require("util");
 var cors            = require("cors");
 var express         = require("express");
@@ -287,14 +284,16 @@ proxyserver.on("http-intercept-response", function (cid, request, response, remo
     if (remoteResponse.req.path.match(cjsFile) !== null) {
         console.log('Discovered CJS file: ' + request.url)
         /*  Load the original file to a temporary buffer  */
-        buffer = new Buffer(remoteResponseBody, 'utf8')
+        //buffer = new Buffer(remoteResponseBody, 'utf8')
+        buffer = new Buffer(0)
 
         /*  Inject the given files  */
         var filesToInject = [
+            './assets/component.js',
             './assets/plugins/component.plugin.tracing.js',
             './assets/socket.io.js',
-            './assets/plugins/component.plugin.tracing-remote.js',
-            './assets/plugins/component.plugin.tracing-console.js'
+            //'./assets/plugins/component.plugin.tracing-console.js',
+            './assets/plugins/component.plugin.tracing-remote.js'
         ]
 
         for (var i = 0; i < filesToInject.length; i++) {
