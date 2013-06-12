@@ -9,17 +9,11 @@
 
 app.ui.comp.tracing = cs.clazz({
     mixin: [ cs.marker.controller ],
-    dynamics: {
-        socket: null
-    },
     protos: {
         create: function () {
             cs(this).create('toolbarModel/view', app.ui.widget.toolbar.model, app.ui.widget.toolbar.view)
             var gridCtrl = new app.ui.widget.grid.ctrl(false)
             cs(this).create('grid', gridCtrl)
-
-            this.socket = io.connect('http://localhost:8080')
-            this.socket.emit('join')
 
             cs(this).model({
                 'event:record'          : { value: false, valid: 'boolean', autoreset: true },
@@ -101,13 +95,16 @@ app.ui.comp.tracing = cs.clazz({
 
             cs(self).plug(content)
 
-            self.socket.on('newTrace', function (data) {
-                if (!cs(self).value('state:record')) {
-                    return
-                }
-                cs(self, 'grid').call('unshift', data)
-                if (cs(self).value('data:continuous')) {
-                    cs(self).publish('checkTrace', data)
+            cs(self).subscribe({
+                name: 'event:new-trace', spool: 'rendered',
+                func: function (ev, data) {
+                    if (!cs(self).value('state:record')) {
+                        return
+                    }
+                    cs(self, 'grid').call('unshift', data)
+                    if (cs(self).value('data:continuous')) {
+                        cs(self).publish('checkTrace', data)
+                    }
                 }
             })
 
@@ -121,6 +118,9 @@ app.ui.comp.tracing = cs.clazz({
                             var content = e.target.result.split('\n')
                             var tuples = cs('/sv').call('parseLogfile', content)
                             cs(self, 'grid').call('tuples', tuples)
+                            if (cs(self).value('data:continuous')) {
+                                cs(self).publish('checkJournal')
+                            }
                         }
                     })(f)
 
