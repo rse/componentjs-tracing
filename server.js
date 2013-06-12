@@ -91,6 +91,8 @@ var options = [
         help: "Regex matching the urls of the components files of the SPA", helpArg: "REGEX" },
     {   names: [ "proxyaddr", "A" ], type: "string", "default": "127.0.0.1",
         help: "IP address to listen", helpArg: "ADDRESS" },
+    {   names: [ "latestcjs", "lcjs" ], type: "bool", "default": false,
+        help: "Overwrites applications ComponentJS file", helpArg: "BOOL" },
     {   names: [ "proxyport", "P" ], type: "integer", "default": 8129,
         help: "TCP port to listen", helpArg: "PORT" },
     {   names: [ "proxyfwd", "F" ], type: "string", "default": "",
@@ -247,7 +249,7 @@ for (var i = 0; i < opts.app.length; i++) {
 }
 
 /*  configure a fallback middleware  */
-srv.use(function(req, res, next) {
+srv.use(function(req, res) {
     res.send(404, "Resource Not Found");
 });
 
@@ -267,11 +269,11 @@ var proxyserver = require("http-proxy-simple").createProxyServer({
     proxy: opts.proxyfwd
 });
 
-proxyserver.on("http-request", function (cid, request, response) {
+proxyserver.on("http-request", function (cid, request) {
    app.logger.log("info", "proxy: " + cid + ": HTTP request: " + request.url);
 });
 
-proxyserver.on("http-error", function (cid, error, request, response) {
+proxyserver.on("http-error", function (cid, error) {
    app.logger.log("info", "proxy: " + cid + ": HTTP error: " + error);
 });
 
@@ -283,18 +285,21 @@ proxyserver.on("http-intercept-response", function (cid, request, response, remo
     var injected = false
     if (remoteResponse.req.path.match(cjsFile) !== null) {
         console.log('Discovered CJS file: ' + request.url)
-        /*  Load the original file to a temporary buffer  */
-        //buffer = new Buffer(remoteResponseBody, 'utf8')
-        buffer = new Buffer(0)
-
         /*  Inject the given files  */
         var filesToInject = [
-            './assets/component.js',
             './assets/plugins/component.plugin.tracing.js',
             './assets/socket.io.js',
-            //'./assets/plugins/component.plugin.tracing-console.js',
             './assets/plugins/component.plugin.tracing-remote.js'
         ]
+
+        /*  Load the original file to a temporary buffer  */
+        if (opts.latestcjs) {
+            console.log('Injecting the latest ComponentJS version')
+            filesToInject.unshift('./assets/component.js')
+            buffer = new Buffer(0)
+        } else {
+            buffer = new Buffer(remoteResponseBody, 'utf8')
+        }
 
         for (var i = 0; i < filesToInject.length; i++) {
             /*  Load the file to inject to a temporary buffer  */
