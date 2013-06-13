@@ -12,7 +12,8 @@ User-Interface dialogs of complex HTML5-based Rich Clients
 
 ##Architecture
 The diagram below illustrates the underlying architecture of the tracing
-proxy application.  
+proxy application.
+
 ![Architecture](architecture.png)
 
 ##Installation
