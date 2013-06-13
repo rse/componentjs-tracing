@@ -8,17 +8,17 @@
 */
 
 /*
- *  This is a small ComponentJS plugin which just logs all
- *  captured tracing tuples to the console.
+ *  This is a small ComponentJS plugin which sends all
+ *  captured tracing tuples to the server using websockets.
  */
 
 /* global ComponentJS:false */
 /* jshint unused:false */
 
-var websocket = io.connect("http://localhost:8081");
-websocket.emit('join')
-
 ComponentJS.plugin("tracing-remote", function (_cs, $cs, GLOBAL) {
+    /*  connect to the server to drop recorded traces  */
+    var websocket = io.connect("http://localhost:8081");
+
     /*  ensure the tracing plugin is present  */
     if (!$cs.plugin("tracing"))
         throw _cs.exception("plugin:tracing-remote", "sorry, required 'tracing' plugin not found");
@@ -63,7 +63,8 @@ ComponentJS.plugin("tracing-remote", function (_cs, $cs, GLOBAL) {
                 parameters: tracing.parameters()
             }
 
-            websocket.emit('trace', trace);
+            /*  send the new trace to the server  */
+            websocket.emit("trace", trace);
         }
     });
 });
