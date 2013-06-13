@@ -24,4 +24,3 @@ if (process.argv[2] !== '-i') {
 var source = fs.readFileSync(filename_src, { encoding: "utf8" });
 source = tracing.instrument("cs", source);
 fs.writeFileSync(filename_dst, source, { encoding: "utf8" });
-
