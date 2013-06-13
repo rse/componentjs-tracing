@@ -21,32 +21,25 @@ module.exports = {
         srv.use(express.bodyParser())
         srv.use(express.methodOverride())
 
-        ctx.srv.io.on('connection', function (socket) {
-            console.log('New inbound connection')
-            socket.on('disconnect', function () {
-                console.log('Client disconnected')
-            })
-        })
-
         var buffer = []
 
+        /*  a client can subscribe itself to incoming traces by issuing a 'join' message  */
         ctx.srv.io.route('join', function (req) {
             req.io.join('tracingRoom')
-            console.log('Joined tracing queue')
-            if (buffer.length !== 0) {
-                console.log(buffer.length + ' buffered traces found, flushing ...')
-                for (var i = 0; i < buffer.length; i++) {
-                    req.io.emit('newTrace', buffer[i])
-                }
+            for (var i = 0; i < buffer.length; i++) {
+                req.io.emit('newTrace', buffer[i])
             }
+            /*  clear the buffer after flushing  */
             buffer = []
         })
 
+        /*  new traces can be transfered to the server using the 'trace' message with the trace as payload  */
         ctx.srv.io.route('trace', function (req) {
             var clients = ctx.srv.io.sockets.clients('tracingRoom')
             for (var i = 0; i < clients.length; i++) {
                 clients[i].emit('newTrace', req.data)
             }
+            /*  buffer incoming traces when no client is present yet  */
             if (clients.length === 0) {
                 buffer.push(req.data)
             }
