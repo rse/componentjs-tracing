@@ -26,9 +26,10 @@ Execute the package file. It will install or update the necessary node modules.
 ##Usage
 
 ###Basic Usage
-node server.js
+	node server.js
 
 ###Advanced Usage
+	node server.js [options] [arguments]
 The following options can either be supplied via the included [server.ini](server.ini) file or the
 command line.
 
