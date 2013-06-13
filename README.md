@@ -27,7 +27,7 @@ file or cloning via [git](http://git-scm.com/)
 
 ###Installing dependencies
 
-Execute the package file. It will install or update the necessary node modules.
+Executing the package file will install or update the necessary node modules.
 * **Windows:** package.bat
 * **Linux/Cygwin:** package.sh
 
