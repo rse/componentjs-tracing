@@ -26,16 +26,29 @@ module.exports = {
             socket.on('disconnect', function () {
                 console.log('Client disconnected')
             })
-            console.log('Joining tracing queue')
-            socket.join('tracingRoom')
+        })
+
+        var buffer = []
+
+        ctx.srv.io.route('join', function (req) {
+            req.io.join('tracingRoom')
+            console.log('Joined tracing queue')
+            if (buffer.length !== 0) {
+                console.log(buffer.length + ' buffered traces found, flushing ...')
+                for (var i = 0; i < buffer.length; i++) {
+                    req.io.emit('newTrace', buffer[i])
+                }
+            }
+            buffer = []
         })
 
         ctx.srv.io.route('trace', function (req) {
             var clients = ctx.srv.io.sockets.clients('tracingRoom')
             for (var i = 0; i < clients.length; i++) {
-                if (req.socket.id !== clients[i].id) {
-                    clients[i].emit('newTrace', req.data)
-                }
+                clients[i].emit('newTrace', req.data)
+            }
+            if (clients.length === 0) {
+                buffer.push(req.data)
             }
         })
 
