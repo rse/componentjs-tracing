@@ -61,7 +61,7 @@ app.ui.comp.panel = cs.clazz({
             cs(self, 'panel/panel/statusbar').publish('message', 'Connecting ...')
             cs(self, 'panel/panel/statusbar').publish('color', 'yellow')
 
-            var socket = io.connect('http://localhost:8081')
+            var socket = io.connect('http://localhost:8080')
             socket.on('connect', function () {
                 socket.emit('join')
                 cs(self, 'panel/panel/statusbar').publish('message', 'Connected')

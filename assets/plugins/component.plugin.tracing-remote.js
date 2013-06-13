@@ -17,7 +17,7 @@
 
 ComponentJS.plugin("tracing-remote", function (_cs, $cs, GLOBAL) {
     /*  connect to the server to drop recorded traces  */
-    var websocket = io.connect("http://localhost:8081");
+    var websocket = io.connect("http://localhost:8080");
 
     /*  ensure the tracing plugin is present  */
     if (!$cs.plugin("tracing"))
