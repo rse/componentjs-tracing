@@ -29,7 +29,7 @@ command line.
 * **proxyport, P:** TCP port to listen in on
 * **latestcjs, lcjs:** Overwrites applications ComponentJS file with the supplied version
 * **proxyfwd, F:** Host and port of forwarding proxy
-* **config=<cfg>:** Adds the specified section of the ini file to overwrite defaults
+* **config=&lt;cfg&gt;:** Adds the specified section of the ini file to overwrite defaults
 
 ##License
 
