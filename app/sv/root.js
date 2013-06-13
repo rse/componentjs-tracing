@@ -31,7 +31,12 @@ module.exports = {
         })
 
         ctx.srv.io.route('trace', function (req) {
-            ctx.srv.io.sockets.in('tracingRoom').emit('newTrace', req.data)
+            var clients = ctx.srv.io.sockets.clients('tracingRoom')
+            for (var i = 0; i < clients.length; i++) {
+                if (req.socket.id !== clients[i].id) {
+                    clients[i].emit('newTrace', req.data)
+                }
+            }
         })
 
         return srv
