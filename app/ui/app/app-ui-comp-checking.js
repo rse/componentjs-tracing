@@ -128,6 +128,9 @@ app.ui.comp.checking = cs.clazz({
                 }
             })
         },
+        cleanup: function () {
+            cs(this).unspool('prepared')
+        },
         release: function () {
             cs(this).unspool('rendered')
         }

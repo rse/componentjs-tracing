@@ -7,7 +7,7 @@
 **  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-cs.ns("app.ui.widget.tuple.details")
+cs.ns('app.ui.widget.tuple.details')
 
 app.ui.widget.tuple.details.model = cs.clazz({
     mixin: [ cs.marker.model ],
@@ -15,7 +15,9 @@ app.ui.widget.tuple.details.model = cs.clazz({
         create: function () {
             /*  presentation model for items  */
             cs(this).model({
-                "data:tuple"  : { value: null, valid: '(null | { id?: number, time: number, source: string, sourceType: string, origin: string, originType: string, operation: string, parameters: any, checks: any, result: string })' }
+                'data:tuple'  : { value: null, valid: '(null | { id?: number, time: number, '
+                    + 'source: string, sourceType: string, origin: string, originType: '
+                    + 'string, operation: string, parameters: any, checks: any, result: string })' }
             })
         }
     }

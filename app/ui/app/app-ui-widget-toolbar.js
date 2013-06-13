@@ -38,7 +38,8 @@ app.ui.widget.toolbar.view = cs.clazz({
             })
 
             cs(self).observe({
-                name: 'data:items', spool: 'rendered', touch: true,
+                name: 'data:items', spool: 'rendered',
+                touch: true,
                 func: function (ev, nVal) {
                     for (var i = 0; i < nVal.length; i++) {
                         var item = nVal[i];

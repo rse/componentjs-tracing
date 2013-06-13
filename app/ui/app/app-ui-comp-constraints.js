@@ -11,7 +11,11 @@ app.ui.comp.constraints = cs.clazz({
     mixin: [ cs.marker.controller ],
     protos: {
         create: function () {
-            cs(this).create('{toolbarModel/view/,constraintset}', app.ui.widget.toolbar.model, app.ui.widget.toolbar.view, app.ui.widget.vertical.tabs.controller)
+            cs(this).create('{toolbarModel/view/,constraintset}',
+                app.ui.widget.toolbar.model,
+                app.ui.widget.toolbar.view,
+                app.ui.widget.vertical.tabs.controller
+            )
 
             cs(this).model({
                 'event:add'     : { value: false, valid: 'boolean', autoreset: true },
@@ -21,8 +25,6 @@ app.ui.comp.constraints = cs.clazz({
             })
         },
         prepare: function () {
-            var self = this
-
             var toolbarItems = [{
                 label: 'Add',
                 event: 'event:add',
@@ -41,7 +43,7 @@ app.ui.comp.constraints = cs.clazz({
                 type: 'button'
             }]
 
-            cs(self, 'toolbarModel').value('data:items', toolbarItems)
+            cs(this, 'toolbarModel').value('data:items', toolbarItems)
         },
         render: function () {
             var self = this

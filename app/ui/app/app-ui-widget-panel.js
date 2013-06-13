@@ -16,8 +16,8 @@ app.ui.widget.panel.model = cs.clazz({
         create: function () {
             /*  presentation model for tabs  */
             cs(this).model({
-                "data:tabs":        { value: [], valid: "[{ id: string, name: string }*]" },
-                "state:active-tab": { value: -1, valid: "number", store: true }
+                "data:tabs"         : { value: [], valid: "[{ id: string, name: string }*]" },
+                "state:active-tab"  : { value: -1, valid: "number", store: true }
             })
         }
     }
@@ -42,7 +42,7 @@ app.ui.widget.panel.view = cs.clazz({
             /*  render tabs  */
             var tab2socket = []
             cs(self).observe({
-                name: "data:tabs", spool: "materialized", touch: true,
+                name: "data:tabs", spool: "rendered", touch: true,
                 func: function (ev, tabs) {
                     /*  remove potentially still existing tabs  */
                     var i
@@ -72,7 +72,7 @@ app.ui.widget.panel.view = cs.clazz({
 
             /*  react on active tab change  */
             cs(self).observe({
-                name: "state:active-tab", spool: "materialized", touch: true,
+                name: "state:active-tab", spool: "rendered", touch: true,
                 func: function (ev, active) {
                     if (active > cs(self).value("data:tabs").length)
                         throw new Error("invalid tab number to activate")
@@ -89,8 +89,7 @@ app.ui.widget.panel.view = cs.clazz({
             })
         },
         release: function () {
-            cs(this).unspool("materialized")
+            cs(this).unspool("rendered")
         }
     }
 })
-

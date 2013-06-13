@@ -12,8 +12,7 @@ app.ui.comp.tracing = cs.clazz({
     protos: {
         create: function () {
             cs(this).create('toolbarModel/view', app.ui.widget.toolbar.model, app.ui.widget.toolbar.view)
-            var gridCtrl = new app.ui.widget.grid.ctrl(false)
-            cs(this).create('grid', gridCtrl)
+            cs(this).create('grid', new app.ui.widget.grid.ctrl(false))
 
             cs(this).model({
                 'event:record'          : { value: false, valid: 'boolean', autoreset: true },
@@ -68,13 +67,13 @@ app.ui.comp.tracing = cs.clazz({
             cs(this, 'toolbarModel').value('data:items', toolbarItems)
 
             var columns = [
-                { label: 'Time', dataIndex: 'time', width: 50, align: 'center' },
-                { label: 'Source', dataIndex: 'source' },
-                { label: 'ST', dataIndex: 'sourceType', width: 20, align: 'center' },
-                { label: 'Origin', dataIndex: 'origin' },
-                { label: 'OT', dataIndex: 'originType', width: 20, align: 'center' },
-                { label: 'Operation', dataIndex: 'operation', width: 60, align: 'center' },
-                { label: 'Parameters', dataIndex: 'parameters' }
+                { label: 'Time',        dataIndex: 'time',          width: 50, align: 'center' },
+                { label: 'Source',      dataIndex: 'source'                                    },
+                { label: 'ST',          dataIndex: 'sourceType',    width: 20, align: 'center' },
+                { label: 'Origin',      dataIndex: 'origin'                                    },
+                { label: 'OT',          dataIndex: 'originType',    width: 20, align: 'center' },
+                { label: 'Operation',   dataIndex: 'operation',     width: 60, align: 'center' },
+                { label: 'Parameters',  dataIndex: 'parameters'                                }
             ]
 
             cs(this, 'grid').call('columns', columns)

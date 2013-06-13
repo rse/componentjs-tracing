@@ -58,6 +58,7 @@ app.ui.comp.panel = cs.clazz({
                 }
             })
 
+            /*  handle the websocket state and push it to the statusbar  */
             cs(self, 'panel/panel/statusbar').publish('message', 'Connecting ...')
             cs(self, 'panel/panel/statusbar').publish('color', 'yellow')
 
@@ -98,6 +99,9 @@ app.ui.comp.panel = cs.clazz({
         },
         release: function () {
             cs(this).unspool('materialized')
+        },
+        destroy: function () {
+            cs(this).unspool('created')
         }
     }
 })

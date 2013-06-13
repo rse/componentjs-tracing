@@ -11,13 +11,13 @@ app.sv = cs.clazz({
     mixin: [ cs.marker.service ],
     protos: {
         create: function () {
-            var self = this
-
-            cs(self).register('parseLogfile', function (content) {
+            /*  converts a string containing multiple traces into an array of trace objects  */
+            cs(this).register('parseLogfile', function (content) {
                 return window.tupleParser.parseLog(content)
             })
 
-            cs(self).register('parseConstraintset', function (content) {
+            /*  parses the a given string using the peg parser for the constraint grammar  */
+            cs(this).register('parseConstraintset', function (content) {
                 try {
                     var constraintSet = window.constraint_parser.parse(content)
                     return {
@@ -32,17 +32,18 @@ app.sv = cs.clazz({
                 }
             })
 
-            cs(self).register('checkTuples', function (tuples, constraintSet) {
-                var resTuples = []
+            /*  checks an array of traces against a given set of constraints  */
+            cs(this).register('checkTuples', function (traces, constraintSet) {
+                var resTraces = []
 
-                for (var i = 0; i < tuples.length; i++) {
-                    var tuple = window.constraintChecker.checkTuple(constraintSet, tuples[i])
+                for (var i = 0; i < traces.length; i++) {
+                    var tuple = window.constraintChecker.checkTuple(constraintSet, traces[i])
                     if (tuple.result === 'UNCLASSIFIED' || tuple.result === 'FAIL') {
-                        resTuples.push(tuple)
+                        resTraces.push(tuple)
                     }
                 }
 
-                return resTuples
+                return resTraces
             })
         }
     }

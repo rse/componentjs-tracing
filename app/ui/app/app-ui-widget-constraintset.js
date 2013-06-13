@@ -50,7 +50,7 @@ app.ui.widget.constraintset.model = cs.clazz({
 
             self.editor = ace.edit(id)
             self.editor.getSession().setMode('ace/mode/cjsc')
-            self.editor.on('change', function (ev) {
+            self.editor.on('change', function () {
                 cs(self).publish('editorChanged')
             })
 

@@ -15,7 +15,10 @@ app.ui.widget.statusbar = cs.clazz({
         create: function () {
             var self = this
 
-            cs(self).create('model/view', app.ui.widget.statusbar.model, app.ui.widget.statusbar.view)
+            cs(self).create('model/view',
+                app.ui.widget.statusbar.model,
+                app.ui.widget.statusbar.view
+            )
 
             cs(self).subscribe({
                 name: 'message', spool: 'created',
@@ -42,8 +45,8 @@ app.ui.widget.statusbar.model = cs.clazz({
     protos: {
         create: function () {
             cs(this).model({
-                'state:message' : { value: 'Not connected', valid: 'string' },
-                'state:color'   : { value: 'black', valid: 'string'}
+                'state:message' : { value: 'Not connected',     valid: 'string' },
+                'state:color'   : { value: 'black',             valid: 'string' }
             })
         }
     }
@@ -54,24 +57,24 @@ app.ui.widget.statusbar.view = cs.clazz({
     mixin: [ cs.marker.view ],
     protos: {
         render: function () {
-            var self = this
-
             /*  plug mask into parent  */
             var content = $.markup('statusbar')
 
-            cs(self).plug(content)
+            cs(this).plug(content)
 
-            cs(self).observe({
-                name: 'state:message', spool: 'rendered', touch: true,
+            cs(this).observe({
+                name: 'state:message', spool: 'rendered',
+                touch: true,
                 func: function (ev, nVal) {
                     $('.statusbar-message', content).text(nVal)
                 }
             })
 
-            cs(self).observe({
-                name: 'state:color', spool: 'rendered', touch: true,
+            cs(this).observe({
+                name: 'state:color', spool: 'rendered',
+                touch: true,
                 func: function (ev, nVal) {
-                    $('.statusbar-icon', content).css('background-image', 'url(static/img/bullet_' + nVal + '.png)');  
+                    $('.statusbar-icon', content).css('background-image', 'url(static/img/bullet_' + nVal + '.png)')
                 }
             })
         },

@@ -23,8 +23,10 @@ app.ui.widget.grid.ctrl = cs.clazz({
         create: function () {
             var self = this
 
-            var gridView = new app.ui.widget.grid.view(self.selectable)
-            cs(self).create('gridModel/view', app.ui.widget.grid.model, gridView)
+            cs(self).create('gridModel/view',
+                app.ui.widget.grid.model,
+                new app.ui.widget.grid.view(self.selectable)
+            )
 
             cs(self).register({
                 name: 'unshift', spool: 'created',
@@ -39,7 +41,8 @@ app.ui.widget.grid.ctrl = cs.clazz({
             cs(self).register({
                 name: 'save', spool: 'created',
                 func: function () {
-                    window.location = 'data:application/octet-stream;base64,' + btoa(cs(self, 'gridModel').value('data:savable'))
+                    window.location = 'data:application/octet-stream;base64,'
+                        + btoa(cs(self, 'gridModel').value('data:savable'))
                 }
             })
 
@@ -95,15 +98,19 @@ app.ui.widget.grid.model = cs.clazz({
         create: function () {
             var self = this
 
+            var validTuplesSet = '[{ id?: number, time: number, source: string, sourceType: string,'
+                + ' origin: string, originType: string, operation: string,'
+                + 'parameters: any, result?: string, checks?: any }*]'
+
             /*  presentation model for items  */
             cs(self).model({
-                'data:columns'      : { value: [], valid: '[{ label: string, dataIndex: string, width?: number, align?:string }*]' },
-                'state:selection'   : { value: -1, valid: 'number' },
-                'state:filter'      : { value: '', valid: 'string' },
-                'data:selected-obj' : { value: null, valid: 'object' },
-                'data:savable'      : { value: '', valid: 'string' },
-                'data:filtered'     : { value: [], valid: '[{ id?: number, time: number, source: string, sourceType: string, origin: string, originType: string, operation: string, parameters: any, result?: string, checks?: any }*]' },
-                'data:rows'         : { value: [], valid: '[{ id?: number, time: number, source: string, sourceType: string, origin: string, originType: string, operation: string, parameters: any, result?: string, checks?: any }*]' }
+                'data:columns'      : { value: [],      valid: '[{ label: string, dataIndex: string, width?: number, align?:string }*]' },
+                'state:selection'   : { value: -1,      valid: 'number' },
+                'state:filter'      : { value: '',      valid: 'string' },
+                'data:selected-obj' : { value: null,    valid: 'object' },
+                'data:savable'      : { value: '',      valid: 'string' },
+                'data:filtered'     : { value: [],      valid: validTuplesSet },
+                'data:rows'         : { value: [],      valid: validTuplesSet }
             })
 
             cs(self).observe({

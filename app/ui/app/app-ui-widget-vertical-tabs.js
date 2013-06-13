@@ -17,7 +17,11 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
     },
     protos: {
         create: function () {
-            cs(this).create('tabsModel/view/standard', app.ui.widget.vertical.tabs.model, app.ui.widget.vertical.tabs.view, app.ui.widget.constraintset.model)
+            cs(this).create('tabsModel/view/standard',
+                app.ui.widget.vertical.tabs.model,
+                app.ui.widget.vertical.tabs.view,
+                app.ui.widget.constraintset.model
+            )
         },
         prepare: function () {
             var self = this
@@ -31,7 +35,7 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
             })
 
             cs(self).subscribe({
-                name: 'editorChanged', spool: 'rendered',
+                name: 'editorChanged', spool: 'prepared',
                 func: function () {
                     if (self.timer !== null) {
                         clearTimeout(self.timer)
@@ -43,7 +47,7 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
             })
 
             cs(self).register({
-                name: 'parseConstraintsets', spool: 'rendered',
+                name: 'parseConstraintsets', spool: 'prepared',
                 func: function () {
                     var tabs = cs(self, 'tabsModel').value('data:tabs')
                     var constraintsets = []
@@ -110,6 +114,9 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                 }
             })
         },
+        cleanup: function () {
+            cs(this).unspool('prepared')
+        },
         release: function () {
             cs(this).unspool('rendered')
         }
@@ -124,10 +131,10 @@ app.ui.widget.vertical.tabs.model = cs.clazz({
 
             /*  presentation model for items  */
             cs(self).model({
-                'data:tabs'                     : { value: [], valid: '[{ id: string, name: string, enabled: boolean, socket?: string, deleted?: boolean }*]' },
-                'state:active-tab'              : { value: -1, valid: 'number', store: true },
-                'event:tab-checked'             : { value: null, valid: '(null | { tabIndex: number, state: boolean })', autoreset: true },
-                'data:savable'                  : { value: '', valid: 'string' }
+                'data:tabs'                     : { value: [],      valid: '[{ id: string, name: string, enabled: boolean, socket?: string, deleted?: boolean }*]' },
+                'state:active-tab'              : { value: -1,      valid: 'number', store: true },
+                'event:tab-checked'             : { value: null,    valid: '(null | { tabIndex: number, state: boolean })', autoreset: true },
+                'data:savable'                  : { value: '',      valid: 'string' }
             })
 
             cs(self).observe({
@@ -166,7 +173,8 @@ app.ui.widget.vertical.tabs.view = cs.clazz({
 
             /*  render tabs  */
             cs(self).observe({
-                name: 'data:tabs', spool: 'rendered', touch: true,
+                name: 'data:tabs', spool: 'rendered',
+                touch: true,
                 func: function (ev, tabs) {
                     var i
                     /*  clean up orphaned tabs */

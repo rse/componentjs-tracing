@@ -7,7 +7,7 @@
 **  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-cs.ns("app.ui.widget.toolbar.items")
+cs.ns('app.ui.widget.toolbar.items')
 
 /*  button view  */
 app.ui.widget.toolbar.items.button = cs.clazz({
@@ -25,11 +25,11 @@ app.ui.widget.toolbar.items.button = cs.clazz({
             var self = this
 
             cs(self).model({
-                'state:pressed'     : { value: false, valid: 'boolean' },
-                'data:pressed-icon' : { value: '', valid: 'string' }
+                'state:pressed'     : { value: false,   valid: 'boolean' },
+                'data:pressed-icon' : { value: '',      valid: 'string' }
             })
 
-            var btn = $.markup("toolbar-button", { label: self.label })
+            var btn = $.markup('toolbar-button', { label: self.label })
 
             cs(self).observe({
                 name: 'state:pressed', spool: 'created',
@@ -56,7 +56,7 @@ app.ui.widget.toolbar.items.button = cs.clazz({
                 cs(self).value(self.event, true)
             })
 
-            cs(self).plug(btn);
+            cs(self).plug(btn)
         },
         destroy: function () {
             cs(this).unspool('created')
@@ -79,7 +79,7 @@ app.ui.widget.toolbar.items.input = cs.clazz({
         create: function () {
             var self = this
 
-            var btn = $.markup("toolbar-input")
+            var btn = $.markup('toolbar-input')
 
             $('input[type=text]', btn).keyup(function (event) {
                 if (event.keyCode === 13) {
@@ -99,7 +99,7 @@ app.ui.widget.toolbar.items.input = cs.clazz({
                 }
             })
 
-            cs(self).plug(btn);
+            cs(self).plug(btn)
         },
         destroy: function () {
             cs(this).unspool('created')
@@ -120,11 +120,9 @@ app.ui.widget.toolbar.items.text = cs.clazz({
         create: function () {
             var self = this
 
-            var btn = $.markup("toolbar-text", { label: self.label })
+            var btn = $.markup('toolbar-text', { label: self.label })
 
-            cs(self).plug(btn);
-        },
-        release: function () {
+            cs(self).plug(btn)
         }
     }
 })
@@ -144,7 +142,7 @@ app.ui.widget.toolbar.items.checkbox = cs.clazz({
         create: function () {
             var self = this
 
-            var btn = $.markup("toolbar-checkbox", { id: Date.now(), label: self.label })
+            var btn = $.markup('toolbar-checkbox', { id: Date.now(), label: self.label })
 
             $('input[type=checkbox]', btn).click(function () {
                 cs(self).value(self.dataBinding, $('input[type=checkbox]', btn).is(':checked'))
@@ -158,7 +156,7 @@ app.ui.widget.toolbar.items.checkbox = cs.clazz({
                 }
             })
 
-            cs(self).plug(btn);
+            cs(self).plug(btn)
         },
         destroy: function () {
             cs(this).unspool('created')
