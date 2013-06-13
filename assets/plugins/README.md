@@ -7,7 +7,7 @@ application.
 The plug-in "component.plugin.tracing.js" hooks into ComponentJS
 and traces all API calls in tuples of the following form:  
 **< time, source, sourceType, origin, originType, operation, parameters >**  
-By providing a hook itself, the plug-in enables other plug-ins
+By providing a hook the plug-in itself enables other plug-ins
 to process these traces.
 
 ## Console Plug-in
