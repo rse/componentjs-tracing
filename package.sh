@@ -13,4 +13,3 @@ if [ -d node_modules ]; then
 else
     npm install
 fi
-

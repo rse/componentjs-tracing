@@ -11,9 +11,24 @@ User-Interface (UI) dialogs of complex HTML5-based Rich Clients ([SPA](http://en
 
 ##Installation
 
-FIXME
+###Prerequisites
 
-##Configuration
+* NodeJS
+* NPM
+* Obtain a copy of this repository either by downloading the zip file or cloning via git
+
+###Installing dependencies
+
+Execute the package file. It will install or update the necessary node modules.
+* **Windows:** package.bat
+* **Linux/Cygwin:** package.sh
+
+##Usage
+
+###Basic Usage
+node server.js
+
+###Advanced Usage
 The following options can either be supplied via the included [server.ini](server.ini) file or the
 command line.
 
@@ -35,7 +50,7 @@ command line.
 Copyright (c) 2013 Ralf S. Engelschall (http://engelschall.com)
 
 This Source Code Form is subject to the terms of the Mozilla Public
-License, v. 2.0. If a copy of the MPL was not distributed with file
+License, v. 2.0. If a [copy](LICENSE) of the MPL was not distributed with file
 this, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 ##Authors
