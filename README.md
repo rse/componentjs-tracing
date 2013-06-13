@@ -13,9 +13,9 @@ User-Interface (UI) dialogs of complex HTML5-based Rich Clients ([SPA](http://en
 
 ###Prerequisites
 
-* NodeJS
-* NPM
-* Obtain a copy of this repository either by downloading the zip file or cloning via git
+* [Node.js](http://nodejs.org/)
+* [NPM](https://npmjs.org/)
+* Obtain a copy of this repository either by downloading the [zip](/archive/master.zip) file or cloning via [git](http://git-scm.com/)
 
 ###Installing dependencies
 
