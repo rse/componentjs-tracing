@@ -1,6 +1,6 @@
 #ComponentJS Tracing Proxy
 
-Tracing Reverse proxy for ComponentJS Development Support
+Tracing proxy for ComponentJS development support
 
 ##Overview
 
