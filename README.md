@@ -11,6 +11,8 @@ User-Interface dialogs of complex HTML5-based Rich Clients
 ([SPA](http://en.wikipedia.org/wiki/Single-page_application)s).
 
 ##Architecture
+The diagram below illustrates the underlying architecture of the tracing
+proxy application.
 ![Architecture](architecture.png)
 
 ##Installation
