@@ -9,6 +9,9 @@ to support development with [ComponentJS](http://componentjs.com/),
 a powerful Component System for hierarchically structuring the
 User-Interface (UI) dialogs of complex HTML5-based Rich Clients ([SPA](http://en.wikipedia.org/wiki/Single-page_application)s).
 
+##Architecture
+![My image](architecture.png)
+
 ##Installation
 
 ###Prerequisites
