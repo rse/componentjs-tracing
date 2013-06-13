@@ -44,7 +44,7 @@ command line.
 * **proxyaddr, A:** IP address to bind to
 * **proxyport, P:** TCP port to listen in on
 * **latestcjs, lcjs:** Overwrites applications ComponentJS file with the supplied version
-* **proxyfwd, F:** Host and port of forwarding proxy
+* **proxyfwd, F:** Host and port of forwarding proxy (eg when you are behind a corporate proxy)
 * **config=&lt;cfg&gt;:** Adds the specified section of the ini file to overwrite defaults
 
 ##License
