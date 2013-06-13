@@ -31,7 +31,8 @@ Execute the package file. It will install or update the necessary node modules.
 ###Advanced Usage
 	node server.js [options] [arguments]
 The following options can either be supplied via the included [server.ini](server.ini) file or the
-command line.
+command line.  
+*Note: Options need to be prefixed with two dashes*
 
 * **version:** Print tool version and exit
 * **help, h:** Print this help and exit
