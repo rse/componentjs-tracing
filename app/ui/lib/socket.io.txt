@@ -1,0 +1,5 @@
+Name:    socket.io
+Summary: Websocket client library
+Home:    https://github.com/LearnBoost/socket.io-client
+Version: 0.9.11
+License: MIT

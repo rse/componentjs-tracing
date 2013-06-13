@@ -1,0 +1,5 @@
+Name:    TaffyDB
+Summary: JavaScript in-memory database
+Home:    https://github.com/typicaljoe/taffydb
+Version: 20130525
+License: BSD
