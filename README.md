@@ -6,9 +6,8 @@ Tracing Reverse proxy for ComponentJS Development Support
 
 This is a [Node.js](http://nodejs.org/) based reverse proxy
 to support development with [ComponentJS](http://componentjs.com/),
-the powerful Component System for hierarchically structuring the
-User-Interface (UI) dialogs of complex HTML5-based Rich Clients (aka
-Single-Page-Apps).
+a powerful Component System for hierarchically structuring the
+User-Interface (UI) dialogs of complex HTML5-based Rich Clients ([SPA](http://en.wikipedia.org/wiki/Single-page_application)s).
 
 ##Installation
 
