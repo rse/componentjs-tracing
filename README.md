@@ -17,10 +17,10 @@ proxy application.
 ![Architecture](architecture.png)
 
 **Documentation:**
-* [Plug-ins](assets/plugins/)
-* [Transpiler](assets/transpiler/)
-* [Server Module](app/sv/)
-* [User Interface](app/ui/)
+* [Plug-ins](assets/plugins#componentjs-plug-ins)
+* [Transpiler](assets/transpiler#transpiler)
+* [Server Module](app/sv#websocket-server-module)
+* [User Interface](app/uiu#User-interface-(spa))
 
 ##Installation
 
