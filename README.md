@@ -16,6 +16,12 @@ proxy application.
 
 ![Architecture](architecture.png)
 
+**Documentation:**
+* [Plug-ins](assets/plugins/)
+* [Transpiler](assets/transpiler/)
+* [Server Module](app/sv/)
+* [User Interface](app/ui/)
+
 ##Installation
 
 ###Prerequisites

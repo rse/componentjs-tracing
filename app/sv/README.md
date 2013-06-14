@@ -1,4 +1,5 @@
 # Websocket Server Module
+
 This server module handles the websocket based communication with
 the analysis [SPA](http://en.wikipedia.org/wiki/Single-page_application) and the [remote plug-in](../../assets/plugins#remote-plug-in)  
 It basically provides two websocket endpoints
