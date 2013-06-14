@@ -20,7 +20,7 @@ proxy application.
 * [Plug-ins](assets/plugins#componentjs-plug-ins)
 * [Transpiler](assets/transpiler#transpiler)
 * [Server Module](app/sv#websocket-server-module)
-* [User Interface](app/uiu#User-interface-(spa))
+* [User Interface](app/ui#user-interface-spa)
 
 ##Installation
 
