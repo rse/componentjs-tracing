@@ -14,46 +14,46 @@ var app = {
     date: "2013-01-01",
     logger: null,
     basedir: null
-};
+}
 
 /*  determine path to server base directory  */
-app.basedir = __dirname;
+app.basedir = __dirname
 
 /*  load required libraries (1/3)  */
-var fs       = require("fs");
-var path     = require("path");
+var fs       = require("fs")
+var path     = require("path")
 
 /*  load required libraries (2/3)  */
-var ini      = require("node-ini");
+var ini      = require("node-ini")
 var util     = require("util")
-var dashdash = require("dashdash");
+var dashdash = require("dashdash")
 
 /*  default command-line value loading  */
-var k = 0;
-var argv = [];
-argv.push(process.argv[k++]);
-argv.push(process.argv[k++]);
-var sections = [ "default" ];
+var k = 0
+var argv = []
+argv.push(process.argv[k++])
+argv.push(process.argv[k++])
+var sections = [ "default" ]
 if (k < process.argv.length) {
-    var m = process.argv[k].match(/^--config=(.+)$/);
+    var m = process.argv[k].match(/^--config=(.+)$/)
     if (m !== null) {
-        sections.push(m[1]);
-        k++;
+        sections.push(m[1])
+        k++
     }
 }
-var config = ini.parseSync(path.join(app.basedir, "/server.ini"));
+var config = ini.parseSync(path.join(app.basedir, "/server.ini"))
 for (var j = 0; j < sections.length; j++) {
     if (typeof config[sections[j]] !== "undefined") {
         for (var name in config[sections[j]]) {
             if (config[sections[j]].hasOwnProperty(name)) {
                 if (typeof config[sections[j]][name] === "string") {
-                    argv.push("--" + name);
-                    argv.push(config[sections[j]][name]);
+                    argv.push("--" + name)
+                    argv.push(config[sections[j]][name])
                 }
                 else if (config[sections[j]][name] instanceof Array) {
                     for (var i = 0; i < config[sections[j]][name].length; i++) {
-                        argv.push("--" + name);
-                        argv.push(config[sections[j]][name][i]);
+                        argv.push("--" + name)
+                        argv.push(config[sections[j]][name][i])
                     }
                 }
             }
@@ -61,13 +61,13 @@ for (var j = 0; j < sections.length; j++) {
     }
 }
 while (k < process.argv.length)
-    argv.push(process.argv[k++]);
+    argv.push(process.argv[k++])
 
 /*  die the reasonable way  */
 var die = function (msg) {
     console.error("server: ERROR: %s", msg)
     process.exit(1)
-};
+}
 
 /*  command-line argument parsing  */
 var options = [
@@ -122,12 +122,12 @@ else if (opts.version) {
 }
 
 /*  load required libraries (3/3)  */
-var util            = require("util");
-var cors            = require("cors");
-var express         = require("express");
-var express_io      = require("express.io");
-var express_winston = require("express-winston");
-var winston         = require("winston");
+var util            = require("util")
+var cors            = require("cors")
+var express         = require("express")
+var express_io      = require("express.io")
+var express_winston = require("express-winston")
+var winston         = require("winston")
 
 /*  create a server logger  */
 var loggerTransport = new winston.transports.File({
@@ -137,47 +137,47 @@ var loggerTransport = new winston.transports.File({
     maxFiles: 10,
     json: false,
     colorize: false
-});
-var transports = [ loggerTransport ];
+})
+var transports = [ loggerTransport ]
 if (opts.console) {
     var consoleTransport = new winston.transports.Console({
         level: "debug",
         timestamp: true
     })
-    transports.push(consoleTransport);
+    transports.push(consoleTransport)
 }
 app.logger = new (winston.Logger)({
     transports: transports
-});
-app.logger.log("info", "starting %s %s (%s)", app.name, app.vers, app.date);
+})
+app.logger.log("info", "starting %s %s (%s)", app.name, app.vers, app.date)
 process.on("uncaughtException", function (error) {
-    app.logger.log("error", error);
-    console.log("server: ERROR: " + error);
-});
+    app.logger.log("error", error)
+    console.log("server: ERROR: " + error)
+})
 
 /*  establish a root server  */
-var srv = express_io();
-srv.http().io();
-app.srv = srv;
+var srv = express_io()
+srv.http().io()
+app.srv = srv
 
 /*  adjust server identification  */
-srv.enable("trust proxy");
-srv.disable("x-powered-by");
+srv.enable("trust proxy")
+srv.disable("x-powered-by")
 srv.use(function (req, res, next) {
-    res.setHeader("Server", util.format("%s %s (%s)", app.name, app.vers, app.date));
-    next();
-});
+    res.setHeader("Server", util.format("%s %s (%s)", app.name, app.vers, app.date))
+    next()
+})
 
 /*  allow to be used behind a reverse proxy  */
-srv.enable("trust proxy");
+srv.enable("trust proxy")
 
 /*  support CORS  */
 srv.use(cors(function (req, cb) {
-    var options = { origin: false, credentials: true };
+    var options = { origin: false, credentials: true }
     if (typeof req.header("Origin") === "string")
-        options.origin = true;
-    cb(null, options);
-}));
+        options.origin = true
+    cb(null, options)
+}))
 
 /*  access logging  */
 srv.use(express_winston.logger({
@@ -190,87 +190,87 @@ srv.use(express_winston.logger({
             colorize: false
         })
     ]
-}));
+}))
 
 /*  make an Express server from custom JavaScript code  */
 var mkAppJS = function (filename) {
-    var mod;
-    try        { mod = require(filename); }
-    catch (ex) { die("failed to load JavaScript module \"" + filename + "\": " + ex.message); }
+    var mod
+    try        { mod = require(filename) }
+    catch (ex) { die("failed to load JavaScript module \"" + filename + "\": " + ex.message) }
     if (typeof mod.setup !== "function")
-        die("JavaScript module does not export \"setup\" function: " + filename);
-    var srv = mod.setup(app, opts);
-    return srv;
-};
+        die("JavaScript module does not export \"setup\" function: " + filename)
+    var srv = mod.setup(app, opts)
+    return srv
+}
 
 /*  make an Express server as standard directory listing  */
 var mkAppDir = function (dirname) {
-    var srv = express();
-    srv.disable("x-powered-by");
-    srv.use(express.favicon(dirname + "/favicon.ico", { maxAge: 24*60*60*1000 }));
-    srv.use(express.compress());
-    srv.use(express.responseTime());
-    srv.use(express.static(dirname, { maxAge: 1*60*60*1000 }));
-    return srv;
-};
+    var srv = express()
+    srv.disable("x-powered-by")
+    srv.use(express.favicon(dirname + "/favicon.ico", { maxAge: 24*60*60*1000 }))
+    srv.use(express.compress())
+    srv.use(express.responseTime())
+    srv.use(express.static(dirname, { maxAge: 1*60*60*1000 }))
+    return srv
+}
 
 /*  iterate over all configured servers  */
 if (typeof opts.app === "undefined")
-    die("no application(s) defined");
+    die("no application(s) defined")
 for (var i = 0; i < opts.app.length; i++) {
     /*  parse application specification  */
-    var m = (opts.app[i] + "").match(/^(.+):(.+)$/);
+    var m = (opts.app[i] + "").match(/^(.+):(.+)$/)
     if (m === null)
-        die("invalid app specification (has to be \"<url-prefix>:<file-or-dir-path>\")");
-    var url = m[1];
-    var src = m[2];
+        die("invalid app specification (has to be \"<url-prefix>:<file-or-dir-path>\")")
+    var url = m[1]
+    var src = m[2]
 
     /*  sanity check parameters  */
     if (!url.match(/^\//))
-        die("invalid URL prefix (has to start with a slash)");
+        die("invalid URL prefix (has to start with a slash)")
     if (!fs.existsSync(src))
-        die("invalid app source: \"" + src + "\"  (has to be either JavaScript file or directory)");
+        die("invalid app source: \"" + src + "\"  (has to be either JavaScript file or directory)")
 
     /*  determine type of Express application  */
-    var stats = fs.statSync(src);
-    var subsrv;
+    var stats = fs.statSync(src)
+    var subsrv
     if (stats.isFile()) {
-        app.logger.log("info", "proxy: deploying custom app: url=%s src=%s", url, src);
-        subsrv = mkAppJS(src);
+        app.logger.log("info", "proxy: deploying custom app: url=%s src=%s", url, src)
+        subsrv = mkAppJS(src)
     }
     else if (stats.isDirectory()) {
-        var index = src + "/root.js";
+        var index = src + "/root.js"
         if (fs.existsSync(index) && fs.statSync(index).isFile()) {
-            app.logger.log("info", "proxy: deploying custom app: url=%s src=%s", url, index);
-            subsrv = mkAppJS(index);
+            app.logger.log("info", "proxy: deploying custom app: url=%s src=%s", url, index)
+            subsrv = mkAppJS(index)
         }
         else {
-            app.logger.log("info", "proxy: deploying directory-index: url=%s src=%s", url, src);
-            subsrv = mkAppDir(src);
+            app.logger.log("info", "proxy: deploying directory-index: url=%s src=%s", url, src)
+            subsrv = mkAppDir(src)
         }
     }
 
     /*  configure as sub-server  */
     if (subsrv !== null)
-        srv.use(url, subsrv);
+        srv.use(url, subsrv)
 }
 
 /*  configure a fallback middleware  */
 srv.use(function(req, res) {
-    res.send(404, "Resource Not Found");
-});
+    res.send(404, "Resource Not Found")
+})
 
 /*  error logging  */
 srv.use(express_winston.errorLogger({
     level: "info",
     transports: [ loggerTransport ]
-}));
+}))
 
 /*  error logging  */
-srv.use(express.errorHandler({ dumpExceptions: false, showStack: false }));
+srv.use(express.errorHandler({ dumpExceptions: false, showStack: false }))
 
 /*  start the listening on the root server  */
 srv.listen(opts.port, opts.addr, opts.backlog, function () {
-    app.logger.log("info", "listening on http://%s:%d for ORIGIN requests", opts.addr, opts.port);
-});
+    app.logger.log("info", "listening on http://%s:%d for ORIGIN requests", opts.addr, opts.port)
+})
 

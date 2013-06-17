@@ -7,12 +7,12 @@
 **  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-module.paths = module.paths.concat(module.parent.paths);
+module.paths = module.paths.concat(module.parent.paths)
 
 module.exports = {
     setup: function (ctx, opts) {
 
-        require("./proxy.js").setup(ctx, opts)
+        require("./proxy.js")    .setup(ctx, opts)
         require("./websocket.js").setup(ctx, opts)
 
         return null
