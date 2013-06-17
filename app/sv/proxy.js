@@ -73,15 +73,15 @@ module.exports = {
 
                 /*  which files do we want to be injected?  */
                 var filesToInject = [
+                    path.join(ctx.basedir, "assets/3rdparty/socket.io.js"),
                     path.join(ctx.basedir, "assets/plugins/component.plugin.tracing.js"),
-                    path.join(ctx.basedir, "assets/socket.io.js"),
                     path.join(ctx.basedir, "assets/plugins/component.plugin.tracing-remote.js")
                 ]
 
                 /*  should the latest version of ComponentJS be injected as well?  */
                 if (opts.latestcjs) {
                     ctx.logger.log("info", "proxy: injecting the latest ComponentJS version")
-                    filesToInject.unshift(path.join(ctx.basedir, "assets/component.js"))
+                    filesToInject.unshift(path.join(ctx.basedir, "assets/3rdparty/component.js"))
                     remoteResponseBody = ""
                 }
 
