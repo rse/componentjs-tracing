@@ -1,5 +1,0 @@
-Name:      Tuple Parser
-Summary:   Tracing Tuple Parser
-Homepage:  -
-Version:   -
-License:   MPL

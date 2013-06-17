@@ -1,5 +1,0 @@
-Name:      jQuery Mkay
-Summary:   Mask Rendering
-Homepage:  https://github.com/fgnass/mkay/
-Version:   2012
-License:   MIT
