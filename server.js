@@ -75,6 +75,8 @@ var options = [
         help: "Print tool version and exit." },
     {   names: [ "help", "h" ], type: "bool", "default": false,
         help: "Print this help and exit." },
+    {   name: "console", type: "bool", "default": false,
+        help: "Display logfile also on console." },
     {   names: [ "addr", "a" ], type: "string", "default": "127.0.0.1",
         help: "IP address to listen", helpArg: "ADDRESS" },
     {   names: [ "port", "p" ], type: "integer", "default": 8080,
@@ -136,8 +138,16 @@ var loggerTransport = new winston.transports.File({
     json: false,
     colorize: false
 });
+var transports = [ loggerTransport ];
+if (opts.console) {
+    var consoleTransport = new winston.transports.Console({
+        level: "debug",
+        timestamp: true
+    })
+    transports.push(consoleTransport);
+}
 app.logger = new (winston.Logger)({
-    transports: [ loggerTransport ]
+    transports: transports
 });
 app.logger.log("info", "starting %s %s (%s)", app.name, app.vers, app.date);
 process.on("uncaughtException", function (error) {
@@ -304,7 +314,7 @@ proxyserver.on("http-intercept-response", function (cid, request, response, remo
     if (remoteResponse.req.path.match(cjsFile) !== null) {
         /*  Convert the remoteResponseBody to a string  */
         remoteResponseBody = remoteResponseBody.toString("utf8");
-        app.logger.log("info", "discovered ComponentJS file: " + request.url);
+        app.logger.log("info", "proxy: discovered ComponentJS file: " + request.url);
 
         /*  Which files do we want to be injected?  */
         var filesToInject = [
@@ -315,7 +325,7 @@ proxyserver.on("http-intercept-response", function (cid, request, response, remo
 
         /*  Should the latest version of ComponentJS be injected as well?  */
         if (opts.latestcjs) {
-            app.logger.log("info", "injecting the latest ComponentJS version");
+            app.logger.log("info", "proxy: injecting the latest ComponentJS version");
             filesToInject.unshift("./assets/component.js");
             remoteResponseBody = "";
         }
@@ -328,14 +338,14 @@ proxyserver.on("http-intercept-response", function (cid, request, response, remo
             remoteResponseBody += append;
         }
 
-        app.logger.log("info", "append necessary plug-ins and libraries");
+        app.logger.log("info", "proxy: append necessary plug-ins and libraries");
         finishResponse();
     } else if (remoteResponse.req.path.match(cmpFiles) !== null) {
         /*  read original remoteResponseBody, instrument it and write instrumented remoteResponseBody  */
         remoteResponseBody = remoteResponseBody.toString("utf8");
         remoteResponseBody = tracing.instrument("cs", remoteResponseBody);
 
-        app.logger.log("info", "transpiled component file: " + request.url);
+        app.logger.log("info", "proxy: transpiled component file: " + request.url);
         finishResponse();
     }
 
