@@ -45,8 +45,8 @@ app.ui.widget.statusbar.model = cs.clazz({
     protos: {
         create: function () {
             cs(this).model({
-                'state:message' : { value: 'Not connected',     valid: 'string' },
-                'state:color'   : { value: 'black',             valid: 'string' }
+                'state:message': { value: 'Not connected', valid: 'string' },
+                'state:color':   { value: 'black',         valid: 'string' }
             })
         }
     }

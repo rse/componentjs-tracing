@@ -15,9 +15,9 @@ app.ui.widget.rationales.model = cs.clazz({
         create: function () {
             /*  presentation model for items  */
             cs(this).model({
-                'data:tuple'        : { value: null, valid: '(null | { id?: number, time: number,'
-                    + ' source: string, sourceType: string, origin: string, originType: string,'
-                    + ' operation: string, parameters: any, result: string, checks: any })'},
+                'data:tuple'        : { value: null, valid: '(null | { id?: number, time: number,' +
+                    ' source: string, sourceType: string, origin: string, originType: string,' +
+                    ' operation: string, parameters: any, result: string, checks: any })'},
                 'data:rationales'   : { value: [], valid: '[any*]'}
             })
         }
@@ -36,10 +36,8 @@ app.ui.widget.rationales.view = cs.clazz({
             var gatherRationales = function (checks, acc) {
                 for (var i = 0; i < checks.length; i++) {
                     acc.push(checks[i].constraint)
-
                     gatherRationales(checks[i].subs, acc)
                 }
-
                 return acc
             }
 
@@ -52,6 +50,7 @@ app.ui.widget.rationales.view = cs.clazz({
 
                     var data = {}
                     var checks = gatherRationales(nVal, [])
+
                     /* add new rationales  */
                     for (var i = 0; i < checks.length; i++) {
                         var item = checks[i]
@@ -62,9 +61,8 @@ app.ui.widget.rationales.view = cs.clazz({
                     }
 
                     var tuple = cs(self).value('data:tuple')
-                    if (tuple === null) {
+                    if (tuple === null)
                         return
-                    }
                     if (tuple.result === 'UNCLASSIFIED') {
                         data.title = 'No constraint found, that matches this tuple'
                         data.rationale = 'None of the given constraints conditions matched this tuple, thus no assumption about its validity could be made'

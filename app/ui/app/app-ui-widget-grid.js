@@ -98,19 +98,19 @@ app.ui.widget.grid.model = cs.clazz({
         create: function () {
             var self = this
 
-            var validTuplesSet = '[{ id?: number, time: number, source: string, sourceType: string,'
-                + ' origin: string, originType: string, operation: string,'
-                + 'parameters: any, result?: string, checks?: any }*]'
+            var validTuplesSet = '[{ id?: number, time: number, source: string, sourceType: string,' +
+                ' origin: string, originType: string, operation: string,' +
+                ' parameters: any, result?: string, checks?: any }*]'
 
             /*  presentation model for items  */
             cs(self).model({
-                'data:columns'      : { value: [],      valid: '[{ label: string, dataIndex: string, width?: number, align?:string }*]' },
-                'state:selection'   : { value: -1,      valid: 'number' },
-                'state:filter'      : { value: '',      valid: 'string' },
-                'data:selected-obj' : { value: null,    valid: 'object' },
-                'data:savable'      : { value: '',      valid: 'string' },
-                'data:filtered'     : { value: [],      valid: validTuplesSet },
-                'data:rows'         : { value: [],      valid: validTuplesSet }
+                'data:columns'      : { value: [],   valid: '[{ label: string, dataIndex: string, width?: number, align?:string }*]' },
+                'state:selection'   : { value: -1,   valid: 'number' },
+                'state:filter'      : { value: '',   valid: 'string' },
+                'data:selected-obj' : { value: null, valid: 'object' },
+                'data:savable'      : { value: '',   valid: 'string' },
+                'data:filtered'     : { value: [],   valid: validTuplesSet },
+                'data:rows'         : { value: [],   valid: validTuplesSet }
             })
 
             cs(self).observe({
@@ -126,9 +126,9 @@ app.ui.widget.grid.model = cs.clazz({
                 touch: true,
                 func: function (ev, nVal) {
                     var unfiltered = cs(self).value('data:rows')
-                    if (nVal === '') {
+                    if (nVal === '')
                         cs(self).value('data:filtered', unfiltered)
-                    } else {
+                    else {
                         var result = []
 
                         var tmp = nVal.split(':')
@@ -136,18 +136,16 @@ app.ui.widget.grid.model = cs.clazz({
                         for (var i = 0; i < unfiltered.length; i++) {
                             var tuple = unfiltered[i]
                             if (tmp.length === 2 && tuple[tmp[0]]) {
-                                if (tuple[tmp[0]].toLowerCase().indexOf(tmp[1].toLowerCase()) !== -1) {
+                                if (tuple[tmp[0]].toLowerCase().indexOf(tmp[1].toLowerCase()) !== -1)
                                     result.push(tuple)
-                                }
-                            } else {
+                            }
+                            else {
                                 for (var key in tuple) {
-                                    if (key === 'time' || key === 'id') {
+                                    if (key === 'time' || key === 'id')
                                         continue
-                                    }
                                     var val = tuple[key]
-                                    if (key === 'parameters') {
+                                    if (key === 'parameters')
                                         val = JSON.stringify(val)
-                                    }
                                     if (val.toLowerCase().indexOf(nVal.toLowerCase()) !== -1) {
                                         result.push(tuple)
                                         break
@@ -228,9 +226,8 @@ app.ui.widget.grid.view = cs.clazz({
                 func: function (ev, nVal) {
                     for (var i = 0; i < nVal.length; i++) {
                         var vars = { label: nVal[i].label }
-                        if (nVal[i].width) {
+                        if (nVal[i].width)
                             vars.style = 'width: ' + nVal[i].width + 'px;'
-                        }
                         $('.thead > .row', grid).markup('grid/column', vars)
                     }
                 }
@@ -240,17 +237,14 @@ app.ui.widget.grid.view = cs.clazz({
                 var columns = cs(self).value('data:columns')
                 for (var x = 0; x < columns.length; x++) {
                     var vars = { style: '' }
-                    if (columns[x].dataIndex === 'parameters') {
+                    if (columns[x].dataIndex === 'parameters')
                         vars.label = JSON.stringify(trace[columns[x].dataIndex])
-                    } else {
+                    else
                         vars.label = trace[columns[x].dataIndex]
-                    }
-                    if (columns[x].width) {
+                    if (columns[x].width)
                         vars.style += 'width: ' + columns[x].width + 'px;'
-                    }
-                    if (columns[x].align) {
+                    if (columns[x].align)
                         vars.style += 'text-align: ' + columns[x].align + ';'
-                    }
                     $(row).markup('grid/row/data', vars)
                 }
             }
@@ -260,9 +254,8 @@ app.ui.widget.grid.view = cs.clazz({
                 func: function (trace) {
                     trace.style = ''
                     var i = $('.tbody > .row:first', grid).data('i')
-                    if (typeof i === 'undefined') {
+                    if (typeof i === 'undefined')
                         i = -1
-                    }
                     var row = $.markup('grid/row', { i: ++i })
                     fillRow(row, trace)
                     delete trace.style
@@ -307,9 +300,9 @@ app.ui.widget.grid.view = cs.clazz({
                         cs(self).value('data:selected-obj', cs(self).value('data:rows')[nVal])
                         $('.selected', grid).removeClass('selected')
                         $('.table > .tbody > .row', grid[2]).eq(nVal).addClass('selected')
-                    } else {
-                        cs(self).value('data:selected-obj', null)
                     }
+                    else
+                        cs(self).value('data:selected-obj', null)
                 }
             })
         },

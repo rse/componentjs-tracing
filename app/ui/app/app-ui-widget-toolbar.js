@@ -15,7 +15,8 @@ app.ui.widget.toolbar.model = cs.clazz({
         create: function () {
             /*  presentation model for items  */
             cs(this).model({
-                "data:items"    : { value: [], valid: '[(any | {source: string, sourceType: string, origin: string, originType: string, operation: string, parameters: any})*]' }
+                "data:items": { value: [], valid: '[(any | { source: string, sourceType: string, ' +
+                    'origin: string, originType: string, operation: string, parameters: any})*]' }
             })
         }
     }
@@ -45,13 +46,11 @@ app.ui.widget.toolbar.view = cs.clazz({
                         var item = nVal[i];
                         if (item.type === 'button') {
                             var btn =  new app.ui.widget.toolbar.items.button(item.label, item.event)
-                            if (!item.id) {
+                            if (!item.id)
                                 item.id = 'button-' + i
-                            }
                             cs(self).create(item.id, btn)
-                            if (item.pressedIcon) {
+                            if (item.pressedIcon)
                                 cs(self, item.id).value('data:pressed-icon', item.pressedIcon)
-                            }
                         }
                         else if (item.type === 'input') {
                             var input =  new app.ui.widget.toolbar.items.input(item.data, item.event)
@@ -60,13 +59,13 @@ app.ui.widget.toolbar.view = cs.clazz({
                         else if (item.type === 'text') {
                             var text =  new app.ui.widget.toolbar.items.text(item.label)
                             cs(self).create('text-' + i, text)
-                        } else if (item.type === 'checkbox') {
+                        }
+                        else if (item.type === 'checkbox') {
                             var checkbox =  new app.ui.widget.toolbar.items.checkbox(item.label, item.data)
                             cs(self).create('checkbox-' + i, checkbox)
                         }
-                        else {
+                        else
                             $('.items', content).markup('widget-toolbar/item', { content: item.label })
-                        }
                     }
                 }
             })

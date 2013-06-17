@@ -8,7 +8,7 @@
 */
 
 .statusbar {
-	.statusbar-style;	
+	.statusbar-style;
 }
 
 .statusbar-style (
@@ -17,22 +17,22 @@
     @color-tab-fg:    #000000;
     @font-size:       12px;
 ) {
-	height: 100%;
-	border-top:    1px solid darken(@color-canvas-bg, 20%);
-	border-bottom:    1px solid darken(@color-canvas-bg, 20%);
+	height:              100%;
+	border-top:          1px solid darken(@color-canvas-bg, 20%);
+	border-bottom:       1px solid darken(@color-canvas-bg, 20%);
 
     .items {
-        height:       ~"calc(100% - 2px)";
-        display:      block;
-        padding:      3px 0px 0px 0px;
-        list-style-type:none;
-        margin:       0px 0px 0px 0px;
+        height:          ~"calc(100% - 2px)";
+        display:         block;
+        padding:         3px 0px 0px 0px;
+        list-style-type: none;
+        margin:          0px 0px 0px 0px;
 
         .item {
-            display:                 inline;
-            margin:                  0px 0px 0px 2px;
-            height:                  15px;
-            font-size:               @font-size;
+            display:     inline;
+            margin:      0px 0px 0px 2px;
+            height:      15px;
+            font-size:   @font-size;
         }
 
 		.statusbar-icon {
@@ -40,7 +40,7 @@
 		}
 
 		.statusbar-message {
-			color:                   lighten(@color-tab-fg, 40%);
+			color:       lighten(@color-tab-fg, 40%);
 		}
     }
 }

@@ -20,8 +20,8 @@ app.ui.widget.constraintset.model = cs.clazz({
 
             /*  presentation model for items  */
             cs(self).model({
-                'data:constraintset'    : { value: '', valid: 'string' },
-                'data:savable'          : { value: '', valid: 'string' }
+                'data:constraintset': { value: '', valid: 'string' },
+                'data:savable':       { value: '', valid: 'string' }
             })
 
             /*  calculate the savable content on demand  */
@@ -29,11 +29,10 @@ app.ui.widget.constraintset.model = cs.clazz({
                 name: 'data:savable', spool: 'created',
                 operation: 'get',
                 func: function (ev) {
-                    if (!self.editor) {
+                    if (!self.editor)
                         cs(self).value('data:constraintset')
-                    } else {
+                    else
                         ev.result(self.editor.getSession().getValue())
-                    }
                 }
             })
         },
@@ -65,14 +64,14 @@ app.ui.widget.constraintset.model = cs.clazz({
             cs(self).register({
                 name: 'displayError', spool: 'rendered',
                 func: function (error) {
-                    if (error === null) {
+                    if (error === null)
                         self.editor.getSession().setAnnotations([])
-                    } else {
+                    else {
                         self.editor.getSession().setAnnotations([{
-                          row: error.line - 1,
-                          column: error.column,
-                          text: error.message,
-                          type: 'error'
+                            row: error.line - 1,
+                            column: error.column,
+                            text: error.message,
+                            type: 'error'
                         }])
                     }
                     self.editor.focus()

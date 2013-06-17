@@ -25,8 +25,8 @@ app.ui.widget.toolbar.items.button = cs.clazz({
             var self = this
 
             cs(self).model({
-                'state:pressed'     : { value: false,   valid: 'boolean' },
-                'data:pressed-icon' : { value: '',      valid: 'string' }
+                'state:pressed':     { value: false, valid: 'boolean' },
+                'data:pressed-icon': { value: '',    valid: 'string' }
             })
 
             var btn = $.markup('toolbar-button', { label: self.label })
@@ -82,9 +82,8 @@ app.ui.widget.toolbar.items.input = cs.clazz({
             var btn = $.markup('toolbar-input')
 
             $('input[type=text]', btn).keyup(function (event) {
-                if (event.keyCode === 13) {
+                if (event.keyCode === 13 /* RETURN */)
                     cs(self).value(self.dataBinding, event.target.value)
-                }
             })
 
             $('input[type=text]', btn).keyup(function (event) {

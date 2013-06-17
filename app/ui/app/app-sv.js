@@ -24,7 +24,8 @@ app.sv = cs.clazz({
                         success: true,
                         constraints: constraintSet
                     }
-                } catch (err) {
+                }
+                catch (err) {
                     return {
                         success: false,
                         error: err
@@ -38,9 +39,8 @@ app.sv = cs.clazz({
 
                 for (var i = 0; i < traces.length; i++) {
                     var tuple = app.lib.constraintChecker.checkTuple(constraintSet, traces[i])
-                    if (tuple.result === 'UNCLASSIFIED' || tuple.result === 'FAIL') {
+                    if (tuple.result === 'UNCLASSIFIED' || tuple.result === 'FAIL')
                         resTraces.push(tuple)
-                    }
                 }
 
                 return resTraces

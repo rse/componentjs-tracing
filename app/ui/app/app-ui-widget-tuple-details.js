@@ -15,9 +15,9 @@ app.ui.widget.tuple.details.model = cs.clazz({
         create: function () {
             /*  presentation model for items  */
             cs(this).model({
-                'data:tuple'  : { value: null, valid: '(null | { id?: number, time: number, '
-                    + 'source: string, sourceType: string, origin: string, originType: '
-                    + 'string, operation: string, parameters: any, checks: any, result: string })' }
+                'data:tuple'  : { value: null, valid: '(null | { id?: number, time: number, ' +
+                    'source: string, sourceType: string, origin: string, originType: ' +
+                    'string, operation: string, parameters: any, checks: any, result: string })' }
             })
         }
     }
@@ -44,7 +44,8 @@ app.ui.widget.tuple.details.view = cs.clazz({
                         $('.origin-type', details).text(nVal.originType)
                         $('.operation', details).text(nVal.operation)
                         $('.parameters', details).text(JSON.stringify(nVal.parameters))
-                    } else {
+                    }
+                    else {
                         $('.time', details).text('')
                         $('.source', details).text('')
                         $('.source-type', details).text('')

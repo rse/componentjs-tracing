@@ -17,9 +17,9 @@ app.ui.comp.checking = cs.clazz({
             cs(this).create('rationalesModel/view', app.ui.widget.rationales.model, app.ui.widget.rationales.view)
 
             cs(this).model({
-                'event:clear'           : { value: false, valid: 'boolean', autoreset: true },
-                'event:check-journal'   : { value: false, valid: 'boolean', autoreset: true },
-                'data:continuous'       : { value: false, valid: 'boolean' }
+                'event:clear'         : { value: false, valid: 'boolean', autoreset: true },
+                'event:check-journal' : { value: false, valid: 'boolean', autoreset: true },
+                'data:continuous'     : { value: false, valid: 'boolean' }
             })
         },
         prepare: function () {
@@ -34,12 +34,12 @@ app.ui.comp.checking = cs.clazz({
             cs(self, 'toolbarModel').value('data:items', toolbarItems)
 
             var columns = [
-                { label: 'Time', dataIndex: 'time', width: 50, align: 'center' },
-                { label: 'Source', dataIndex: 'source' },
-                { label: 'ST', dataIndex: 'sourceType', width: 20, align: 'center' },
-                { label: 'Origin', dataIndex: 'origin' },
-                { label: 'OT', dataIndex: 'originType', width: 20, align: 'center'},
-                { label: 'Operation', dataIndex: 'operation', width: 60, align: 'center' }
+                { label: 'Time',      dataIndex: 'time',       width: 50, align: 'center' },
+                { label: 'Source',    dataIndex: 'source'                                 },
+                { label: 'ST',        dataIndex: 'sourceType', width: 20, align: 'center' },
+                { label: 'Origin',    dataIndex: 'origin'                                 },
+                { label: 'OT',        dataIndex: 'originType', width: 20, align: 'center' },
+                { label: 'Operation', dataIndex: 'operation',  width: 60, align: 'center' }
             ]
 
             cs(self, 'grid').call('columns', columns)
@@ -120,11 +120,10 @@ app.ui.comp.checking = cs.clazz({
                     cs(self, 'detailsModel').value('data:tuple', nVal)
                     cs(self, 'rationalesModel').value('data:tuple', nVal)
 
-                    if (nVal !== null) {
+                    if (nVal !== null)
                         cs(self, 'rationalesModel').value('data:rationales', nVal.checks)
-                    } else {
+                    else
                         cs(self, 'rationalesModel').value('data:rationales', [])
-                    }
                 }
             })
         },

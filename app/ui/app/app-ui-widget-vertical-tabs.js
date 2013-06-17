@@ -61,9 +61,9 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                         if (result.success) {
                             tab.call('displayError', null)
                             constraintsets.push(result.constraints)
-                        } else {
-                            tab.call('displayError', result.error)
                         }
+                        else
+                            tab.call('displayError', result.error)
                     }
                     var merged = _.flatten(constraintsets)
                     var sorted = app.lib.sorter(merged)
@@ -89,10 +89,13 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                 func: function (content) {
                     var current = cs(self, 'tabsModel').value('data:tabs')
                     current.push({ id: 'custom_' + self.customs, name: 'Custom ' + self.customs, enabled: false })
+
                     cs(self, 'tabsModel').value('data:tabs', current, true)
+
                     var newCustom = cs(this, 'tabsModel/view').create('custom_' + self.customs, app.ui.widget.constraintset.model)
                     newCustom.value('data:constraintset', content)
                     newCustom.state('visible')
+
                     self.customs++
                 }
             })
@@ -131,10 +134,10 @@ app.ui.widget.vertical.tabs.model = cs.clazz({
 
             /*  presentation model for items  */
             cs(self).model({
-                'data:tabs'                     : { value: [],      valid: '[{ id: string, name: string, enabled: boolean, socket?: string, deleted?: boolean }*]' },
-                'state:active-tab'              : { value: -1,      valid: 'number', store: true },
-                'event:tab-checked'             : { value: null,    valid: '(null | { tabIndex: number, state: boolean })', autoreset: true },
-                'data:savable'                  : { value: '',      valid: 'string' }
+                'data:tabs':         { value: [],   valid: '[{ id: string, name: string, enabled: boolean, socket?: string, deleted?: boolean }*]' },
+                'state:active-tab':  { value: -1,   valid: 'number', store: true },
+                'event:tab-checked': { value: null, valid: '(null | { tabIndex: number, state: boolean })', autoreset: true },
+                'data:savable':      { value: '',   valid: 'string' }
             })
 
             cs(self).observe({
@@ -184,9 +187,8 @@ app.ui.widget.vertical.tabs.view = cs.clazz({
                             $('.vertical-contents > .vertical-content', details).eq(i).remove()
                             cs(self).unsocket(tabs[i].socket)
                             tabs.splice(i, 1)
-                            for (var x = i; x < tabs.length; x++) {
+                            for (var x = i; x < tabs.length; x++)
                                 $('.vertical-tabs > .vertical-tab', details).eq(x).data('i', x)
-                            }
                         }
                     }
 

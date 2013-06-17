@@ -24,67 +24,67 @@
     text-align:       center;
 
     .tab-container {
-        float: left;
-        width: 126px;
-        height: 100%;
-        border-right:    1px solid darken(@color-canvas-bg, 20%);
+        float:                     left;
+        width:                     126px;
+        height:                    100%;
+        border-right:              1px solid darken(@color-canvas-bg, 20%);
 
         .vertical-tabs {
-            list-style: none;
-            text-align: center;
-            list-style-position: inside;
-            height: ~"calc(100% - 8px)";
+            list-style:            none;
+            text-align:            center;
+            list-style-position:   inside;
+            height:                ~"calc(100% - 8px)";
             -webkit-padding-start: 0px;
             -webkit-margin-before: 0px;
-            -webkit-margin-after: 0px;
+            -webkit-margin-after:  0px;
 
             .vertical-tab {
-                margin:                  2px 0px 0px 2px;
-                border-top-left-radius:  4px;
-                height: @font-size;
-                padding:                 4px 0px 4px 0px;
-                border-bottom-left-radius:  4px;
-                border-top: 1px solid darken(@color-tab-bg, 20%);
-                border-bottom: 1px solid darken(@color-tab-bg, 50%);
-                border-left: 1px solid darken(@color-tab-bg, 20%);
-                background-color:        darken(@color-tab-bg, 5%);
-                color:                   lighten(@color-tab-fg, 40%);
-                -webkit-user-select:     none;
-                user-select:             none;
-                cursor:                  pointer;
+                margin:                    2px 0px 0px 2px;
+                border-top-left-radius:    4px;
+                height:                    @font-size;
+                padding:                   4px 0px 4px 0px;
+                border-bottom-left-radius: 4px;
+                border-top:                1px solid darken(@color-tab-bg, 20%);
+                border-bottom:             1px solid darken(@color-tab-bg, 50%);
+                border-left:               1px solid darken(@color-tab-bg, 20%);
+                background-color:          darken(@color-tab-bg, 5%);
+                color:                     lighten(@color-tab-fg, 40%);
+                -webkit-user-select:       none;
+                user-select:               none;
+                cursor:                    pointer;
 
                 &.active {
-                    position: relative;
-                    left: 1px;
-                    background-color:    @color-tab-bg;
-                    color:               @color-tab-fg;
-                    border-top:          1px solid darken(@color-tab-bg, 30%);
-                    border-left:         1px solid darken(@color-tab-bg, 30%);
+                    position:              relative;
+                    left:                  1px;
+                    background-color:      @color-tab-bg;
+                    color:                 @color-tab-fg;
+                    border-top:            1px solid darken(@color-tab-bg, 30%);
+                    border-left:           1px solid darken(@color-tab-bg, 30%);
                 }
 
                 .checkbox {
-                    margin:              0px 2px 0px 0px;
-                    vertical-align:      top;
+                    margin:                0px 2px 0px 0px;
+                    vertical-align:        top;
                 }
             }
         }
     }
 
     .vertical-contents {
-        height: 100%;
-        float: left;
-        width: ~"calc(100% - 127px)";
+        height:                            100%;
+        float:                             left;
+        width:                             ~"calc(100% - 127px)";
 
         .vertical-content {
-            text-align: left;
-            height:     100%;
-            width: 100%;
-            display:    none;
+            text-align:                    left;
+            height:                        100%;
+            width:                         100%;
+            display:                       none;
 
             &.active {
-                background-color: @color-tab-bg;
-                color:            @color-tab-fg;
-                display:          block;
+                background-color:          @color-tab-bg;
+                color:                     @color-tab-fg;
+                display:                   block;
             }
         }
     }

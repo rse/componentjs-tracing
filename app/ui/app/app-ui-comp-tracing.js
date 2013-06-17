@@ -19,11 +19,11 @@ app.ui.comp.tracing = cs.clazz({
                 'event:load'            : { value: false, valid: 'boolean', autoreset: true },
                 'event:save'            : { value: false, valid: 'boolean', autoreset: true },
                 'event:clear'           : { value: false, valid: 'boolean', autoreset: true },
-                'event:filterKeyUp'     : { value: -1, valid: 'number', autoreset: true },
+                'event:filterKeyUp'     : { value: -1,    valid: 'number',  autoreset: true },
                 'event:check-journal'   : { value: false, valid: 'boolean', autoreset: true },
-                'state:record'          : { value: true, valid: 'boolean' },
-                'data:continuous'       : { value: false, valid: 'boolean', store: true },
-                'data:filter'           : { value: '', valid: 'string' }
+                'state:record'          : { value: true,  valid: 'boolean'                  },
+                'data:continuous'       : { value: false, valid: 'boolean', store: true     },
+                'data:filter'           : { value: '',    valid: 'string'                   }
             })
         },
         prepare: function () {
@@ -97,13 +97,11 @@ app.ui.comp.tracing = cs.clazz({
             cs(self).subscribe({
                 name: 'event:new-trace', spool: 'rendered',
                 func: function (ev, data) {
-                    if (!cs(self).value('state:record')) {
+                    if (!cs(self).value('state:record'))
                         return
-                    }
                     cs(self, 'grid').call('unshift', data)
-                    if (cs(self).value('data:continuous')) {
+                    if (cs(self).value('data:continuous'))
                         cs(self).publish('checkTrace', data)
-                    }
                 }
             })
 
