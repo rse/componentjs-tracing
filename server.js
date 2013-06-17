@@ -12,16 +12,16 @@ var app = {
     name: "Server",
     vers: "0.0.0",
     date: "2013-01-01",
-    logger: null
+    logger: null,
+    basedir: null
 };
 
 /*  determine path to server base directory  */
-var basedir = __dirname;
+app.basedir = __dirname;
 
 /*  load required libraries (1/3)  */
 var fs       = require("fs");
 var path     = require("path");
-var tracing  = require("./assets/transpiler/transpiler-lib.js").tracing;
 
 /*  load required libraries (2/3)  */
 var ini      = require("node-ini");
@@ -41,7 +41,7 @@ if (k < process.argv.length) {
         k++;
     }
 }
-var config = ini.parseSync(path.join(basedir, "/server.ini"));
+var config = ini.parseSync(path.join(app.basedir, "/server.ini"));
 for (var j = 0; j < sections.length; j++) {
     if (typeof config[sections[j]] !== "undefined") {
         for (var name in config[sections[j]]) {
@@ -199,7 +199,7 @@ var mkAppJS = function (filename) {
     catch (ex) { die("failed to load JavaScript module \"" + filename + "\": " + ex.message); }
     if (typeof mod.setup !== "function")
         die("JavaScript module does not export \"setup\" function: " + filename);
-    var srv = mod.setup(app);
+    var srv = mod.setup(app, opts);
     return srv;
 };
 
@@ -251,7 +251,8 @@ for (var i = 0; i < opts.app.length; i++) {
     }
 
     /*  configure as sub-server  */
-    srv.use(url, subsrv);
+    if (subsrv !== null)
+        srv.use(url, subsrv);
 }
 
 /*  configure a fallback middleware  */
@@ -268,91 +269,8 @@ srv.use(express_winston.errorLogger({
 /*  error logging  */
 srv.use(express.errorHandler({ dumpExceptions: false, showStack: false }));
 
-app.logger.log("info", "listening on http://%s:%d for PROXY requests", opts.proxyaddr, opts.proxyport);
-var proxyserver = require("http-proxy-simple").createProxyServer({
-    host:  opts.proxyaddr,
-    port:  opts.proxyport,
-    proxy: opts.proxyfwd
-});
-
-proxyserver.on("http-request", function (cid, request) {
-   app.logger.log("info", "proxy: " + cid + ": HTTP request: " + request.url);
-});
-
-proxyserver.on("http-error", function (cid, error) {
-   app.logger.log("info", "proxy: " + cid + ": HTTP error: " + error);
-});
-
-/*  get supplied arguments, identifying the ComponentJS library file and the application component files  */
-var cjsFile  = new RegExp(opts.componentjs)
-var cmpFiles = new RegExp(opts.components)
-
-proxyserver.on("http-intercept-request", function (cid, request, response, remoteRequest, performRequest) {
-    /*  ensure we always get a non-cached result back  */
-    delete remoteRequest.headers["if-modified-since"];
-    delete remoteRequest.headers["if-none-match"];
-    performRequest(remoteRequest);
-})
-
-proxyserver.on("http-intercept-response", function (cid, request, response, remoteResponse, remoteResponseBody, performResponse) {
-    /*  Did we inject anything? If yes, fix the HTTP request  */
-    var finishResponse = function () {
-        /*  Make sure the file is never marked as loaded from cache  */
-        remoteResponse.statusCode = 200;
-        remoteResponse.headers["content-length"] = remoteResponseBody.length;
-        remoteResponse.headers["content-type"] = "application/javascript";
-        remoteResponse.headers["accept-ranges"] = "bytes";
-        /*  Take care of the caching headers  */
-        var cacheControl = remoteResponse.headers["x-cache"];
-        if (cacheControl)
-            cacheControl = cacheControl.replace("HIT", "MISS");
-        cacheControl = remoteResponse.headers["x-cache-lookup"];
-        if (cacheControl)
-            cacheControl = cacheControl.replace("HIT", "MISS");
-    };
-
-    if (remoteResponse.req.path.match(cjsFile) !== null) {
-        /*  Convert the remoteResponseBody to a string  */
-        remoteResponseBody = remoteResponseBody.toString("utf8");
-        app.logger.log("info", "proxy: discovered ComponentJS file: " + request.url);
-
-        /*  Which files do we want to be injected?  */
-        var filesToInject = [
-            "./assets/plugins/component.plugin.tracing.js",
-            "./assets/socket.io.js",
-            "./assets/plugins/component.plugin.tracing-remote.js"
-        ];
-
-        /*  Should the latest version of ComponentJS be injected as well?  */
-        if (opts.latestcjs) {
-            app.logger.log("info", "proxy: injecting the latest ComponentJS version");
-            filesToInject.unshift("./assets/component.js");
-            remoteResponseBody = "";
-        }
-
-        /*  Now inject each file */
-        for (var i = 0; i < filesToInject.length; i++) {
-            /*  Load the file to inject to a temporary string  */
-            var append = fs.readFileSync(filesToInject[i]).toString("utf8");
-            /*  Append file to the responseBody  */
-            remoteResponseBody += append;
-        }
-
-        app.logger.log("info", "proxy: append necessary plug-ins and libraries");
-        finishResponse();
-    } else if (remoteResponse.req.path.match(cmpFiles) !== null) {
-        /*  read original remoteResponseBody, instrument it and write instrumented remoteResponseBody  */
-        remoteResponseBody = remoteResponseBody.toString("utf8");
-        remoteResponseBody = tracing.instrument("cs", remoteResponseBody);
-
-        app.logger.log("info", "proxy: transpiled component file: " + request.url);
-        finishResponse();
-    }
-
-    performResponse(remoteResponse, remoteResponseBody);
-});
-
 /*  start the listening on the root server  */
 srv.listen(opts.port, opts.addr, opts.backlog, function () {
     app.logger.log("info", "listening on http://%s:%d for ORIGIN requests", opts.addr, opts.port);
 });
+
