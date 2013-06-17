@@ -225,17 +225,17 @@ for (var i = 0; i < opts.app.length; i++) {
     var stats = fs.statSync(src);
     var subsrv;
     if (stats.isFile()) {
-        app.logger.log("info", "deploying custom app: url=%s src=%s", url, src);
+        app.logger.log("info", "proxy: deploying custom app: url=%s src=%s", url, src);
         subsrv = mkAppJS(src);
     }
     else if (stats.isDirectory()) {
         var index = src + "/root.js";
         if (fs.existsSync(index) && fs.statSync(index).isFile()) {
-            app.logger.log("info", "deploying custom app: url=%s src=%s", url, index);
+            app.logger.log("info", "proxy: deploying custom app: url=%s src=%s", url, index);
             subsrv = mkAppJS(index);
         }
         else {
-            app.logger.log("info", "deploying directory-index: url=%s src=%s", url, src);
+            app.logger.log("info", "proxy: deploying directory-index: url=%s src=%s", url, src);
             subsrv = mkAppDir(src);
         }
     }
@@ -304,7 +304,7 @@ proxyserver.on("http-intercept-response", function (cid, request, response, remo
     if (remoteResponse.req.path.match(cjsFile) !== null) {
         /*  Convert the remoteResponseBody to a string  */
         remoteResponseBody = remoteResponseBody.toString("utf8");
-        console.log("Discovered CJS file: " + request.url);
+        app.logger.log("info", "discovered ComponentJS file: " + request.url);
 
         /*  Which files do we want to be injected?  */
         var filesToInject = [
@@ -315,7 +315,7 @@ proxyserver.on("http-intercept-response", function (cid, request, response, remo
 
         /*  Should the latest version of ComponentJS be injected as well?  */
         if (opts.latestcjs) {
-            console.log("Injecting the latest ComponentJS version");
+            app.logger.log("info", "injecting the latest ComponentJS version");
             filesToInject.unshift("./assets/component.js");
             remoteResponseBody = "";
         }
@@ -328,14 +328,14 @@ proxyserver.on("http-intercept-response", function (cid, request, response, remo
             remoteResponseBody += append;
         }
 
-        console.log("Append necessary plug-ins and libraries");
+        app.logger.log("info", "append necessary plug-ins and libraries");
         finishResponse();
     } else if (remoteResponse.req.path.match(cmpFiles) !== null) {
         /*  read original remoteResponseBody, instrument it and write instrumented remoteResponseBody  */
         remoteResponseBody = remoteResponseBody.toString("utf8");
         remoteResponseBody = tracing.instrument("cs", remoteResponseBody);
 
-        console.log("Transpiled component file: " + request.url);
+        app.logger.log("info", "transpiled component file: " + request.url);
         finishResponse();
     }
 
