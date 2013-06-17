@@ -10,6 +10,7 @@
 /*  bootstrap component system  */
 ComponentJS.symbol("cs");
 cs.bootstrap();
+cs.ns("app.lib");
 cs.ns("app.ui.comp");
 cs.ns("app.ui.widget");
 cs.debug(0);

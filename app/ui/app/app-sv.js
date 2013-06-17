@@ -13,13 +13,13 @@ app.sv = cs.clazz({
         create: function () {
             /*  converts a string containing multiple traces into an array of trace objects  */
             cs(this).register('parseLogfile', function (content) {
-                return window.tupleParser.parseLog(content)
+                return app.lib.tupleParser.parseLog(content)
             })
 
             /*  parses the a given string using the peg parser for the constraint grammar  */
             cs(this).register('parseConstraintset', function (content) {
                 try {
-                    var constraintSet = window.constraint_parser.parse(content)
+                    var constraintSet = app.lib.constraint_parser.parse(content)
                     return {
                         success: true,
                         constraints: constraintSet
@@ -37,7 +37,7 @@ app.sv = cs.clazz({
                 var resTraces = []
 
                 for (var i = 0; i < traces.length; i++) {
-                    var tuple = window.constraintChecker.checkTuple(constraintSet, traces[i])
+                    var tuple = app.lib.constraintChecker.checkTuple(constraintSet, traces[i])
                     if (tuple.result === 'UNCLASSIFIED' || tuple.result === 'FAIL') {
                         resTraces.push(tuple)
                     }

@@ -201,6 +201,6 @@ var create = function (verbose) {
     };
 };
 
-window.graph = create;
+app.lib.graph = create;
 
 })();

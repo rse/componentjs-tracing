@@ -177,6 +177,6 @@ var constraintChecker = function () {
 
 var create = new constraintChecker();
 
-window.constraintChecker = create;
+app.lib.constraintChecker = create;
 
 })();

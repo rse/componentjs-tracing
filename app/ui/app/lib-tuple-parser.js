@@ -100,7 +100,7 @@ var parseLog = function (lines) {
     return tuples
 };
 
-window.tupleParser = {};
-window.tupleParser.parseLog = parseLog;
+app.lib.tupleParser = {};
+app.lib.tupleParser.parseLog = parseLog;
 
 })();

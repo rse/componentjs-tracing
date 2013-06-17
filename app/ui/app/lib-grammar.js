@@ -2278,5 +2278,5 @@
   
   result.SyntaxError.prototype = Error.prototype;
   
-  window.constraint_parser = result;
+  app.lib.constraint_parser = result;
 })();

@@ -66,7 +66,7 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                         }
                     }
                     var merged = _.flatten(constraintsets)
-                    var sorted = window.sorter(merged)
+                    var sorted = app.lib.sorter(merged)
 
                     cs(self).publish('constraintSetChanged', sorted)
                 }

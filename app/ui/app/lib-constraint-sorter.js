@@ -9,7 +9,7 @@
 
 (function () {
 
-var graph = window.graph();
+var graph = app.lib.graph();
 
 var sort = function (constraintSet) {
     //  Set the after relation for rules that are not included in the order yet
@@ -60,6 +60,6 @@ var sort = function (constraintSet) {
     return clearedConstraintSet;
 };
 
-window.sorter = sort;
+app.lib.sorter = sort;
 
 })();
