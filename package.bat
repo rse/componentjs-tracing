@@ -7,11 +7,10 @@
 ::  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ::
 @echo off
-cd lib
+
 IF exist node_modules (
 	npm update
-	cd ..
 ) ELSE (
 	npm install
-	cd ..
 )
+

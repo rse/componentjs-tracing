@@ -23,10 +23,6 @@ var fs       = require("fs");
 var path     = require("path");
 var tracing  = require("./assets/transpiler/transpiler-lib.js").tracing;
 
-/*  determine path to Node library directory  */
-var libdir = path.resolve(path.join(basedir, "/lib/node_modules/"));
-module.paths.unshift(libdir);
-
 /*  load required libraries (2/3)  */
 var ini      = require("node-ini");
 var util     = require("util")

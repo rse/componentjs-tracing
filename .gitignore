@@ -1,3 +1,3 @@
 server.log
 server.access.log
-*/node_modules/
+node_modules
