@@ -277,6 +277,13 @@ proxyserver.on("http-error", function (cid, error) {
 var cjsFile  = new RegExp(opts.componentjs)
 var cmpFiles = new RegExp(opts.components)
 
+proxyserver.on("http-intercept-request", function (cid, request, response, remoteRequest, performRequest) {
+    /*  ensure we always get a non-cached result back  */
+    delete remoteRequest.headers["if-modified-since"];
+    delete remoteRequest.headers["if-none-match"];
+    performRequest(remoteRequest);
+})
+
 proxyserver.on("http-intercept-response", function (cid, request, response, remoteResponse, remoteResponseBody, performResponse) {
     /*  Did we inject anything? If yes, fix the HTTP request  */
     var finishResponse = function () {
