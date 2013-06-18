@@ -135,9 +135,9 @@ app.ui.widget.vertical.tabs.model = cs.clazz({
             /*  presentation model for items  */
             cs(self).model({
                 'data:tabs':         { value: [],   valid: '[{ id: string, name: string, enabled: boolean, socket?: string, deleted?: boolean }*]' },
-                'state:active-tab':  { value: -1,   valid: 'number', store: true },
-                'event:tab-checked': { value: null, valid: '(null | { tabIndex: number, state: boolean })', autoreset: true },
-                'data:savable':      { value: '',   valid: 'string' }
+                'state:active-tab':  { value: -1,   valid: 'number', store: true                                                                   },
+                'event:tab-checked': { value: null, valid: '(null | { tabIndex: number, state: boolean })', autoreset: true                        },
+                'data:savable':      { value: '',   valid: 'string'                                                                                }
             })
 
             cs(self).observe({

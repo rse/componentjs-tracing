@@ -5,7 +5,7 @@ constraint view-self {
   }
   condition {
         (sourceType == "V" || sourceType == "M")
-    &&  source == origin  
+    &&  source == origin
   }
 
   constraint view-self-observe {

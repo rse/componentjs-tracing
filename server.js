@@ -273,4 +273,3 @@ srv.use(express.errorHandler({ dumpExceptions: false, showStack: false }))
 srv.listen(opts.port, opts.addr, opts.backlog, function () {
     app.logger.log("info", "listening on http://%s:%d for ORIGIN requests", opts.addr, opts.port)
 })
-

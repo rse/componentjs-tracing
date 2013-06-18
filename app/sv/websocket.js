@@ -10,7 +10,7 @@
 module.paths = module.paths.concat(module.parent.paths)
 
 module.exports = {
-    setup: function (ctx, opts) {
+    setup: function (ctx) {
         var buffer = []
 
         /*  a client can subscribe itself to incoming traces by issuing a "join" message  */

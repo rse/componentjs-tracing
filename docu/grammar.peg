@@ -76,7 +76,7 @@ before
 after
   = "after" _ ids:idseq _ { return ids }
 
-idseq 
+idseq
   = first:id ids:("," id)* { var tmp = [first];for (var i = 0; i < ids.length; i++) {if (i % 2 == 0) { tmp.push(ids[i][1])} }; return tmp }
 
 _

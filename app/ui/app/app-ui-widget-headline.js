@@ -14,8 +14,7 @@ app.ui.widget.headline.view = cs.clazz({
     mixin: [ cs.marker.view ],
     protos: {
         render: function () {
-            var ui = $.markup("widget-headline")
-            cs(this).plug(ui)
+            cs(this).plug($.markup("widget-headline"))
         }
     }
 })

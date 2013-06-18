@@ -41,8 +41,8 @@ app.ui.widget.grid.ctrl = cs.clazz({
             cs(self).register({
                 name: 'save', spool: 'created',
                 func: function () {
-                    window.location = 'data:application/octet-stream;base64,'
-                        + btoa(cs(self, 'gridModel').value('data:savable'))
+                    window.location = 'data:application/octet-stream;base64,'+
+                        btoa(cs(self, 'gridModel').value('data:savable'))
                 }
             })
 

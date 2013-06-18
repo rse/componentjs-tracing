@@ -11,8 +11,6 @@ module.paths = module.paths.concat(module.parent.paths)
 
 var fs         = require("fs")
 var path       = require("path")
-var express    = require("express")
-var express_io = require("express.io")
 
 module.exports = {
     setup: function (ctx, opts) {
