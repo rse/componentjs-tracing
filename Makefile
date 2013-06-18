@@ -13,7 +13,13 @@ GRUNT = ./node_modules/grunt-cli/bin/grunt
 all: build
 
 bootstrap:
-	@if [ ! -x $(GRUNT) ]; then $(NPM) install; fi
+	@if [ ! -x $(GRUNT) ]; then \
+	    if [ -d node_modules ]; then \
+	        $(NPM) update; \
+	    else \
+	        $(NPM) install; \
+	    fi; \
+	fi
 
 build: bootstrap
 	@$(GRUNT)
