@@ -1,16 +1,20 @@
 {
-    "name": "componentjs-tracing-proxy",
-    "version": "0.0.0",
-    "dependencies": {
-        "node-ini": "*",
-        "dashdash": "*",
-        "express": "*",
-        "express-api-helper": "*",
-        "express-winston": "*",
-        "express.io": "*",
-        "winston": "*",
-        "cors": "*",
-        "http-proxy-simple":"*",
-        "request":"*"
-    }
+  "name": "componentjs-tracing-proxy",
+  "version": "0.0.0",
+  "dependencies": {
+    "node-ini": "*",
+    "dashdash": "*",
+    "express": "*",
+    "express-api-helper": "*",
+    "express-winston": "*",
+    "express.io": "*",
+    "winston": "*",
+    "cors": "*",
+    "http-proxy-simple": "*",
+    "request": "*"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-replace": "~0.4.4"
+  }
 }
