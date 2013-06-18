@@ -66,14 +66,19 @@ app.ui.comp.tracing = cs.clazz({
 
             cs(this, 'toolbarModel').value('data:items', toolbarItems)
 
+            var linkRenderer = function (op) {
+                /* global Handlebars: true */
+                return new Handlebars.SafeString('<a href="http://componentjs.com/api/api.screen.html#' + op + '" target="_BLANK">' + op + '</a>')
+            }
+
             var columns = [
-                { label: 'Time',        dataIndex: 'time',          width: 50, align: 'center' },
-                { label: 'Source',      dataIndex: 'source'                                    },
-                { label: 'ST',          dataIndex: 'sourceType',    width: 20, align: 'center' },
-                { label: 'Origin',      dataIndex: 'origin'                                    },
-                { label: 'OT',          dataIndex: 'originType',    width: 20, align: 'center' },
-                { label: 'Operation',   dataIndex: 'operation',     width: 60, align: 'center' },
-                { label: 'Parameters',  dataIndex: 'parameters'                                }
+                { label: 'Time',        dataIndex: 'time',       width: 50, align: 'center'                         },
+                { label: 'Source',      dataIndex: 'source'                                                         },
+                { label: 'ST',          dataIndex: 'sourceType', width: 20, align: 'center'                         },
+                { label: 'Origin',      dataIndex: 'origin'                                                         },
+                { label: 'OT',          dataIndex: 'originType', width: 20, align: 'center'                         },
+                { label: 'Operation',   dataIndex: 'operation',  width: 60, align: 'center', renderer: linkRenderer },
+                { label: 'Parameters',  dataIndex: 'parameters'                                                     }
             ]
 
             cs(this, 'grid').call('columns', columns)
