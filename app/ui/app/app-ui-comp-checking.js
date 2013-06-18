@@ -17,9 +17,7 @@ app.ui.comp.checking = cs.clazz({
             cs(this).create('rationalesModel/view', app.ui.widget.rationales.model, app.ui.widget.rationales.view)
 
             cs(this).model({
-                'event:clear'         : { value: false, valid: 'boolean', autoreset: true },
-                'event:check-journal' : { value: false, valid: 'boolean', autoreset: true },
-                'data:continuous'     : { value: false, valid: 'boolean' }
+                'event:clear'         : { value: false, valid: 'boolean', autoreset: true }
             })
         },
         prepare: function () {
