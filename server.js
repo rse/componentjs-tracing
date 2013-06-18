@@ -7,9 +7,13 @@
 **  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
+/* global __dirname: true */
+/* global process: true */
+/* global console: true */
+
 /*  program identification  */
 var app = {
-    name: "Server",
+    name: "ComponentJS Tracing Proxy",
     vers: "0.0.0",
     date: "2013-01-01",
     logger: null,

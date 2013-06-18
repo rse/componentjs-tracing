@@ -17,7 +17,7 @@ module.exports = function(grunt) {
                 ignores:  [ "app/ui/app/lib-grammar.js" ]
             },
             gruntfile:   [ "Gruntfile.js" ],
-            sourcefiles: [ "app/sv/*.js", "app/ui/app/app-*.js" ]
+            sourcefiles: [ "server.js", "app/sv/*.js", "app/ui/app/app-*.js" ]
         },
         peg: {
             constraints: {
