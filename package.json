@@ -15,6 +15,6 @@
   },
   "devDependencies": {
     "grunt": "~0.4.1",
-    "grunt-replace": "~0.4.4"
+    "grunt-peg": "~0.2.0"
   }
 }
