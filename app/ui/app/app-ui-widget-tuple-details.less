@@ -12,8 +12,8 @@
 }
 
 .tuple-details-style (
-    @color-canvas-bg: #e0e0e0;
-    @color-tab-bg:    #f8f8f8;
+    @color-canvas-bg: #ffffff;
+    @color-tab-bg:    #ffffff;
     @color-tab-fg:    #000000;
     @font-size:       12px;
 ) {
@@ -34,14 +34,21 @@
             height:      @font-size;
         }
 
+        tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f8f8;
+        }
+
         td {
             padding:     2px;
         }
 
         .row-header {
             width:                   100px;
-            background-color:        darken(@color-tab-bg, 15%);
-            border:                  1px solid darken(@color-canvas-bg, 20%);
+            color:                   #408edc;
+            border:                  1px solid darken(@color-canvas-bg, 10%);
             vertical-align:          top;
             -webkit-user-select:     none;
             user-select:             none;
@@ -49,7 +56,7 @@
 
         .row-content {
             width:                   ~"calc(100% - 100px)";
-            border:                  1px solid darken(@color-canvas-bg, 20%);
+            border:                  1px solid darken(@color-canvas-bg, 10%);
             vertical-align:          top;
             overflow-x:              hidden;
         }

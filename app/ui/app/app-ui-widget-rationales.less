@@ -12,8 +12,8 @@
 }
 
 .rationales-style (
-    @color-canvas-bg: #e0e0e0;
-    @color-tab-bg:    #f8f8f8;
+    @color-canvas-bg: #ffffff;
+    @color-tab-bg:    #ffffff;
     @color-tab-fg:    #000000;
     @font-size:       12px;
 ) {
@@ -28,19 +28,20 @@
         height: 100%;
 
         .rationales-title {
-            background-color: darken(@color-tab-bg, 15%);
+            background-color: #f8f8f8;
+            color:            #408edc;
             text-align:       left;
             vertical-align:   top;
-            border-bottom:    1px solid darken(@color-canvas-bg, 20%);
-            border-top:       1px solid darken(@color-canvas-bg, 20%);
+            border-bottom:    1px solid darken(@color-canvas-bg, 10%);
+            border-top:       1px solid darken(@color-canvas-bg, 10%);
             height:           @font-size;
-            padding:          2px 0px 2px 2px;
+            padding:          2px 4px 2px 4px;
         }
 
         .rationales-content {
             text-align:       left;
             vertical-align:   top;
-            padding:          2px;
+            padding:          4px;
         }
 
         tr:first-child td {

@@ -14,41 +14,32 @@ app.ui.widget.toolbar.items.button = cs.clazz({
     mixin: [ cs.marker.view ],
     dynamics: {
         label: null,
+        icon: null,
         eventBinding: null
     },
-    cons: function (label, eventBinding) {
+    cons: function (label, eventBinding, icon) {
         this.label = label
         this.event = eventBinding
+        this.icon  = icon
     },
     protos: {
         create: function () {
             var self = this
 
             cs(self).model({
-                'state:pressed':     { value: false, valid: 'boolean' },
-                'data:pressed-icon': { value: '',    valid: 'string' }
+                'state:pressed': { value: false, valid: 'boolean' }
             })
 
-            var btn = $.markup('toolbar-button', { label: self.label })
+            var btn = $.markup('toolbar-button', { label: self.label, icon: self.icon })
 
             cs(self).observe({
                 name: 'state:pressed', spool: 'created',
                 touch: true,
                 func: function (ev, nVal) {
-                    if (nVal) {
+                    if (nVal)
                         $(btn).addClass('pressed')
-                        $('.pressed-icon', btn).removeClass('invisible')
-                    } else {
+                    else
                         $(btn).removeClass('pressed')
-                        $('.pressed-icon', btn).addClass('invisible')
-                    }
-                }
-            })
-
-            cs(self).observe({
-                name: 'data:pressed-icon', spool: 'created',
-                func: function (ev, nVal) {
-                    $('.pressed-icon', btn).attr('src', nVal)
                 }
             })
 
@@ -110,16 +101,18 @@ app.ui.widget.toolbar.items.input = cs.clazz({
 app.ui.widget.toolbar.items.text = cs.clazz({
     mixin: [ cs.marker.view ],
     dynamics: {
-        label: null
+        label: null,
+        icon:  null
     },
-    cons: function (label) {
-        this.label =  label
+    cons: function (label, icon) {
+        this.label = label
+        this.icon  = icon
     },
     protos: {
         create: function () {
             var self = this
 
-            var btn = $.markup('toolbar-text', { label: self.label })
+            var btn = $.markup('toolbar-text', { label: self.label, icon: self.icon })
 
             cs(self).plug(btn)
         }
@@ -131,17 +124,19 @@ app.ui.widget.toolbar.items.checkbox = cs.clazz({
     mixin: [ cs.marker.view ],
     dynamics: {
         label: null,
-        dataBinding: null
+        dataBinding: null,
+        icon: null
     },
-    cons: function (label, binding) {
+    cons: function (label, binding, icon) {
         this.label =  label
         this.dataBinding = binding
+        this.icon = icon
     },
     protos: {
         create: function () {
             var self = this
 
-            var btn = $.markup('toolbar-checkbox', { id: Date.now(), label: self.label })
+            var btn = $.markup('toolbar-checkbox', { id: Date.now(), label: self.label, icon: self.icon })
 
             $('input[type=checkbox]', btn).click(function () {
                 cs(self).value(self.dataBinding, $('input[type=checkbox]', btn).is(':checked'))

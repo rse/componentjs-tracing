@@ -12,11 +12,36 @@
 }
 
 .constraint-set-content-style (
-    @color-canvas-bg: #e0e0e0;
-    @color-tab-bg:    #f8f8f8;
-    @color-tab-fg:    #000000;
-    @font-size:       12px;
 ) {
     height: 100%;
     width:  100%;
+}
+
+.ace_editor {
+	font-family: "DejaVu Sans Mono" !important;
+}
+
+.ace_content {
+	background-color: #ffffff !important;
+}
+
+.ace_gutter {
+	background-color: #ffffff !important;
+	border-right: 1px solid #e0e0e0;
+	color: #b0b0b0 !important;
+}
+
+.ace_gutter-active-line {
+	background-color: #f0f0f0 !important;
+}
+
+.ace_keyword {
+	color: #408edc !important;
+}
+.ace_constant {
+	color: #333333 !important;
+	font-weight: bold;
+}
+.ace_operator {
+	color: #000000 !important;
 }

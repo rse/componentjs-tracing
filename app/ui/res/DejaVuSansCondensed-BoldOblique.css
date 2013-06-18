@@ -1,0 +1,17 @@
+
+/* DejaVu Sans Condensed Bold Oblique */
+@font-face {
+    font-family:  'DejaVu Sans Condensed';
+    src:          url('DejaVuSansCondensed-BoldOblique.eot');
+    src:          local('*'),
+                  url('DejaVuSansCondensed-BoldOblique.eot?#iefix') format('embedded-opentype'),
+                  url('DejaVuSansCondensed-BoldOblique.otf') format('opentype'),
+                  url('DejaVuSansCondensed-BoldOblique.ttf') format('truetype'),
+                  url('DejaVuSansCondensed-BoldOblique.woff') format('woff'),
+                  url('DejaVuSansCondensed-BoldOblique.svg#DejaVuSansCondensed-BoldOblique') format('svg');
+    font-style:   oblique;
+    font-weight:  bold;
+    font-stretch: semi-condensed;
+    font-variant: normal;
+}
+

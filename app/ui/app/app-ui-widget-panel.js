@@ -16,7 +16,7 @@ app.ui.widget.panel.model = cs.clazz({
         create: function () {
             /*  presentation model for tabs  */
             cs(this).model({
-                "data:tabs"         : { value: [], valid: "[{ id: string, name: string }*]" },
+                "data:tabs"         : { value: [], valid: "[{ id: string, name: string, icon: string }*]" },
                 "state:active-tab"  : { value: -1, valid: "number", store: true }
             })
         }
@@ -56,7 +56,7 @@ app.ui.widget.panel.view = cs.clazz({
 
                     /*  render new tabs  */
                     for (i = 0; i < tabs.length; i++) {
-                        $(".tabs", ui).markup("widget-panel/tab", { i: i, name: tabs[i].name })
+                        $(".tabs", ui).markup("widget-panel/tab", { i: i, name: tabs[i].name, icon: tabs[i].icon })
                         var content = $(".contents", ui).markup("widget-panel/content")
                         var id = cs(self).socket({ scope: tabs[i].id, ctx: $(content), type: "jquery" })
                         tab2socket.push(id)

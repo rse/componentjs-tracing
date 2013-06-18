@@ -12,8 +12,8 @@
 }
 
 .checking-content-style (
-    @color-canvas-bg: #e0e0e0;
-    @color-tab-bg:    #f8f8f8;
+    @color-canvas-bg: #ffffff;
+    @color-tab-bg:    #ffffff;
     @color-tab-fg:    #000000;
     @font-size:       12px;
 ) {
@@ -27,7 +27,7 @@
 		height: ~"calc(100% - 28px)";
 
 		.grid {
-			border-right: 1px solid darken(@color-canvas-bg, 20%);
+			border-right: 1px solid darken(@color-canvas-bg, 10%);
 		    height:       ~"calc(100% - 2px)";
 			position:     relative;
 			top:          1px;
@@ -38,7 +38,7 @@
 		.tuple-details-container {
 			position:     relative;
 			top:          1px;
-			border-right: 1px solid darken(@color-canvas-bg, 20%);
+			border-right: 1px solid darken(@color-canvas-bg, 10%);
 			height:       100%;
 			width:        ~"calc((100% - 2px) / 3)";
 			float:        left;

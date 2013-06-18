@@ -16,7 +16,7 @@ app.ui.widget.toolbar.model = cs.clazz({
             /*  presentation model for items  */
             cs(this).model({
                 "data:items": { value: [], valid: '[(any | { source: string, sourceType: string, ' +
-                    'origin: string, originType: string, operation: string, parameters: any})*]' }
+                    'origin: string, originType: string, operation: string, parameters: any})*]' } /* FIXME: wrong fields! */
             })
         }
     }
@@ -45,7 +45,7 @@ app.ui.widget.toolbar.view = cs.clazz({
                     for (var i = 0; i < nVal.length; i++) {
                         var item = nVal[i];
                         if (item.type === 'button') {
-                            var btn =  new app.ui.widget.toolbar.items.button(item.label, item.event)
+                            var btn =  new app.ui.widget.toolbar.items.button(item.label, item.event, item.icon)
                             if (!item.id)
                                 item.id = 'button-' + i
                             cs(self).create(item.id, btn)
@@ -57,11 +57,11 @@ app.ui.widget.toolbar.view = cs.clazz({
                             cs(self).create('input-' + i, input)
                         }
                         else if (item.type === 'text') {
-                            var text =  new app.ui.widget.toolbar.items.text(item.label)
+                            var text =  new app.ui.widget.toolbar.items.text(item.label, item.icon)
                             cs(self).create('text-' + i, text)
                         }
                         else if (item.type === 'checkbox') {
-                            var checkbox =  new app.ui.widget.toolbar.items.checkbox(item.label, item.data)
+                            var checkbox =  new app.ui.widget.toolbar.items.checkbox(item.label, item.data, item.icon)
                             cs(self).create('checkbox-' + i, checkbox)
                         }
                         else

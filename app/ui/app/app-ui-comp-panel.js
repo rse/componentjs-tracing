@@ -63,11 +63,11 @@ app.ui.comp.panel = cs.clazz({
             cs(self, 'panel/panel/statusbar').publish('color', 'yellow')
 
             /* global io: true */
-            var socket = io.connect('http://localhost:8080')
+            var socket = io.connect()
             socket.on('connect', function () {
                 socket.emit('join')
                 cs(self, 'panel/panel/statusbar').publish('message', 'Connected')
-                cs(self, 'panel/panel/statusbar').publish('color', 'green')
+                cs(self, 'panel/panel/statusbar').publish('color', 'black')
             })
             socket.on('reconnect_error', function () {
                 cs(self, 'panel/panel/statusbar').publish('message', 'Unable to reconnect')
@@ -75,11 +75,11 @@ app.ui.comp.panel = cs.clazz({
             })
             socket.on('reconnect', function () {
                 cs(self, 'panel/panel/statusbar').publish('message', 'Reconnected')
-                cs(self, 'panel/panel/statusbar').publish('color', 'green')
+                cs(self, 'panel/panel/statusbar').publish('color', 'black')
             })
             socket.on('disconnect', function () {
                 cs(self, 'panel/panel/statusbar').publish('message', 'Trying to reconnect ...')
-                cs(self, 'panel/panel/statusbar').publish('color', 'yellow')
+                cs(self, 'panel/panel/statusbar').publish('color', 'red')
             })
 
             socket.on('newTrace', function (data) {
@@ -88,9 +88,9 @@ app.ui.comp.panel = cs.clazz({
         },
         prepare: function () {
             cs(this, 'panel').value('data:tabs', [
-                { id: 'tracing',     name: 'Tracing'     },
-                { id: 'checking',    name: 'Checking'    },
-                { id: 'constraints', name: 'Constraints' }
+                { id: 'tracing',     name: 'Tracing',     icon: "gears" },
+                { id: 'checking',    name: 'Checking',    icon: "thumbs-down" },
+                { id: 'constraints', name: 'Constraints', icon: "legal" }
             ])
         },
         render: function () {

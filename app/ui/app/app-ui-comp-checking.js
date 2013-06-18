@@ -25,6 +25,7 @@ app.ui.comp.checking = cs.clazz({
 
             var toolbarItems = [{
                 label: 'Clear',
+                icon: "remove-sign",
                 event: 'event:clear',
                 type: 'button'
             }]

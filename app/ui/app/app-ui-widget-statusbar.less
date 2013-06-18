@@ -18,11 +18,9 @@
     @font-size:       12px;
 ) {
 	height:              100%;
-	border-top:          1px solid darken(@color-canvas-bg, 20%);
-	border-bottom:       1px solid darken(@color-canvas-bg, 20%);
 
     .items {
-        height:          ~"calc(100% - 2px)";
+        height:          100%;
         display:         block;
         padding:         3px 0px 0px 0px;
         list-style-type: none;
@@ -36,12 +34,12 @@
             -webkit-user-select: none;
         }
 
-        .statusbar-icon {
-            background-image: url('/static/img/bullet_black.png')
+        .icon {
+            margin-left: 10px;
         }
 
         .statusbar-message {
-            color:               lighten(@color-tab-fg, 40%);
+            color:       lighten(@color-tab-fg, 20%);
 		}
     }
 }

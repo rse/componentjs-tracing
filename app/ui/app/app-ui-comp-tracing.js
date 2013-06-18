@@ -29,34 +29,40 @@ app.ui.comp.tracing = cs.clazz({
         prepare: function () {
             var toolbarItems = [{
                 label: 'Record',
+                icon:  "microphone",
                 event: 'event:record',
                 type: 'button',
-                pressedIcon: './static/img/record.png',
                 id: 'recordBtn'
             }, {
                 label: 'Load',
+                icon:  "upload-alt",
                 event: 'event:load',
                 type: 'button'
             }, {
                 label: 'Save',
+                icon:  "download-alt",
                 event: 'event:save',
                 type: 'button'
             }, {
                 label: 'Clear',
+                icon:  "remove-sign",
                 event: 'event:clear',
                 type: 'button'
             }, {
-                label: 'Check Journal',
+                label: 'Check Once',
+                icon:  "ok-sign",
                 event: 'event:check-journal',
                 type: 'button'
             }, {
-                label: 'Check continuously',
+                label: 'Check Continuously',
+                icon: "repeat",
                 data: 'data:continuous',
                 type: 'checkbox'
             }, {
                 type: 'fill'
             }, {
                 label: 'Filter:',
+                icon:  "filter",
                 type: 'text'
             }, {
                 type: 'input',

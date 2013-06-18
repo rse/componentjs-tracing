@@ -1,0 +1,17 @@
+
+/* DejaVu Sans Mono */
+@font-face {
+    font-family:  'DejaVu Sans Mono';
+    src:          url('DejaVuSansMono.eot');
+    src:          local('*'),
+                  url('DejaVuSansMono.eot?#iefix') format('embedded-opentype'),
+                  url('DejaVuSansMono.otf') format('opentype'),
+                  url('DejaVuSansMono.ttf') format('truetype'),
+                  url('DejaVuSansMono.woff') format('woff'),
+                  url('DejaVuSansMono.svg#DejaVuSansMono') format('svg');
+    font-style:   normal;
+    font-weight:  normal;
+    font-stretch: normal;
+    font-variant: normal;
+}
+

@@ -27,18 +27,22 @@ app.ui.comp.constraints = cs.clazz({
         prepare: function () {
             var toolbarItems = [{
                 label: 'Add',
+                icon: "plus-sign",
                 event: 'event:add',
                 type: 'button'
             }, {
                 label: 'Remove',
+                icon: "minus-sign",
                 event: 'event:remove',
                 type: 'button'
             }, {
                 label: 'Load',
+                icon: 'upload-alt',
                 event: 'event:load',
                 type: 'button'
             }, {
                 label: 'Save',
+                icon: 'download-alt',
                 event: 'event:save',
                 type: 'button'
             }]

@@ -11,7 +11,7 @@
 
 <markup id="toolbar-button">
     <li class="toolbar-button item">
-        <img class="pressed-icon" src=""/>{{label}}
+        <i class="icon icon-{{icon}}"></i> {{label}}
     </li>
 </markup>
 
@@ -23,13 +23,14 @@
 
 <markup id="toolbar-text">
     <li class="toolbar-text item">
-        {{label}}
+        <i class="icon icon-{{icon}}"></i> {{label}}
     </li>
 </markup>
 
 <markup id="toolbar-checkbox">
     <li class="toolbar-checkbox item">
         <input class="checkbox" type="checkbox" id="{{id}}" value="true"/>
+        <i class="icon icon-{{icon}}"></i>
         <label for="{{id}}" style="-webkit-user-select: none;">{{label}}</label>
     </li>
 </markup>

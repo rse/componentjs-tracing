@@ -1,0 +1,17 @@
+
+/* DejaVu Sans Condensed Bold */
+@font-face {
+    font-family:  'DejaVu Sans Condensed';
+    src:          url('DejaVuSansCondensed-Bold.eot');
+    src:          local('*'),
+                  url('DejaVuSansCondensed-Bold.eot?#iefix') format('embedded-opentype'),
+                  url('DejaVuSansCondensed-Bold.otf') format('opentype'),
+                  url('DejaVuSansCondensed-Bold.ttf') format('truetype'),
+                  url('DejaVuSansCondensed-Bold.woff') format('woff'),
+                  url('DejaVuSansCondensed-Bold.svg#DejaVuSansCondensed-Bold') format('svg');
+    font-style:   normal;
+    font-weight:  bold;
+    font-stretch: semi-condensed;
+    font-variant: normal;
+}
+

@@ -74,7 +74,7 @@ app.ui.widget.statusbar.view = cs.clazz({
                 name: 'state:color', spool: 'rendered',
                 touch: true,
                 func: function (ev, nVal) {
-                    $('.statusbar-icon', content).css('background-image', 'url(static/img/bullet_' + nVal + '.png)')
+                    $('.icon', content).css('color', nVal)
                 }
             })
         },
