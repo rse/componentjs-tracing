@@ -92,7 +92,7 @@ module.exports = {
                     remoteResponseBody += append
                 }
 
-                ctx.logger.log("info", "proxy: ctxend necessary plug-ins and libraries")
+                ctx.logger.log("info", "proxy: append necessary plug-ins and libraries")
                 finishResponse()
             }
             else if (remoteResponse.req.path.match(cmpFiles) !== null) {
