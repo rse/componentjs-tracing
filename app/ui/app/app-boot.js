@@ -8,12 +8,12 @@
 */
 
 /*  bootstrap component system  */
-ComponentJS.symbol("cs");
-cs.bootstrap();
-cs.ns("app.lib");
-cs.ns("app.ui.comp");
-cs.ns("app.ui.widget");
-cs.debug(0);
+ComponentJS.symbol("cs")
+cs.bootstrap()
+cs.ns("app.lib")
+cs.ns("app.ui.comp")
+cs.ns("app.ui.widget")
+cs.debug(0)
 if (cs.plugin("debugger")) {
     if (cs.debug_instrumented()) {
         cs.debug(9)
@@ -30,23 +30,28 @@ if (cs.plugin("debugger")) {
 
 /*  once the DOM is ready...  */
 $(document).ready(function () {
+
+    if (window.chrome === undefined) {
+        alert("You can only view this application using Google Chrome. Please go and get yourself a copy :)")
+        return
+    }
+
     /*  load stylesheets  */
-    less.env = "production";
-    less.async = true;
-    less.dumpLineNumbers = "mediaQuery";
+    less.env = "production"
+    less.async = true
+    less.dumpLineNumbers = "mediaQuery"
     $("head > link[rel='stylesheet/less']").each(function () {
-        less.sheets.push(this);
-    });
-    less.refresh(true);
+        less.sheets.push(this)
+    })
+    less.refresh(true)
 
     /*  load markup templates  */
     $.markup.load(function () {
         /*  fire up application components  */
-        cs.create("/sv", app.sv);
+        cs.create("/sv", app.sv)
         cs("/sv").state("prepared", function () {
-            cs.create("/ui/panel", {}, app.ui.comp.panel);
-            cs("/ui/panel").state(typeof document !== "undefined" ? "visible" : "prepared");
-        });
-    });
-});
-
+            cs.create("/ui/panel", {}, app.ui.comp.panel)
+            cs("/ui/panel").state(typeof document !== "undefined" ? "visible" : "prepared")
+        })
+    })
+})
