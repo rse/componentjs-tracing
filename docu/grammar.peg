@@ -1,0 +1,83 @@
+start
+  = constraintset
+
+constraintset
+  = _ cts:constraint+ _ { return cts }
+
+constraint
+  = _ "constraint" _ id:id _ "{" _ body:constraintBody _ "}" _ { return { type: 'constraint', id: id, constraintBody: body } }
+
+constraintBody
+  = after:after? before:before? rat:rationale cond:condition res:result { var obj = { dependencies: { before: before === '' ? [] : before, after: after === '' ? [] : after }, rationale : rat, condition: cond, result: res }; return obj }
+  / after:after? before:before? rat:rationale cond:condition subs:constraintset { var obj = { dependencies: { before: before === '' ? [] : before, after: after === '' ? [] : after }, rationale : rat, condition: cond, constraints: subs }; return obj }
+condition
+  = "condition" _ "{" _ ex:expr _ "}" _ { return ex }
+
+expr
+  = "true" _ ex1:expr1 { var t = { type: 'true' }; if (ex1.length === 0) { return t } else { ex1.left = t; return ex1 } }
+  / "false" _ ex1:expr1 { var t = { type: 'false' }; if (ex1.length === 0) { return t } else { ex1.left = t; return ex1 } }
+  / t:term _ ex1:expr1 { if (ex1.length !== 0) { ex1.left = t; return ex1 } else { return t } }
+  / "(" _ ex:expr _ ")" _ ex1:expr1 { var t = { type: 'clasped', expression: ex }; if (ex1.length !== 0) { ex1.left = t; return ex1 } else { return t } }
+  / "!" _ ex:expr _ ex1:expr1 { var t = { type: 'not', expression: ex }; if (ex1.length !== 0) { ex1.left = ex; return ex1 } else { return t } }
+
+expr1
+  = _ "&&" _ ex1:expr ex2:expr1 { return { type: 'and', right: ex1 } }
+  / _ "||" _ ex1:expr ex2:expr1 { return { type: 'or', right: ex1 } }
+  / _
+
+term
+  = f:field _ o:op _ v:value { return {type: 'term', op: o, field: f, value: v } }
+  / f:function _ "(" _ p:params _ ")" _ o:op _ v:value _ { return {type: 'term', op: o, function: f, params: p, value: v } }
+  / f:function _ "(" _ p:params _ ")" _ { return { type: 'function', name: f, params: p } }
+
+params
+  = first:field _ fields:("," _ field)* _ { var tmp = [first];for (var i = 0; i < fields.length; i++) {if (i % 2 == 0) { tmp.push(fields[i][fields[i].length-1])} }; return tmp }
+
+function
+  = "parent"
+  / "distance"
+  / "contains"
+
+field
+  = first:id ids:("." id)? _ { var tmp = [first].concat(ids); return tmp.join('') }
+
+value
+  = "true"
+  / "false"
+  / '"' content:( '\\"' / [^"])* '"' { return '"' + content.join('') + '"' }
+  / "'" content:( '\\\'' / [^'])* "'" { return '"' + content.join('') + '"' }
+  / first:[0-9]+ last:(.[0-9]+)? { return first.concat(last).join('') }
+  / '/' content:('\\/' / [^/])* '/' { return { type: 'regex', value: '/' + content.join('') + '/' } }
+  / f:field { return f }
+
+op
+  = "=="
+  / "!="
+  / "<="
+  / ">="
+  / "<"
+  / ">"
+  / "=~"
+  / "!~"
+
+rationale
+  = "rationale" _ "{" _ text:([^}]*) "}" _ { return text.join('').trim() }
+
+result
+  = "result" _ val:("FAIL_FINAL" / "PASS_FINAL" / "PASS" / "FAIL") { return val }
+
+id
+  = "last" { return 'last' }
+  / "first" { return 'first' }
+  / id:([a-zA-Z][a-zA-Z0-9-_]*) { if (id.length > 1) { return id[0]+id[1].join('') } else { return id } }
+
+before
+  = "before" _ ids:idseq _ { return ids }
+after
+  = "after" _ ids:idseq _ { return ids }
+
+idseq 
+  = first:id ids:("," id)* { var tmp = [first];for (var i = 0; i < ids.length; i++) {if (i % 2 == 0) { tmp.push(ids[i][1])} }; return tmp }
+
+_
+  = [ \t\r\n]*
