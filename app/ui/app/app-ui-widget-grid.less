@@ -78,10 +78,6 @@
             border-top: 0px;
         }
 
-        .selectable {
-            cursor: pointer;
-        }
-
         .selected {
             background-color: darken(@color-tab-bg, 5%);
         }
@@ -94,6 +90,14 @@
 
         .tbody td {
             height: 20px;
+        }
+
+        .tbody tr {
+
+            cursor:                 pointer;
+            &:hover {
+                background-color:   darken(@color-tab-bg, 5%);
+            }
         }
     }
 }
