@@ -30,13 +30,15 @@ if (cs.plugin("debugger")) {
 
 /*  once the DOM is ready...  */
 $(document).ready(function () {
-
+    /*  we really need Google Chrome's feature set  */
     if (window.chrome === undefined) {
-        alert("You can only view this application using Google Chrome. Please go and get yourself a copy :)")
-        return
+        /* global alert: true */
+        alert("You can only view this application using Google Chrome.");
+        return;
     }
 
     /*  load stylesheets  */
+    /* global less: true */
     less.env = "production"
     less.async = true
     less.dumpLineNumbers = "mediaQuery"

@@ -93,20 +93,6 @@ app.ui.comp.checking = cs.clazz({
             cs(self).plug(content)
 
             cs(self).observe({
-                name: 'data:continuous', spool: 'rendered',
-                func: function (ev, nVal, oVal) {
-                    console.log('new: ' + nVal + ', old: ' + oVal)
-                }
-            })
-
-            cs(self).observe({
-                name: 'event:check-journal', spool: 'rendered',
-                func: function () {
-                    console.log('check journal now')
-                }
-            })
-
-            cs(self).observe({
                 name: 'event:clear', spool: 'rendered',
                 func: function () {
                     cs(self, 'grid').call('clear')

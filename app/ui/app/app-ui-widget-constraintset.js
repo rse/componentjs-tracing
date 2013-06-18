@@ -47,6 +47,7 @@ app.ui.widget.constraintset.model = cs.clazz({
                 spool: 'rendered'
             })
 
+            /* global ace: true */
             self.editor = ace.edit(id)
             self.editor.getSession().setMode('ace/mode/cjsc')
             self.editor.on('change', function () {

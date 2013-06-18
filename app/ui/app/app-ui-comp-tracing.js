@@ -98,7 +98,7 @@ app.ui.comp.tracing = cs.clazz({
                 name: 'event:new-trace', spool: 'rendered',
                 func: function (ev, data) {
                     if (!cs(self).value('state:record'))
-                        return
+                        return;
                     cs(self, 'grid').call('unshift', data)
                     if (cs(self).value('data:continuous'))
                         cs(self).publish('checkTrace', data)
@@ -108,7 +108,8 @@ app.ui.comp.tracing = cs.clazz({
             $('#tracing_upload').change(function (evt) {
                 var files = evt.target.files;
 
-                for (var i = 0, f; f = files[i]; i++) {
+                for (var i = 0, f; (f = files[i]); i++) {
+                    /* global FileReader: true */
                     var reader = new FileReader()
                     reader.onload = (function () {
                         return function (e) {

@@ -52,10 +52,8 @@ app.ui.comp.panel = cs.clazz({
                 name: 'checkTrace', spool: 'created',
                 func: function (ev, trace) {
                     var resTuples = cs('/sv').call('checkTuples', [ trace ], self.constraintSet)
-
-                    if (resTuples.length === 0) {
-                        return
-                    }
+                    if (resTuples.length === 0)
+                        return;
                     cs(self, 'panel/panel/checking').call('unshift', resTuples[0])
                 }
             })
@@ -64,6 +62,7 @@ app.ui.comp.panel = cs.clazz({
             cs(self, 'panel/panel/statusbar').publish('message', 'Connecting ...')
             cs(self, 'panel/panel/statusbar').publish('color', 'yellow')
 
+            /* global io: true */
             var socket = io.connect('http://localhost:8080')
             socket.on('connect', function () {
                 socket.emit('join')

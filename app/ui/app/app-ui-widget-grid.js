@@ -41,6 +41,7 @@ app.ui.widget.grid.ctrl = cs.clazz({
             cs(self).register({
                 name: 'save', spool: 'created',
                 func: function () {
+                    /* global btoa */
                     window.location = 'data:application/octet-stream;base64,'+
                         btoa(cs(self, 'gridModel').value('data:savable'))
                 }
@@ -142,13 +143,13 @@ app.ui.widget.grid.model = cs.clazz({
                             else {
                                 for (var key in tuple) {
                                     if (key === 'time' || key === 'id')
-                                        continue
+                                        continue;
                                     var val = tuple[key]
                                     if (key === 'parameters')
                                         val = JSON.stringify(val)
                                     if (val.toLowerCase().indexOf(nVal.toLowerCase()) !== -1) {
                                         result.push(tuple)
-                                        break
+                                        break;
                                     }
                                 }
                             }
@@ -257,7 +258,7 @@ app.ui.widget.grid.view = cs.clazz({
                     if (typeof i === 'undefined')
                         i = -1
                     var row = $.markup('grid/row', { i: ++i })
-                    fillRow(row, trace)
+                    fillRow(row, trace);
                     delete trace.style
                     $('.tbody', grid).prepend(row)
                     if (self.selectable) {

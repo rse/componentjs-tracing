@@ -64,7 +64,8 @@ app.ui.comp.constraints = cs.clazz({
             $('#constraint_upload').change(function (evt) {
                 var files = evt.target.files;
 
-                for (var i = 0, f; f = files[i]; i++) {
+                for (var i = 0, f; (f = files[i]); i++) {
+                    /* global FileReader: true */
                     var reader = new FileReader()
                     reader.onload = (function () {
                         return function (e) {
@@ -88,6 +89,7 @@ app.ui.comp.constraints = cs.clazz({
             cs(self).observe({
                 name: 'event:remove', spool: 'rendered',
                 func: function () {
+                    /* global confirm: true */
                     if (confirm('Do you want to save this constraint set first?')) {
                         cs(self, 'constraintset').call('saveCurrent')
                         cs(self, 'constraintset').call('removeConstraintset')

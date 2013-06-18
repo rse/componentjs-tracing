@@ -9,8 +9,8 @@
 
 module.paths = module.paths.concat(module.parent.paths)
 
-var fs         = require("fs")
-var path       = require("path")
+var fs   = require("fs")
+var path = require("path")
 
 module.exports = {
     setup: function (ctx, opts) {
@@ -40,8 +40,8 @@ module.exports = {
         /*  intercept the proxy requests  */
         proxyserver.on("http-intercept-request", function (cid, request, response, remoteRequest, performRequest) {
             /*  ensure we always get a non-cached result back  */
-            delete remoteRequest.headers["if-modified-since"]
-            delete remoteRequest.headers["if-none-match"]
+            delete remoteRequest.headers["if-modified-since"];
+            delete remoteRequest.headers["if-none-match"];
             performRequest(remoteRequest)
         })
 

@@ -38,8 +38,10 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                 name: 'editorChanged', spool: 'prepared',
                 func: function () {
                     if (self.timer !== null) {
+                        /* global clearTimeout: true */
                         clearTimeout(self.timer)
                     }
+                    /* global setTimeout: true */
                     self.timer = setTimeout(function () {
                         cs(self).call('parseConstraintsets')
                     }, 1000)
@@ -79,7 +81,7 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                 name: 'saveCurrent', spool: 'rendered',
                 func: function () {
                     var content = cs(self, 'tabsModel').value('data:savable')
-
+                    /* global btoa: true */
                     window.location = 'data:application/octet-stream;base64,' + btoa(content)
                 }
             })
@@ -107,8 +109,9 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                     var idx = cs(self, 'tabsModel').value('state:active-tab')
                     var activeTab = tabs[idx]
                     if (activeTab.id === 'standard') {
+                        /* global alert: true */
                         alert('You cannot delete the standard constraint set')
-                        return
+                        return;
                     }
                     var tab = cs(self, 'tabsModel/view/' + activeTab.id)
                     cs.destroy(tab)

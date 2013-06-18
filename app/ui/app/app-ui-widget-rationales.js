@@ -62,7 +62,7 @@ app.ui.widget.rationales.view = cs.clazz({
 
                     var tuple = cs(self).value('data:tuple')
                     if (tuple === null)
-                        return
+                        return;
                     if (tuple.result === 'UNCLASSIFIED') {
                         data.title = 'No constraint found, that matches this tuple'
                         data.rationale = 'None of the given constraints conditions matched this tuple, thus no assumption about its validity could be made'
