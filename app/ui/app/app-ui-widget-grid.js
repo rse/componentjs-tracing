@@ -105,7 +105,7 @@ app.ui.widget.grid.model = cs.clazz({
 
             /*  presentation model for items  */
             cs(self).model({
-                'data:columns'      : { value: [],   valid: '[{ label: string, dataIndex: string, width?: number, align?:string }*]' },
+                'data:columns'      : { value: [],   valid: '[{ label: string, dataIndex: string, width?: number, align?:string, renderer?:any }*]' },
                 'state:selection'   : { value: -1,   valid: 'number' },
                 'state:filter'      : { value: '',   valid: 'string' },
                 'data:selected-obj' : { value: null, valid: 'object' },
@@ -241,7 +241,10 @@ app.ui.widget.grid.view = cs.clazz({
                     if (columns[x].dataIndex === 'parameters')
                         vars.label = JSON.stringify(trace[columns[x].dataIndex])
                     else
-                        vars.label = trace[columns[x].dataIndex]
+                        if (columns[x].renderer)
+                            vars.label = columns[x].renderer(trace[columns[x].dataIndex])
+                        else
+                            vars.label = trace[columns[x].dataIndex]
                     if (columns[x].width)
                         vars.style += 'width: ' + columns[x].width + 'px;'
                     if (columns[x].align)
