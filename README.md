@@ -19,8 +19,8 @@ proxy application.
 **Documentation:**
 * [User Interface](app/ui#user-interface-spa)
 * [Server Module](app/sv#websocket-server-module)
-* [Plug-ins](assets/plugins#componentjs-plug-ins)
-* [Transpiler](assets/transpiler#transpiler)
+* [Plug-ins](app/sv/proxy.d/plugins#componentjs-plug-ins)
+* [Transpiler](app/sv/proxy.d/transpiler#transpiler)
 
 ##Installation
 
@@ -75,7 +75,7 @@ run the grunt task *grammar* by simply executing this line in your bash/cmd/cygw
 The ComponentJS Tracing Monitor can only be used with [Google Chrome](http://www.google.com/chrome/).
 Why do we have this limitation? Because we use Chrome specific functionalities:
 
-* Inspecting the stacktrace is necessary for the [tracing plug-in](assets/plugins#componentjs-plug-ins)
+* Inspecting the stacktrace is necessary for the [tracing plug-in](app/sv/proxy.d/plugins#componentjs-plug-ins)
 * CSS dimension calculation using the [calc](http://caniuse.com/calc) method
 * Native Websockets since we don't want to provide any ugly Flash fallbacks
 * HTML5 FileReader API
