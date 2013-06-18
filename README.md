@@ -61,6 +61,13 @@ command line.
 * **proxyfwd, F:** Host and port of forwarding proxy (eg when you are behind a corporate proxy)
 * **config=&lt;cfg&gt;:** Adds the specified section of the ini file to overwrite defaults
 
+##Limitations
+The ComponentJS Tracing Monitor can only be used with [Google Chrome](http://www.google.com/chrome/‎).
+Why do we have these limitations? Because we use Chrome specific functionalities.
+* Inspecting the stacktrace is necessary for the [tracing plug-in](assets/plugins#componentjs-plug-ins)
+* CSS dimension calculation using the [calc](http://caniuse.com/calc) method
+* Native Websockets since we don't want to provide any ugly flash fallbacks
+
 ##License
 
 Copyright (c) 2013 Ralf S. Engelschall (http://engelschall.com)
