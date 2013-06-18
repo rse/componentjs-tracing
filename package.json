@@ -1,6 +1,16 @@
 {
-  "name": "componentjs-tracing-proxy",
+  "name": "componentjs-tracing-monitor",
+  "description": "A monitoring application to trace down bad design indicators in an ComponentJS based web app",
   "version": "0.0.0",
+  "author": {
+    "name": "Ralf S. Engelschall, Christian Vaas",
+    "url": "http://componentjs.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rse/componentjs-tracing-proxy.git"
+  },
+  "main": "./server.js",
   "dependencies": {
     "node-ini": "*",
     "dashdash": "*",
@@ -17,5 +27,9 @@
     "grunt": "~0.4.1",
     "grunt-peg": "~0.2.0",
     "pegjs": "~0.7.0"
+  },
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/rse/componentjs-tracing-proxy/issues"
   }
 }
