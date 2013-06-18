@@ -14,7 +14,7 @@ User-Interface dialogs of complex HTML5-based Rich Clients
 The diagram below illustrates the underlying architecture of the tracing
 proxy application.
 
-![Architecture](architecture.png)
+![Architecture](docu/architecture.png)
 
 **Documentation:**
 * [User Interface](app/ui#user-interface-spa)
