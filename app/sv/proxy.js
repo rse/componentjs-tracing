@@ -7,6 +7,8 @@
 **  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
+/* global __dirname: true */
+
 module.paths = module.paths.concat(module.parent.paths)
 
 var fs   = require("fs")
@@ -15,7 +17,7 @@ var path = require("path")
 module.exports = {
     setup: function (ctx, opts) {
         /*  load the generic transpiler library  */
-        var tracing = require(path.join(ctx.basedir, "assets/transpiler/transpiler-lib.js")).tracing
+        var tracing = require(path.join(__dirname, "proxy.d/transpiler/transpiler-lib.js")).tracing
 
         /*  create a HTTP (forward) proxy service  */
         ctx.logger.log("info", "listening on http://%s:%d for PROXY requests", opts.proxyaddr, opts.proxyport)
@@ -71,15 +73,15 @@ module.exports = {
 
                 /*  which files do we want to be injected?  */
                 var filesToInject = [
-                    path.join(ctx.basedir, "assets/3rdparty/socket.io.js"),
-                    path.join(ctx.basedir, "assets/plugins/component.plugin.tracing.js"),
-                    path.join(ctx.basedir, "assets/plugins/component.plugin.tracing-remote.js")
+                    path.join(__dirname, "proxy.d/3rdparty/socket.io.js"),
+                    path.join(__dirname, "proxy.d/plugins/component.plugin.tracing.js"),
+                    path.join(__dirname, "proxy.d/plugins/component.plugin.tracing-remote.js")
                 ]
 
                 /*  should the latest version of ComponentJS be injected as well?  */
                 if (opts.latestcjs) {
                     ctx.logger.log("info", "proxy: injecting the latest ComponentJS version")
-                    filesToInject.unshift(path.join(ctx.basedir, "assets/3rdparty/component.js"))
+                    filesToInject.unshift(path.join(__dirname, "proxy.d/3rdparty/component.js"))
                     remoteResponseBody = ""
                 }
 
