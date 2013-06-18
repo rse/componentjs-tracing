@@ -40,9 +40,11 @@ Executing the package file will install or update the necessary node modules.
 ##Usage
 
 ###Basic Usage
+
 	node server.js
 
 ###Advanced Usage
+
 	node server.js [options] [arguments]
 The following options can either be supplied via the included [server.ini](server.ini) file or the
 command line.  
@@ -61,7 +63,15 @@ command line.
 * **proxyfwd, F:** Host and port of forwarding proxy (eg when you are behind a corporate proxy)
 * **config=&lt;cfg&gt;:** Adds the specified section of the ini file to overwrite defaults
 
+##Building the PEG grammar
+If you want to make any changes to the PEG grammar, that is used to parse the constraints, then you
+first have to have a look at the [grammar.peg](docu/grammar.peg). After having changed the file as desired
+run the grunt task 'grammar' by simply executing this line in your bash/cmd.
+
+	grunt grammar
+
 ##Limitations
+
 The ComponentJS Tracing Monitor can only be used with [Google Chrome](http://www.google.com/chrome/‎).
 Why do we have these limitations? Because we use Chrome specific functionalities.
 * Inspecting the stacktrace is necessary for the [tracing plug-in](assets/plugins#componentjs-plug-ins)
