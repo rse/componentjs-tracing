@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "grunt": "~0.4.1",
-    "grunt-peg": "~0.2.0"
+    "grunt-peg": "~0.2.0",
+    "pegjs": "~0.7.0"
   }
 }
