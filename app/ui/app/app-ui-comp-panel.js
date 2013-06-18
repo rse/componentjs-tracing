@@ -27,6 +27,8 @@ app.ui.comp.panel = cs.clazz({
                 app.ui.widget.statusbar
             )
 
+            cs(self).create('headline', app.ui.widget.headline.view)
+
             cs(self).property('ComponentJS:state-auto-increase', true)
 
             cs(self).subscribe({
@@ -93,9 +95,14 @@ app.ui.comp.panel = cs.clazz({
             ])
         },
         render: function () {
+
             var ui = $('body').markup('comp-panel')
             cs(this).socket({ spool: 'materialized', ctx: ui, type: 'jquery' })
             cs(this).spool('materialized', this, function () { $(ui).remove() })
+
+            var headline = $('.headline', ui)
+            cs(this).socket({ scope: 'headline', spool: 'materialized', ctx: headline, type: 'jquery' })
+            cs(this).spool('materialized', this, function () { $(headline).remove() })
         },
         release: function () {
             cs(this).unspool('materialized')

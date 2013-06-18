@@ -18,12 +18,24 @@ body, html {
 }
 
 .comp-panel {
+    .comp-panel-style;
+}
+
+.comp-panel-style (
+    @color-canvas-bg: #e0e0e0;
+    @color-tab-bg:    #f8f8f8;
+    @color-tab-fg:    #000000;
+    @font-size:       12px;
+) {
 	height:      100%;
 	min-height:  100%;
+    background:  linear-gradient(to bottom, lighten(@color-canvas-bg, 2%) 0%, darken(@color-canvas-bg, 2%) 100%);
 
+    .headline {
+        height: 15px;
+    }
 }
 
 #statusbar-container {
     height:      22px;
 }
-
