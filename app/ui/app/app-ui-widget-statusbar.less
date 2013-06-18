@@ -33,14 +33,15 @@
             margin:      0px 0px 0px 2px;
             height:      15px;
             font-size:   @font-size;
+            -webkit-user-select: none;
         }
 
-		.statusbar-icon {
-			background-image: url('/static/img/bullet_black.png')
-		}
+        .statusbar-icon {
+            background-image: url('/static/img/bullet_black.png')
+        }
 
-		.statusbar-message {
-			color: lighten(@color-tab-fg, 40%);
+        .statusbar-message {
+            color:               lighten(@color-tab-fg, 40%);
 		}
     }
 }
