@@ -50,6 +50,7 @@ $(document).ready(function () {
     /*  load markup templates  */
     $.markup.load(function () {
         /*  fire up application components  */
+        /* global app: true */
         cs.create("/sv", app.sv)
         cs("/sv").state("prepared", function () {
             cs.create("/ui/panel", {}, app.ui.comp.panel)
