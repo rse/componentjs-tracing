@@ -11,6 +11,12 @@ a powerful Component System for hierarchically structuring the
 User-Interface dialogs of complex HTML5-based Rich Clients
 ([SPA](http://en.wikipedia.org/wiki/Single-page_application)s).
 
+## Screenshots
+
+<img src="doc/screenshot-tracing.png" width="100%"/><br/>
+<img src="doc/screenshot-checking.png" width="100%"/><br/>
+<img src="doc/screenshot-constraints.png" width="100%"/><br/>
+
 ## Architecture
 
 The diagram below illustrates the underlying architecture of the tracing
