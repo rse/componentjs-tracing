@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
 **  ComponentJS -- Component System for JavaScript <http://componentjs.com>
 **  Copyright (c) 2009-2013 Ralf S. Engelschall <http://engelschall.com>
