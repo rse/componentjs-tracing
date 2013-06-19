@@ -35,7 +35,7 @@ app.ui.widget.rationales.view = cs.clazz({
 
             var gatherRationales = function (checks, acc) {
                 for (var i = 0; i < checks.length; i++) {
-                    acc.push(checks[i].constraint)
+                    acc.push(checks[i])
                     gatherRationales(checks[i].subs, acc)
                 }
                 return acc
@@ -53,11 +53,17 @@ app.ui.widget.rationales.view = cs.clazz({
 
                     /* add new rationales  */
                     for (var i = 0; i < checks.length; i++) {
-                        var item = checks[i]
+                        var item = checks[i].constraint
                         data.title = item.id
                         data.rationale = item.constraintBody.rationale
 
-                        $('.table', rationales).append($.markup('rationales/rationales-item', data))
+                        var rationale = $.markup('rationales/rationales-item', data)
+                        var clazz = 'red'
+                        if (checks[i].result === 'PASS' || checks[i].result === 'PASS_FINAL') {
+                            clazz = 'green'
+                        }
+                        $('.rationales-title', rationale).addClass(clazz)
+                        $('.table', rationales).append(rationale)
                     }
 
                     var tuple = cs(self).value('data:tuple')
