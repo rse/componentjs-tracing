@@ -67,8 +67,8 @@ for (var j = 0; j < sections.length; j++) {
 }
 while (k < process.argv.length)
     argv.push(process.argv[k++])
-argv.push("--app=/:" + app.basedir + "/app/ui/")
-argv.push("--app=/sv:" + app.basedir + "/app/sv/")
+argv.push("--app=/:" + path.join(app.basedir, "/app/ui/"))
+argv.push("--app=/sv:" + path.join(app.basedir, "/app/sv/"))
 
 /*  die the reasonable way  */
 var die = function (msg) {
