@@ -65,7 +65,7 @@ command line.
 
 ##Building the PEG grammar
 If you want to make any changes to the PEG grammar that is used to parse the constraints, then you
-first have to have a look at the [grammar.peg](docu/grammar.peg). After having changed the file as desired,
+first have to have a look at the [grammar.peg](app/ui/app/lib-grammar.peg). After having changed the file as desired,
 run the grunt task *grammar* by simply executing this line in your bash/cmd/cygwin.
 
 	grunt grammar
