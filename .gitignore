@@ -1,3 +1,4 @@
 componentjs-tracing.log
 componentjs-tracing.access.log
 node_modules
+app/ui/app/lib-grammar.js
