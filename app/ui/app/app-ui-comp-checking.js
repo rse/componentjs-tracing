@@ -7,65 +7,72 @@
 **  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
+/* global Handlebars: true */
+
 app.ui.comp.checking = cs.clazz({
     mixin: [ cs.marker.controller ],
     protos: {
         create: function () {
-            cs(this).create('toolbarModel/view', app.ui.widget.toolbar.model, app.ui.widget.toolbar.view)
-            cs(this).create('grid', app.ui.widget.grid.ctrl)
-            cs(this).create('detailsModel/view', app.ui.widget.tuple.details.model, app.ui.widget.tuple.details.view)
-            cs(this).create('rationalesModel/view', app.ui.widget.rationales.model, app.ui.widget.rationales.view)
+            cs(this).create(
+                "{toolbarModel/view," +
+                "grid," +
+                "detailsModel/view," +
+                "rationalesModel/view}",
+                app.ui.widget.toolbar.model, app.ui.widget.toolbar.view,
+                app.ui.widget.grid.ctrl,
+                app.ui.widget.tuple.details.model, app.ui.widget.tuple.details.view,
+                app.ui.widget.rationales.model, app.ui.widget.rationales.view
+            )
 
             cs(this).model({
-                'event:clear'         : { value: false, valid: 'boolean', autoreset: true }
+                "event:clear" : { value: false, valid: "boolean", autoreset: true }
             })
         },
         prepare: function () {
             var self = this
 
             var toolbarItems = [{
-                label: 'Clear',
-                icon: "remove-sign",
-                event: 'event:clear',
-                type: 'button'
+                label: "Clear",
+                icon:  "remove-sign",
+                event: "event:clear",
+                type:  "button"
             }]
-
-            cs(self, 'toolbarModel').value('data:items', toolbarItems)
+            cs(self, "toolbarModel").value("data:items", toolbarItems)
 
             var linkRenderer = function (op) {
-                /* global Handlebars: true */
-                return new Handlebars.SafeString('<a href="http://componentjs.com/api/api.screen.html#' + op + '" target="_BLANK">' + op + '</a>')
+                return new Handlebars.SafeString(
+                    '<a href="http://componentjs.com/api/api.screen.html#' + op +
+                    '" target="_BLANK">' + op + "</a>"
+                )
             }
-
             var columns = [
-                { label: 'Time',      dataIndex: 'time',       width: 50, align: 'center' },
-                { label: 'Source',    dataIndex: 'source'                                 },
-                { label: 'ST',        dataIndex: 'sourceType', width: 20, align: 'center' },
-                { label: 'Origin',    dataIndex: 'origin'                                 },
-                { label: 'OT',        dataIndex: 'originType', width: 20, align: 'center' },
-                { label: 'Operation', dataIndex: 'operation',  width: 60, align: 'center', renderer: linkRenderer }
+                { label: "Time",      dataIndex: "time",       width: 50, align: "center" },
+                { label: "Source",    dataIndex: "source"                                 },
+                { label: "ST",        dataIndex: "sourceType", width: 20, align: "center" },
+                { label: "Origin",    dataIndex: "origin"                                 },
+                { label: "OT",        dataIndex: "originType", width: 20, align: "center" },
+                { label: "Operation", dataIndex: "operation",  width: 60, align: "center", renderer: linkRenderer }
             ]
-
-            cs(self, 'grid').call('columns', columns)
+            cs(self, "grid").call("columns", columns)
 
             cs(self).register({
-                name: 'displayTuples', spool: 'prepared',
+                name: "displayTuples", spool: "prepared",
                 func: function (tuples) {
-                    cs(self, 'grid').call('tuples', tuples)
+                    cs(self, "grid").call("tuples", tuples)
                 }
             })
 
             cs(self).register({
-                name: 'unshift', spool: 'prepared',
+                name: "unshift", spool: "prepared",
                 func: function (tuple) {
-                    cs(self, 'grid').call('unshift', tuple)
+                    cs(self, "grid").call("unshift", tuple)
                 }
             })
 
             cs(self).register({
-                name: 'displayRationales', spool: 'prepared',
+                name: "displayRationales", spool: "prepared",
                 func: function (rationales) {
-                    cs(self).value('event:clear', true)
+                    cs(self).value("event:clear", true)
                     self.rationales = rationales
                 }
             })
@@ -75,53 +82,49 @@ app.ui.comp.checking = cs.clazz({
             var content = $.markup("checking-content")
 
             cs(self).socket({
-                scope: 'toolbarModel/view',
-                ctx: $('.toolbar', content)
+                scope: "toolbarModel/view",
+                ctx: $(".toolbar", content)
             })
 
             cs(self).socket({
-                scope: 'grid',
-                ctx: $('.grid', content)
+                scope: "grid",
+                ctx: $(".grid", content)
             })
 
             cs(self).socket({
-                scope: 'rationalesModel/view',
-                ctx: $('.rationales-container', content)
+                scope: "rationalesModel/view",
+                ctx: $(".rationales-container", content)
             })
 
             cs(self).socket({
-                scope: 'detailsModel/view',
-                ctx: $('.tuple-details-container', content)
+                scope: "detailsModel/view",
+                ctx: $(".tuple-details-container", content)
             })
 
             cs(self).plug(content)
 
             cs(self).observe({
-                name: 'event:clear', spool: 'rendered',
+                name: "event:clear", spool: "rendered",
                 func: function () {
-                    cs(self, 'grid').call('clear')
-                    cs(self, 'rationalesModel').value('data:rationales', [])
+                    cs(self, "grid").call("clear")
+                    cs(self, "rationalesModel").value("data:rationales", [])
                 }
             })
 
             cs(self).subscribe({
-                name: 'objectSelected', spool: 'rendered',
+                name: "objectSelected", spool: "rendered",
                 func: function (ev, nVal) {
-                    cs(self, 'detailsModel').value('data:tuple', nVal)
-                    cs(self, 'rationalesModel').value('data:tuple', nVal)
-
-                    if (nVal !== null)
-                        cs(self, 'rationalesModel').value('data:rationales', nVal.checks)
-                    else
-                        cs(self, 'rationalesModel').value('data:rationales', [])
+                    cs(self, "detailsModel").value("data:tuple", nVal)
+                    cs(self, "rationalesModel").value("data:tuple", nVal)
+                    cs(self, "rationalesModel").value("data:rationales", nVal !== null ? nVal.checks : [])
                 }
             })
         },
-        cleanup: function () {
-            cs(this).unspool('prepared')
-        },
         release: function () {
-            cs(this).unspool('rendered')
+            cs(this).unspool("rendered")
+        },
+        cleanup: function () {
+            cs(this).unspool("prepared")
         }
     }
 })

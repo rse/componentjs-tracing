@@ -7,12 +7,15 @@
 **  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
+/* global alert: true */
+/* global less: true */
+/* global app: true */
+
 /*  bootstrap component system  */
 ComponentJS.symbol("cs")
 cs.bootstrap()
-cs.ns("app.lib")
-cs.ns("app.ui.comp")
-cs.ns("app.ui.widget")
+
+/*  configure component system debugging  */
 cs.debug(0)
 if (cs.plugin("debugger")) {
     if (cs.debug_instrumented()) {
@@ -21,24 +24,27 @@ if (cs.plugin("debugger")) {
             enable:    true,
             natural:   true,
             autoclose: false,
-            name:      "ComponentJS Tracing Proxy",
+            name:      "ComponentJS Tracing",
             width:     800,
             height:    800
         })
     }
 }
 
+/*  create application namespaces  */
+cs.ns("app.lib")
+cs.ns("app.ui.comp")
+cs.ns("app.ui.widget")
+
 /*  once the DOM is ready...  */
 $(document).ready(function () {
     /*  we really need Google Chrome's feature set  */
     if (window.chrome === undefined) {
-        /* global alert: true */
-        alert("You can only view this application using Google Chrome.");
+        alert("You can only view this application using Google Chrome.")
         return;
     }
 
     /*  load stylesheets  */
-    /* global less: true */
     less.env = "production"
     less.async = true
     less.dumpLineNumbers = "mediaQuery"
@@ -50,7 +56,6 @@ $(document).ready(function () {
     /*  load markup templates  */
     $.markup.load(function () {
         /*  fire up application components  */
-        /* global app: true */
         cs.create("/sv", app.sv)
         cs("/sv").state("prepared", function () {
             cs.create("/ui/panel", {}, app.ui.comp.panel)
