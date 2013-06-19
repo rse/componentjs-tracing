@@ -142,7 +142,7 @@ app.ui.widget.grid.model = cs.clazz({
                             }
                             else {
                                 for (var key in tuple) {
-                                    if (key === 'time' || key === 'id')
+                                    if (key === 'time' || key === 'id' || key === 'checks')
                                         continue;
                                     var val = tuple[key]
                                     if (key === 'parameters')
