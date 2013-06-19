@@ -44,6 +44,10 @@ The diagram below illustrates the underlying architecture of the ComponentJS tra
 
         $ npm install -g componentjs-tracing
 
+## Update Existing Installation
+
+    $ npm update -g componentjs-tracing
+
 ## Usage
 
 	$ component-tracing [options]
