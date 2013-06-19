@@ -20,15 +20,15 @@ The ComponentJS Tracing application consists of three major components:
 
 ## Screenshots
 
-<img src="doc/screenshot-tracing.png" width="100%"/><br/>
-<img src="doc/screenshot-checking.png" width="100%"/><br/>
-<img src="doc/screenshot-constraints.png" width="100%"/><br/>
+<img src="https://raw.github.com/rse/componentjs-tracing/master/doc/screenshot-tracing.png" width="100%"/><br/>
+<img src="https://raw.github.com/rse/componentjs-tracing/master/doc/screenshot-checking.png" width="100%"/><br/>
+<img src="https://raw.github.com/rse/componentjs-tracing/master/doc/screenshot-constraints.png" width="100%"/><br/>
 
 ## Architecture
 
 The diagram below illustrates the underlying architecture of the ComponentJS tracing application.
 
-![Architecture](doc/architecture.png)
+![Architecture](https://raw.github.com/rse/componentjs-tracing/master/doc/architecture.png)
 
 **Links:**
 
@@ -39,16 +39,12 @@ The diagram below illustrates the underlying architecture of the ComponentJS tra
 
 ## Installation
 
-### Prerequisites
-
-* [Node.js](http://nodejs.org/)
-* [NPM](https://npmjs.org/) (ships with Node.js distribution)
-
-### Installation Steps
+1. Install [Node.js](http://nodejs.org/)
+2. Use Node.js's [NPM](https://npmjs.org/) to install ComponentJS Tracing:
 
     $ npm install -g componentjs-tracing
 
-##Usage
+## Usage
 
 	$ component-tracing [options]
 
