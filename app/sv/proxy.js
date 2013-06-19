@@ -89,6 +89,10 @@ module.exports = {
                 for (var i = 0; i < filesToInject.length; i++) {
                     /*  load the file to inject to a temporary string  */
                     var append = fs.readFileSync(filesToInject[i]).toString("utf8")
+                    if (filesToInject[i].indexOf('component.plugin.tracing-remote.js') !== -1) {
+                        append = append.replace('{{addr}}', opts.addr)
+                        append = append.replace('{{port}}', opts.port)
+                    }
                     remoteResponseBody += append
                 }
 

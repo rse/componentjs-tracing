@@ -13,44 +13,44 @@
  */
 
 /* global ComponentJS:false */
+/* global io:false */
 /* jshint unused:false */
 
 ComponentJS.plugin("tracing-remote", function (_cs, $cs, GLOBAL) {
     /*  connect to the server to drop recorded traces  */
-    var websocket = io.connect("http://localhost:8080");                   // FIXME: hard-coded
-    // var websocket = io.connect("http://en1.home.engelschall.com:8080"); // FIXME: hard-coded
+    var websocket = io.connect("http://{{addr}}:{{port}}")
 
     /*  ensure the tracing plugin is present  */
     if (!$cs.plugin("tracing"))
-        throw _cs.exception("plugin:tracing-remote", "sorry, required 'tracing' plugin not found");
+        throw _cs.exception("plugin:tracing-remote", "sorry, required 'tracing' plugin not found")
 
     /*  log the tracing information to the console  */
     _cs.latch("ComponentJS:tracing", function (tracing) {
-        if (   typeof GLOBAL.console     !== "undefined"
-            && typeof GLOBAL.console.log !== "undefined") {
+        if (   typeof GLOBAL.console     !== "undefined" &&
+               typeof GLOBAL.console.log !== "undefined") {
 
             /*  stringify component name or path  */
             var nameofcomp = function (comp) {
-                if      (comp === _cs.none || comp === null) comp = "<none>";
-                else if (comp === _cs.internal) comp = "<internal>";
-                else                            comp = comp.path("/");
-                return comp;
-            };
-            var source = nameofcomp(tracing.source());
-            var origin = nameofcomp(tracing.origin());
+                if      (comp === _cs.none || comp === null) comp = "<none>"
+                else if (comp === _cs.internal) comp = "<internal>"
+                else                            comp = comp.path("/")
+                return comp
+            }
+            var source = nameofcomp(tracing.source())
+            var origin = nameofcomp(tracing.origin())
 
             /*  stringify component type(s)  */
             var typeofcomp = function (type) {
-                var txt = "";
-                if (type.view)       txt += "V";
-                if (type.model)      txt += "M";
-                if (type.controller) txt += "C";
-                if (type.service)    txt += "S";
-                if (txt === "")      txt =  "-";
-                return txt;
-            };
-            var sourceType = typeofcomp(tracing.sourceType());
-            var originType = typeofcomp(tracing.originType());
+                var txt = ""
+                if (type.view)       txt += "V"
+                if (type.model)      txt += "M"
+                if (type.controller) txt += "C"
+                if (type.service)    txt += "S"
+                if (txt === "")      txt =  "-"
+                return txt
+            }
+            var sourceType = typeofcomp(tracing.sourceType())
+            var originType = typeofcomp(tracing.originType())
 
             /*  create transferable trace object  */
             var trace = {
@@ -65,7 +65,7 @@ ComponentJS.plugin("tracing-remote", function (_cs, $cs, GLOBAL) {
             }
 
             /*  send the new trace to the server  */
-            websocket.emit("trace", trace);
+            websocket.emit("trace", trace)
         }
-    });
-});
+    })
+})
