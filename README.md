@@ -1,22 +1,25 @@
-#ComponentJS Tracing Monitor
 
-Tracing Monitor proxy for ComponentJS development support
+# ComponentJS Tracing
 
-##Overview
+Run-Time Tracing for ComponentJS
 
-This is a [Node.js](http://nodejs.org/) based reverse proxy
-to support development with [ComponentJS](http://componentjs.com/),
+## Overview
+
+This is a [Node.js](http://nodejs.org/) based tracing
+solution to support development with [ComponentJS](http://componentjs.com/),
 a powerful Component System for hierarchically structuring the
 User-Interface dialogs of complex HTML5-based Rich Clients
 ([SPA](http://en.wikipedia.org/wiki/Single-page_application)s).
 
-##Architecture
+## Architecture
+
 The diagram below illustrates the underlying architecture of the tracing
-proxy application.
+application.
 
 ![Architecture](doc/architecture.png)
 
 **Documentation:**
+
 * [User Interface](app/ui#user-interface-spa)
 * [Server Module](app/sv#websocket-server-module)
 * [Plug-ins](app/sv/proxy.d/plugins#componentjs-plug-ins)
