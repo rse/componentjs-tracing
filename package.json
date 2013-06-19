@@ -1,7 +1,7 @@
 {
     "name":           "componentjs-tracing",
     "description":    "Run-Time Tracing for ComponentJS based Rich Client UIs",
-    "version":        "0.9.0",
+    "version":        "0.9.1",
     "author": {       
         "name":       "Ralf S. Engelschall",
         "email":      "rse@engelschall.com",

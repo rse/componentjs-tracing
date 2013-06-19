@@ -15,7 +15,7 @@
 /*  program identification  */
 var app = {
     name: "ComponentJS Tracing",
-    vers: "0.9.0",
+    vers: "0.9.1",
     date: "2013-06-19",
     logger: null,
     basedir: null
