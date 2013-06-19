@@ -1,23 +1,34 @@
 {
-    "name":           "componentjs-tracing-monitor",
-    "description":    "A monitoring application to trace down bad design indicators in an ComponentJS based web app",
-    "version":        "0.0.0",
+    "name":           "componentjs-tracing",
+    "description":    "Run-Time Tracing for ComponentJS based Rich Client UIs",
+    "version":        "0.9.0",
     "author": {       
-        "name":       "Ralf S. Engelschall, Christian Vaas",
-        "url":        "http://componentjs.com/"
+        "name":       "Ralf S. Engelschall",
+        "email":      "rse@engelschall.com",
+        "url":        "http://engelschall.com/"
     },
+    "contributors": [{       
+        "name":       "Ralf S. Engelschall",
+        "email":      "rse@engelschall.com",
+        "url":        "http://engelschall.com/"
+    }, {
+        "name":       "Christian Vaas",
+        "email":      "christianvaas@auspex.eu"
+    }],
     "repository": {
         "type":       "git",
-        "url":        "https://github.com/rse/componentjs-tracing-proxy.git"
+        "url":        "https://github.com/rse/componentjs-tracing.git"
     },                
     "licenses": [{
-        "type":       "MPL",
-        "url":        "http://opensource.org/licenses/MPL"
+        "type":       "MPL/2.0",
+        "url":        "http://opensource.org/licenses/MPL-2.0"
     }],
     "homepage":       "https://github.com/rse/jquery-markup",
     "bugs":           "https://github.com/rse/componentjs-tracing-proxy/issues",
     "readmeFilename": "README.md",
-    "main":           "server.js",
+    "bin": {
+        "componentjs-tracing": "./componentjs-tracing.js"
+    },
     "dependencies": {
         "node-ini":             "*",
         "dashdash":             "*",
@@ -38,5 +49,8 @@
         "grunt-contrib-clean":  "~0.4.1",
         "grunt-peg":            "~0.2.0",
         "pegjs":                "~0.7.0"
+    },
+    "scripts": {
+        "prepublish": "./node_modules/grunt-cli/bin/grunt"
     }
 }

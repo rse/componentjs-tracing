@@ -16,8 +16,12 @@ module.exports = function(grunt) {
                 jshintrc: "jshint.json",
                 ignores:  [ "app/ui/app/lib-grammar.js" ]
             },
-            gruntfile:   [ "Gruntfile.js" ],
-            sourcefiles: [ "server.js", "app/sv/*.js", "app/ui/app/app-*.js" ]
+            gruntfile: [ "Gruntfile.js" ],
+            sourcefiles: [
+                "componentjs-tracing.js",
+                "app/sv/*.js",
+                "app/ui/app/app-*.js"
+            ]
         },
         peg: {
             constraints: {

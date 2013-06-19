@@ -1,3 +1,5 @@
+*~
+*#*
+/node_modules/
 componentjs-tracing.log
 componentjs-tracing.access.log
-node_modules

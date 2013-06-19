@@ -13,9 +13,9 @@
 
 /*  program identification  */
 var app = {
-    name: "ComponentJS Tracing Proxy",
-    vers: "0.0.0",
-    date: "2013-01-01",
+    name: "ComponentJS Tracing",
+    vers: "0.9.0",
+    date: "2013-06-19",
     logger: null,
     basedir: null
 }
@@ -45,7 +45,7 @@ if (k < process.argv.length) {
         k++
     }
 }
-var config = ini.parseSync(path.join(app.basedir, "/server.ini"))
+var config = ini.parseSync(path.join(app.basedir, "/componentjs-tracing.ini"))
 for (var j = 0; j < sections.length; j++) {
     if (typeof config[sections[j]] !== "undefined") {
         for (var name in config[sections[j]]) {
@@ -69,7 +69,7 @@ while (k < process.argv.length)
 
 /*  die the reasonable way  */
 var die = function (msg) {
-    console.error("server: ERROR: %s", msg)
+    console.error("componentjs-tracing: ERROR: %s", msg)
     process.exit(1)
 }
 
@@ -114,7 +114,7 @@ try {
 if (opts.help) {
     var help = parser.help().trimRight()
     console.log(
-        "server: USAGE: server [options] [arguments]\n" +
+        "componentjs-tracing: USAGE: componentjs-tracing [options] [arguments]\n" +
         "options:\n" +
         help
     )
@@ -135,7 +135,7 @@ var winston         = require("winston")
 
 /*  create a server logger  */
 var loggerTransport = new winston.transports.File({
-    filename: "server.log",
+    filename: "componentjs-tracing.log",
     handleExceptions: true,
     maxsize: 1024*1024,
     maxFiles: 10,
@@ -156,7 +156,7 @@ app.logger = new (winston.Logger)({
 app.logger.log("info", "starting %s %s (%s)", app.name, app.vers, app.date)
 process.on("uncaughtException", function (error) {
     app.logger.log("error", error)
-    console.log("server: ERROR: " + error)
+    console.log("componentjs-tracing: ERROR: " + error)
 })
 
 /*  establish a root server  */
@@ -184,10 +184,11 @@ srv.use(cors(function (req, cb) {
 }))
 
 /*  access logging  */
+/*
 srv.use(express_winston.logger({
     transports: [
         new winston.transports.File({
-            filename: "server.access.log",
+            filename: "componentjs-tracing.access.log",
             maxsize: 1024*1024,
             maxFiles: 10,
             json: false,
@@ -195,6 +196,7 @@ srv.use(express_winston.logger({
         })
     ]
 }))
+*/
 
 /*  make an Express server from custom JavaScript code  */
 var mkAppJS = function (filename) {
