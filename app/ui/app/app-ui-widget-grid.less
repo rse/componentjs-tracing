@@ -88,10 +88,13 @@
         .tbody td a {
             text-decoration: none;
             color: #000000;
+
+            &:hover {
+                color: #408edc;
+            }
         }
 
         .tbody tr {
-            cursor: pointer;
 
             &:nth-child(odd) {
                 background-color: #f8f8f8;
@@ -110,6 +113,7 @@
             &.selectable:hover {
                 background-color: #2068b0;
                 color: #ffffff;
+                cursor: pointer;
             }
 
             &.selectable:hover a {
