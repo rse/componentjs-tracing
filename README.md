@@ -42,7 +42,7 @@ The diagram below illustrates the underlying architecture of the ComponentJS tra
 1. Install [Node.js](http://nodejs.org/)
 2. Use Node.js's [NPM](https://npmjs.org/) to install ComponentJS Tracing:
 
-       $ npm install -g componentjs-tracing
+        $ npm install -g componentjs-tracing
 
 ## Usage
 
