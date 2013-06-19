@@ -44,7 +44,7 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
 
             cs(self).subscribe({
                 name: 'editorChanged', spool: 'prepared',
-                func: function (ev) {
+                func: function (/* ev */) {
                     if (self.timer !== null) {
                         /* global clearTimeout: true */
                         clearTimeout(self.timer)
@@ -97,7 +97,7 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
 
             cs(self).register({
                 name: 'addConstraintset', spool: 'rendered',
-                func: function (content) {
+                func: function (/* content */) {
                     var current = cs(self, 'tabsModel').value('data:tabs')
                     current.push({ id: 'custom_' + self.customs, name: 'Custom ' + self.customs, enabled: false })
 

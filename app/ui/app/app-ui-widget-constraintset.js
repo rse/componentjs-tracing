@@ -54,7 +54,7 @@ app.ui.widget.constraintset.model = cs.clazz({
             self.editor.getSession().setMode('ace/mode/cjsc')
             self.editor.on('change', function (ev, editor) {
                 if (suspend)
-                    return
+                    return;
                 cs(self).publish('editorChanged')
                 suspend = true
                 cs(self).value('data:constraintset', editor.getValue())
@@ -66,7 +66,7 @@ app.ui.widget.constraintset.model = cs.clazz({
                 touch: true,
                 func: function (ev, nVal) {
                     if (suspend)
-                        return
+                        return;
                     suspend = true
                     self.editor.setValue(nVal)
                     self.editor.clearSelection()
