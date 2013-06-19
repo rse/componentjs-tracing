@@ -9,10 +9,9 @@
 
 (function () {
 
-var graph = app.lib.graph()
-
 var sort = function (constraintSet) {
     /*  Set the after relation for rules that are not included in the order yet  */
+    var graph = app.lib.graph()
     var last = graph.addVertex({data: {id: 'first'} })
     var root = last
     var vertices = [ root ]
