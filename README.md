@@ -6,10 +6,17 @@ Run-Time Tracing for ComponentJS
 ## Overview
 
 This is a [Node.js](http://nodejs.org/) based tracing
-solution to support development with [ComponentJS](http://componentjs.com/),
+application to support development with [ComponentJS](http://componentjs.com/),
 a powerful Component System for hierarchically structuring the
 User-Interface dialogs of complex HTML5-based Rich Clients
-([SPA](http://en.wikipedia.org/wiki/Single-page_application)s).
+([SPA](http://en.wikipedia.org/wiki/Single-page_application)).
+
+The ComponentJS Tracing application consists of three major components:
+
+- a forwarding proxy service for instrumenting the target ComponentJS application 
+- a Websocket service for routing the tracing information between the target ComponentJS application and the tracing UI.
+- an origin webserver delivering a tracing UI for collecting the tracing information, provisioning constraint sets and
+  applying constraint sets once or continuously against the tracing information.
 
 ## Screenshots
 
@@ -55,6 +62,7 @@ Executing the package file will install or update the necessary node modules.
 ###Advanced Usage
 
 	node server.js [options] [arguments]
+
 The following options can either be supplied via the included [server.ini](server.ini) file or the
 command line.  
 *Note: Options need to be prefixed with two dashes*
