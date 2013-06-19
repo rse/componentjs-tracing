@@ -65,8 +65,8 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                     for (var i = 0; i < tabs.length; i++) {
                         var tab = cs(self, 'tabsModel/view/' + tabs[i].id)
                         var content = tab.value('data:savable')
-
                         var result = cs('/sv').call('parseConstraintset', content)
+
 
                         if (result.success) {
                             tab.call('displayError', null)
