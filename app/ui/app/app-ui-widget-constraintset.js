@@ -20,7 +20,7 @@ app.ui.widget.constraintset.model = cs.clazz({
 
             /*  presentation model for items  */
             cs(self).model({
-                'data:constraintset': { value: '', valid: 'string' },
+                'data:constraintset': { value: '', valid: 'string', store: true },
                 'data:savable':       { value: '', valid: 'string' }
             })
 
@@ -47,18 +47,31 @@ app.ui.widget.constraintset.model = cs.clazz({
                 spool: 'rendered'
             })
 
+            var suspend = false
+
             /* global ace: true */
             self.editor = ace.edit(id)
             self.editor.getSession().setMode('ace/mode/cjsc')
-            self.editor.on('change', function () {
+            self.editor.on('change', function (ev, editor) {
+                if (suspend)
+                    return
                 cs(self).publish('editorChanged')
+                suspend = true
+                cs(self).value('data:constraintset', editor.getValue())
+                suspend = false
             })
 
             cs(self).observe({
                 name: 'data:constraintset', spool: 'rendered',
                 touch: true,
                 func: function (ev, nVal) {
-                    self.editor.getSession().setValue(nVal)
+                    if (suspend)
+                        return
+                    suspend = true
+                    self.editor.setValue(nVal)
+                    self.editor.clearSelection()
+                    cs(self).publish('editorChanged')
+                    suspend = false
                 }
             })
 
