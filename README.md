@@ -1,22 +1,38 @@
-#ComponentJS Tracing Monitor
 
-Tracing Monitor proxy for ComponentJS development support
+# ComponentJS Tracing
 
-##Overview
+Run-Time Tracing for ComponentJS
 
-This is a [Node.js](http://nodejs.org/) based reverse proxy
-to support development with [ComponentJS](http://componentjs.com/),
+## Overview
+
+This is a [Node.js](http://nodejs.org/) based tracing
+application to support development with [ComponentJS](http://componentjs.com/),
 a powerful Component System for hierarchically structuring the
 User-Interface dialogs of complex HTML5-based Rich Clients
-([SPA](http://en.wikipedia.org/wiki/Single-page_application)s).
+([SPA](http://en.wikipedia.org/wiki/Single-page_application)).
 
-##Architecture
+The ComponentJS Tracing application consists of three major components:
+
+- a forwarding proxy service for instrumenting the target ComponentJS application 
+- a Websocket service for routing the tracing information between the target ComponentJS application and the tracing UI.
+- an origin webserver delivering a tracing UI for collecting the tracing information, provisioning constraint sets and
+  applying constraint sets once or continuously against the tracing information.
+
+## Screenshots
+
+<img src="doc/screenshot-tracing.png" width="100%"/><br/>
+<img src="doc/screenshot-checking.png" width="100%"/><br/>
+<img src="doc/screenshot-constraints.png" width="100%"/><br/>
+
+## Architecture
+
 The diagram below illustrates the underlying architecture of the tracing
-proxy application.
+application.
 
 ![Architecture](doc/architecture.png)
 
 **Documentation:**
+
 * [User Interface](app/ui#user-interface-spa)
 * [Server Module](app/sv#websocket-server-module)
 * [Plug-ins](app/sv/proxy.d/plugins#componentjs-plug-ins)
@@ -46,6 +62,7 @@ Executing the package file will install or update the necessary node modules.
 ###Advanced Usage
 
 	node server.js [options] [arguments]
+
 The following options can either be supplied via the included [server.ini](server.ini) file or the
 command line.  
 *Note: Options need to be prefixed with two dashes*
@@ -65,7 +82,7 @@ command line.
 
 ##Building the PEG grammar
 If you want to make any changes to the PEG grammar that is used to parse the constraints, then you
-first have to have a look at the [grammar.peg](docu/grammar.peg). After having changed the file as desired,
+first have to have a look at the [grammar.peg](app/ui/app/lib-grammar.peg). After having changed the file as desired,
 run the grunt task *grammar* by simply executing this line in your bash/cmd/cygwin.
 
 	grunt grammar
