@@ -15,7 +15,7 @@
     @color-canvas-bg: #e0e0e0;
     @color-tab-bg:    #ffffff;
     @color-tab-fg:    #000000;
-    @font-size:       12px;
+    @font-size:       10pt;
 ) {
     height:           100%;
     width:            100%;
@@ -23,28 +23,26 @@
     background-color: @color-tab-bg;
     color:            @color-tab-fg;
     text-align:       left;
+    font-size:        @font-size;
 
     .items {
-        height:       ~"calc(100% - 1px)";
-        display:      block;
-        padding:      6px 0px 0px 0px;
-        list-style-type:none;
-        margin:       0px 0px 0px 0px;
+        height:          ~"calc(100% - 1px)";
+        display:         block;
+        padding:         0px;
+        list-style-type: none;
+        margin-left:     2px;
 
         .item {
             display:                 inline;
-            margin:                  0px 0px 0px 2px;
             height:                  100%;
-            font-size:               @font-size;
             position:                relative;
         }
 
         .toolbar-button {
 
-            margin:                  3px 0px 3px 2px;
-            padding:                 2px 16px 2px 16px;
+            margin:                  10px 0px 3px 2px;
+            padding:                 5px 16px 4px 16px;
             border-radius:           3px;
-            height:                  (@font-size + 2 + 2);
             background-color:        @color-tab-bg;
             border-top:              1px solid darken(@color-tab-bg, 15%);
             border-left:             1px solid darken(@color-tab-bg, 15%);
@@ -64,7 +62,6 @@
             }
 
             &.pressed {
-                top:                 1px;
                 background-color:    #cc3333;
                 border-top:          1px solid darken(#cc3333, 15%);
                 border-left:         1px solid darken(#cc3333, 15%);

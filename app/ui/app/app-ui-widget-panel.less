@@ -15,7 +15,7 @@
     @color-canvas-bg: #e0e0e0;
     @color-tab-bg:    #ffffff;
     @color-tab-fg:    #000000;
-    @font-size:       12px;
+    @font-size:       10pt;
 ) {
     width:      100%;
     height:     ~"calc(100% - 24px - 16px)";
@@ -32,13 +32,13 @@
             border-top-left-radius:  3px;
             border-top-right-radius: 3px;
             display:                 inline-block;
-            height:                  (@font-size - 1);
+            height:                  @font-size;
             background-color:        darken(@color-tab-bg, 5%);
             border-top:              1px solid darken(@color-tab-bg, 20%);
             border-left:             1px solid darken(@color-tab-bg, 20%);
             border-right:            1px solid darken(@color-tab-bg, 50%);
             margin:                  0px 2px 0px 0px;
-            padding:                 4px 16px 4px 16px;
+            padding:                 7px 16px 4px 16px;
             font-size:               @font-size;
             color:                   lighten(@color-tab-fg, 40%);
             -webkit-user-select:     none;
