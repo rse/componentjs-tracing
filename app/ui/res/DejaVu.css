@@ -5,7 +5,6 @@
     src:          url('DejaVuSans-Bold.eot');
     src:          local('*'),
                   url('DejaVuSans-Bold.eot?#iefix') format('embedded-opentype'),
-                  url('DejaVuSans-Bold.otf') format('opentype'),
                   url('DejaVuSans-Bold.ttf') format('truetype'),
                   url('DejaVuSans-Bold.woff') format('woff'),
                   url('DejaVuSans-Bold.svg#DejaVuSans-Bold') format('svg');
@@ -22,7 +21,6 @@
     src:          url('DejaVuSans-BoldOblique.eot');
     src:          local('*'),
                   url('DejaVuSans-BoldOblique.eot?#iefix') format('embedded-opentype'),
-                  url('DejaVuSans-BoldOblique.otf') format('opentype'),
                   url('DejaVuSans-BoldOblique.ttf') format('truetype'),
                   url('DejaVuSans-BoldOblique.woff') format('woff'),
                   url('DejaVuSans-BoldOblique.svg#DejaVuSans-BoldOblique') format('svg');
@@ -39,7 +37,6 @@
     src:          url('DejaVuSans-ExtraLight.eot');
     src:          local('*'),
                   url('DejaVuSans-ExtraLight.eot?#iefix') format('embedded-opentype'),
-                  url('DejaVuSans-ExtraLight.otf') format('opentype'),
                   url('DejaVuSans-ExtraLight.ttf') format('truetype'),
                   url('DejaVuSans-ExtraLight.woff') format('woff'),
                   url('DejaVuSans-ExtraLight.svg#DejaVuSans-ExtraLight') format('svg');
@@ -56,7 +53,6 @@
     src:          url('DejaVuSans-Oblique.eot');
     src:          local('*'),
                   url('DejaVuSans-Oblique.eot?#iefix') format('embedded-opentype'),
-                  url('DejaVuSans-Oblique.otf') format('opentype'),
                   url('DejaVuSans-Oblique.ttf') format('truetype'),
                   url('DejaVuSans-Oblique.woff') format('woff'),
                   url('DejaVuSans-Oblique.svg#DejaVuSans-Oblique') format('svg');
@@ -73,7 +69,6 @@
     src:          url('DejaVuSans.eot');
     src:          local('*'),
                   url('DejaVuSans.eot?#iefix') format('embedded-opentype'),
-                  url('DejaVuSans.otf') format('opentype'),
                   url('DejaVuSans.ttf') format('truetype'),
                   url('DejaVuSans.woff') format('woff'),
                   url('DejaVuSans.svg#DejaVuSans') format('svg');
@@ -90,7 +85,6 @@
     src:          url('DejaVuSansCondensed-Bold.eot');
     src:          local('*'),
                   url('DejaVuSansCondensed-Bold.eot?#iefix') format('embedded-opentype'),
-                  url('DejaVuSansCondensed-Bold.otf') format('opentype'),
                   url('DejaVuSansCondensed-Bold.ttf') format('truetype'),
                   url('DejaVuSansCondensed-Bold.woff') format('woff'),
                   url('DejaVuSansCondensed-Bold.svg#DejaVuSansCondensed-Bold') format('svg');
@@ -107,7 +101,6 @@
     src:          url('DejaVuSansCondensed-BoldOblique.eot');
     src:          local('*'),
                   url('DejaVuSansCondensed-BoldOblique.eot?#iefix') format('embedded-opentype'),
-                  url('DejaVuSansCondensed-BoldOblique.otf') format('opentype'),
                   url('DejaVuSansCondensed-BoldOblique.ttf') format('truetype'),
                   url('DejaVuSansCondensed-BoldOblique.woff') format('woff'),
                   url('DejaVuSansCondensed-BoldOblique.svg#DejaVuSansCondensed-BoldOblique') format('svg');
@@ -124,7 +117,6 @@
     src:          url('DejaVuSansCondensed-Oblique.eot');
     src:          local('*'),
                   url('DejaVuSansCondensed-Oblique.eot?#iefix') format('embedded-opentype'),
-                  url('DejaVuSansCondensed-Oblique.otf') format('opentype'),
                   url('DejaVuSansCondensed-Oblique.ttf') format('truetype'),
                   url('DejaVuSansCondensed-Oblique.woff') format('woff'),
                   url('DejaVuSansCondensed-Oblique.svg#DejaVuSansCondensed-Oblique') format('svg');
@@ -141,7 +133,6 @@
     src:          url('DejaVuSansCondensed.eot');
     src:          local('*'),
                   url('DejaVuSansCondensed.eot?#iefix') format('embedded-opentype'),
-                  url('DejaVuSansCondensed.otf') format('opentype'),
                   url('DejaVuSansCondensed.ttf') format('truetype'),
                   url('DejaVuSansCondensed.woff') format('woff'),
                   url('DejaVuSansCondensed.svg#DejaVuSansCondensed') format('svg');
@@ -158,7 +149,6 @@
     src:          url('DejaVuSansMono-Bold.eot');
     src:          local('*'),
                   url('DejaVuSansMono-Bold.eot?#iefix') format('embedded-opentype'),
-                  url('DejaVuSansMono-Bold.otf') format('opentype'),
                   url('DejaVuSansMono-Bold.ttf') format('truetype'),
                   url('DejaVuSansMono-Bold.woff') format('woff'),
                   url('DejaVuSansMono-Bold.svg#DejaVuSansMono-Bold') format('svg');
@@ -175,7 +165,6 @@
     src:          url('DejaVuSansMono-BoldOblique.eot');
     src:          local('*'),
                   url('DejaVuSansMono-BoldOblique.eot?#iefix') format('embedded-opentype'),
-                  url('DejaVuSansMono-BoldOblique.otf') format('opentype'),
                   url('DejaVuSansMono-BoldOblique.ttf') format('truetype'),
                   url('DejaVuSansMono-BoldOblique.woff') format('woff'),
                   url('DejaVuSansMono-BoldOblique.svg#DejaVuSansMono-BoldOblique') format('svg');
@@ -192,7 +181,6 @@
     src:          url('DejaVuSansMono-Oblique.eot');
     src:          local('*'),
                   url('DejaVuSansMono-Oblique.eot?#iefix') format('embedded-opentype'),
-                  url('DejaVuSansMono-Oblique.otf') format('opentype'),
                   url('DejaVuSansMono-Oblique.ttf') format('truetype'),
                   url('DejaVuSansMono-Oblique.woff') format('woff'),
                   url('DejaVuSansMono-Oblique.svg#DejaVuSansMono-Oblique') format('svg');
@@ -209,7 +197,6 @@
     src:          url('DejaVuSansMono.eot');
     src:          local('*'),
                   url('DejaVuSansMono.eot?#iefix') format('embedded-opentype'),
-                  url('DejaVuSansMono.otf') format('opentype'),
                   url('DejaVuSansMono.ttf') format('truetype'),
                   url('DejaVuSansMono.woff') format('woff'),
                   url('DejaVuSansMono.svg#DejaVuSansMono') format('svg');
