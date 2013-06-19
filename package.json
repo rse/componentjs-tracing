@@ -1,13 +1,14 @@
 {
     "name":           "componentjs-tracing",
     "description":    "Run-Time Tracing for ComponentJS based Rich Client UIs",
+    "keywords":       [ "componentjs", "tracing", "checking", "constraint", "runtime" ],
     "version":        "0.9.1",
     "author": {       
         "name":       "Ralf S. Engelschall",
         "email":      "rse@engelschall.com",
         "url":        "http://engelschall.com/"
     },
-    "contributors": [{       
+    "maintainers": [{       
         "name":       "Ralf S. Engelschall",
         "email":      "rse@engelschall.com",
         "url":        "http://engelschall.com/"
@@ -49,6 +50,9 @@
         "grunt-contrib-clean":  "~0.4.1",
         "grunt-peg":            "~0.2.0",
         "pegjs":                "~0.7.0"
+    },
+    "engines": {
+        "node":                 ">=0.10.0"
     },
     "scripts": {
         "prepublish": "make"
