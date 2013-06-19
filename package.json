@@ -51,6 +51,6 @@
         "pegjs":                "~0.7.0"
     },
     "scripts": {
-        "prepublish": "./node_modules/grunt-cli/bin/grunt"
+        "prepublish": "make"
     }
 }
