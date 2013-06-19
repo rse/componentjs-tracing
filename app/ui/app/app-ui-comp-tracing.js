@@ -22,7 +22,8 @@ app.ui.comp.tracing = cs.clazz({
                 'event:filterKeyUp'     : { value: -1,    valid: 'number',  autoreset: true },
                 'event:check-journal'   : { value: false, valid: 'boolean', autoreset: true },
                 'state:record'          : { value: true,  valid: 'boolean'                  },
-                'data:continuous'       : { value: false, valid: 'boolean', store: true     },
+                'event:continuous'      : { value: false, valid: 'boolean', autoreset: true },
+                'state:continuously'    : { value: false, valid: 'boolean', store: true     },
                 'data:filter'           : { value: '',    valid: 'string'                   }
             })
         },
@@ -56,8 +57,9 @@ app.ui.comp.tracing = cs.clazz({
             }, {
                 label: 'Check Continuously',
                 icon: "repeat",
-                data: 'data:continuous',
-                type: 'checkbox'
+                event: 'event:continuous',
+                type: 'button',
+                id: 'continuousBtn'
             }, {
                 type: 'fill'
             }, {
@@ -111,7 +113,7 @@ app.ui.comp.tracing = cs.clazz({
                     if (!cs(self).value('state:record'))
                         return;
                     cs(self, 'grid').call('unshift', data)
-                    if (cs(self).value('data:continuous'))
+                    if (cs(self).value('state:continuously'))
                         cs(self).publish('checkTrace', data)
                 }
             })
@@ -127,9 +129,8 @@ app.ui.comp.tracing = cs.clazz({
                             var content = e.target.result.split('\n')
                             var tuples = cs('/sv').call('parseLogfile', content)
                             cs(self, 'grid').call('tuples', tuples)
-                            if (cs(self).value('data:continuous')) {
+                            if (cs(self).value('state:continuously'))
                                 cs(self).publish('checkJournal')
-                            }
                         }
                     })(f)
 
@@ -149,6 +150,13 @@ app.ui.comp.tracing = cs.clazz({
                 name: 'event:record', spool: 'rendered',
                 func: function () {
                     cs(self).value('state:record', !cs(self).value('state:record'))
+                }
+            })
+
+            cs(self).observe({
+                name: 'event:continuous', spool: 'rendered',
+                func: function () {
+                    cs(self).value('state:continuously', !cs(self).value('state:continuously'))
                 }
             })
 
@@ -204,6 +212,14 @@ app.ui.comp.tracing = cs.clazz({
                 touch: true,
                 func: function (ev, nVal) {
                     cs(self, 'toolbarModel/view/recordBtn').value('state:pressed', nVal)
+                }
+            })
+
+            cs(self).observe({
+                name: 'state:continuously', spool: 'shown',
+                touch: true,
+                func: function (ev, nVal) {
+                    cs(self, 'toolbarModel/view/continuousBtn').value('state:pressed', nVal)
                 }
             })
         },
