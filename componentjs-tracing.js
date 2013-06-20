@@ -228,7 +228,7 @@ if (typeof opts.app === "undefined")
     die("no application(s) defined")
 for (var i = 0; i < opts.app.length; i++) {
     /*  parse application specification  */
-    var m = (opts.app[i] + "").match(/^(.+):(.+)$/)
+    var m = (opts.app[i] + "").match(/^(.+?):(.+)$/)
     if (m === null)
         die("invalid app specification (has to be \"<url-prefix>:<file-or-dir-path>\")")
     var url = m[1]
