@@ -14,10 +14,15 @@
  *  tracing = <source, sourceType, origin, originType, operation, parameters>
  */
 
-/* global ComponentJS:false */
+/* global ComponentJS:false, alert:false */
 /* jshint unused:false */
 
 ComponentJS.plugin("tracing", function (_cs, $cs, GLOBAL) {
+    if (window.chrome === undefined) {
+        alert("You can only view this application using Google Chrome.")
+        return;
+    }
+
     var startTime = Date.now();
     /*  ensure run-time requirements are met  */
     if (typeof Error.captureStackTrace !== "function")
