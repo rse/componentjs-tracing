@@ -12,7 +12,7 @@ cs.ns('app.ui.widget.vertical.tabs')
 app.ui.widget.vertical.tabs.controller = cs.clazz({
     mixin: [ cs.marker.controller ],
     dynamics: {
-        customs: 0,
+        customs: 1,
         timer: null
     },
     protos: {
@@ -114,7 +114,7 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                     var newCustom = cs(this, 'tabsModel/view').create(tab.id, app.ui.widget.constraintset.model)
                     newCustom.state('visible')
 
-                    if (tab.id.indexOf('custom'))
+                    if (tab.id.indexOf('custom') !== -1)
                         self.customs++
                 }
             })
@@ -131,6 +131,7 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                         return;
                     }
                     var tab = cs(self, 'tabsModel/view/' + activeTab.id)
+                    tab.value('data:constraintset', '')
                     cs.destroy(tab)
                     activeTab.deleted = true
                     cs(self, 'tabsModel').value('data:tabs', tabs, true)
