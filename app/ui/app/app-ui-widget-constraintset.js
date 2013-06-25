@@ -7,6 +7,7 @@
 **  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
+/* global ace: true */
 cs.ns('app.ui.widget.constraintset')
 
 app.ui.widget.constraintset.model = cs.clazz({
@@ -49,7 +50,6 @@ app.ui.widget.constraintset.model = cs.clazz({
 
             var suspend = false
 
-            /* global ace: true */
             self.editor = ace.edit(id)
             self.editor.getSession().setMode('ace/mode/cjsc')
             self.editor.on('change', function (ev, editor) {

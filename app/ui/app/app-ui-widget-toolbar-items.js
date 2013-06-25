@@ -11,7 +11,7 @@ cs.ns('app.ui.widget.toolbar.items')
 
 /*  button view  */
 app.ui.widget.toolbar.items.button = cs.clazz({
-    mixin: [ cs.marker.view ],
+    mixin: [ cs.marker.view, cs.marker.model ],
     dynamics: {
         label: null,
         icon: null,
