@@ -264,14 +264,15 @@
             );
         };
         var encode = function (value, seen) {
-            if (typeof seen[value] !== "undefined")
-                return "null /* [...] */";
-            else
-                seen[value] = true;
+            if (typeof value !== "boolean" && typeof value !== "number" && typeof value !== "string") {
+                if (typeof seen[value] !== "undefined")
+                    return "null /* CYCLE! */";
+                else
+                    seen[value] = true;
+            }
             switch (typeof value) {
-                case "null":     value = "null"; break;
                 case "boolean":  value = String(value); break;
-                case "number":   value = (isFinite(value) ? String(value) : "null"); break;
+                case "number":   value = (isFinite(value) ? String(value) : "NaN"); break;
                 case "string":   value = quote(value); break;
                 case "function":
                     if (_cs.annotation(value, "type") !== null)
@@ -281,7 +282,7 @@
                     break;
                 case "object":
                     var a = [];
-                    if (!value)
+                    if (value === null)
                         value = "null";
                     else if (_cs.annotation(value, "type") !== null)
                         value = "<" + _cs.annotation(value, "type") + ">";
@@ -1866,6 +1867,7 @@
                 var params = $cs.params("property", arguments, {
                     name:        { pos: 0, req: true      },
                     value:       { pos: 1, def: undefined },
+                    scope:       {         def: undefined },
                     bubbling:    {         def: true      },
                     targeting:   {         def: true      },
                     returnowner: {         def: false     }
@@ -1922,7 +1924,10 @@
                 /*  optionally set new configuration value
                     (on current node only)  */
                 if (typeof params.value !== "undefined")
-                    this.cfg("ComponentJS:property:" + params.name, params.value);
+                    if (typeof params.scope === "undefined")
+                        this.cfg("ComponentJS:property:" + params.name, params.value);
+                    else
+                        this.cfg("ComponentJS:property:" + params.name + "@" + params.scope, params.value);
 
                 /*  return result (either the old configuration
                     value or the owning component)  */
