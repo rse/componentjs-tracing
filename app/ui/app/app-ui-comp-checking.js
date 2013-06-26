@@ -34,9 +34,12 @@ app.ui.comp.checking = cs.clazz({
             var toolbarItems = [{
                 label: "Clear",
                 icon:  "remove-sign",
-                event: "event:clear",
-                type:  "button"
+                type:  "button",
+                id: 'clearBtn'
             }]
+
+            cs(this).property({ name: 'clicked', scope: 'toolbarModel/view/clearBtn', value: 'event:clear' })
+
             cs(self, "toolbarModel").value("data:items", toolbarItems)
 
             var linkRenderer = function (op) {

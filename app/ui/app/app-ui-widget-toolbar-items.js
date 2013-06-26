@@ -14,12 +14,10 @@ app.ui.widget.toolbar.items.button = cs.clazz({
     mixin: [ cs.marker.view, cs.marker.model ],
     dynamics: {
         label: null,
-        icon: null,
-        eventBinding: null
+        icon: null
     },
-    cons: function (label, eventBinding, icon) {
+    cons: function (label, icon) {
         this.label = label
-        this.event = eventBinding
         this.icon  = icon
     },
     protos: {
@@ -44,7 +42,7 @@ app.ui.widget.toolbar.items.button = cs.clazz({
             })
 
             $(btn).click(function () {
-                cs(self).value(self.event, true)
+                cs(self).value(cs(self).property('clicked'), true)
             })
 
             cs(self).plug(btn)
@@ -58,14 +56,6 @@ app.ui.widget.toolbar.items.button = cs.clazz({
 /*  input view  */
 app.ui.widget.toolbar.items.input = cs.clazz({
     mixin: [ cs.marker.view ],
-    dynamics: {
-        dataBinding: null,
-        eventBinding: null
-    },
-    cons: function (dataBinding, eventBinding) {
-        this.dataBinding = dataBinding
-        this.eventBinding = eventBinding
-    },
     protos: {
         create: function () {
             var self = this
@@ -74,15 +64,15 @@ app.ui.widget.toolbar.items.input = cs.clazz({
 
             $('input[type=text]', btn).keyup(function (event) {
                 if (event.keyCode === 13 /* RETURN */)
-                    cs(self).value(self.dataBinding, event.target.value)
+                    cs(self).value(cs(self).property('data'), event.target.value)
             })
 
             $('input[type=text]', btn).keyup(function (event) {
-                cs(self).value(self.eventBinding, event.keyCode)
+                cs(self).value(cs(self).property('keyup'), event.keyCode)
             })
 
             cs(self).observe({
-                name: self.dataBinding, spool: 'created',
+                name: cs(self).property('data'), spool: 'created',
                 touch: true,
                 func: function (ev, nVal) {
                     $('input[type=text]', btn).val(nVal)
@@ -124,12 +114,10 @@ app.ui.widget.toolbar.items.checkbox = cs.clazz({
     mixin: [ cs.marker.view ],
     dynamics: {
         label: null,
-        dataBinding: null,
         icon: null
     },
-    cons: function (label, binding, icon) {
+    cons: function (label, icon) {
         this.label =  label
-        this.dataBinding = binding
         this.icon = icon
     },
     protos: {
@@ -139,11 +127,11 @@ app.ui.widget.toolbar.items.checkbox = cs.clazz({
             var btn = $.markup('toolbar-checkbox', { id: Date.now(), label: self.label, icon: self.icon })
 
             $('input[type=checkbox]', btn).click(function () {
-                cs(self).value(self.dataBinding, $('input[type=checkbox]', btn).is(':checked'))
+                cs(self).value(cs(self).property('data'), $('input[type=checkbox]', btn).is(':checked'))
             })
 
             cs(self).observe({
-                name: self.dataBinding, spool: 'created',
+                name: cs(self).property('data'), spool: 'created',
                 touch: true,
                 func: function (ev, nVal) {
                     $('input[type=checkbox]', btn).attr('checked', nVal)

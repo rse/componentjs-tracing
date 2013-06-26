@@ -54,7 +54,9 @@ app.ui.widget.toolbar.view = cs.clazz({
                         }
                         else if (item.type === 'input') {
                             var input =  new app.ui.widget.toolbar.items.input(item.data, item.event)
-                            cs(self).create('input-' + i, input)
+                            if (!item.id)
+                                item.id = 'input-' + i
+                            cs(self).create(item.id, input)
                         }
                         else if (item.type === 'text') {
                             var text =  new app.ui.widget.toolbar.items.text(item.label, item.icon)
@@ -62,7 +64,9 @@ app.ui.widget.toolbar.view = cs.clazz({
                         }
                         else if (item.type === 'checkbox') {
                             var checkbox =  new app.ui.widget.toolbar.items.checkbox(item.label, item.data, item.icon)
-                            cs(self).create('checkbox-' + i, checkbox)
+                            if (!item.id)
+                                item.id = 'checkbox-' + i
+                            cs(self).create(item.id, checkbox)
                         }
                         else
                             $('.items', content).markup('widget-toolbar/item', { content: item.label })

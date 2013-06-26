@@ -18,34 +18,39 @@ app.ui.comp.constraints = cs.clazz({
             )
 
             cs(this).model({
-                'event:add'     : { value: false, valid: 'boolean', autoreset: true },
-                'event:remove'  : { value: false, valid: 'boolean', autoreset: true },
-                'event:load'    : { value: false, valid: 'boolean', autoreset: true },
-                'event:save'    : { value: false, valid: 'boolean', autoreset: true }
+                'event:add'    : { value: false, valid: 'boolean', autoreset: true },
+                'event:remove' : { value: false, valid: 'boolean', autoreset: true },
+                'event:load'   : { value: false, valid: 'boolean', autoreset: true },
+                'event:save'   : { value: false, valid: 'boolean', autoreset: true }
             })
         },
         prepare: function () {
             var toolbarItems = [{
                 label: 'Add',
                 icon: "plus-sign",
-                event: 'event:add',
-                type: 'button'
+                type: 'button',
+                id: 'addBtn'
             }, {
                 label: 'Remove',
                 icon: "minus-sign",
-                event: 'event:remove',
-                type: 'button'
+                type: 'button',
+                id: 'removeBtn'
             }, {
                 label: 'Load',
                 icon: 'upload-alt',
-                event: 'event:load',
-                type: 'button'
+                type: 'button',
+                id: 'loadBtn'
             }, {
                 label: 'Save',
                 icon: 'download-alt',
-                event: 'event:save',
-                type: 'button'
+                type: 'button',
+                id: 'saveBtn'
             }]
+
+            cs(this).property({ name: 'clicked', scope: 'toolbarModel/view/addBtn',    value: 'event:add'    })
+            cs(this).property({ name: 'clicked', scope: 'toolbarModel/view/loadBtn',   value: 'event:load'   })
+            cs(this).property({ name: 'clicked', scope: 'toolbarModel/view/saveBtn',   value: 'event:save'   })
+            cs(this).property({ name: 'clicked', scope: 'toolbarModel/view/removeBtn', value: 'event:remove' })
 
             cs(this, 'toolbarModel').value('data:items', toolbarItems)
         },

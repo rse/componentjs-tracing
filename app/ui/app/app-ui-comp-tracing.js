@@ -11,53 +11,54 @@ app.ui.comp.tracing = cs.clazz({
     mixin: [ cs.marker.controller ],
     protos: {
         create: function () {
-            cs(this).create('toolbarModel/view', app.ui.widget.toolbar.model, app.ui.widget.toolbar.view)
+            cs(this).create('toolbarModel/view',
+                app.ui.widget.toolbar.model,
+                app.ui.widget.toolbar.view
+            )
             cs(this).create('grid', new app.ui.widget.grid.ctrl(false))
 
             cs(this).model({
-                'event:record'          : { value: false, valid: 'boolean', autoreset: true },
-                'event:load'            : { value: false, valid: 'boolean', autoreset: true },
-                'event:save'            : { value: false, valid: 'boolean', autoreset: true },
-                'event:clear'           : { value: false, valid: 'boolean', autoreset: true },
-                'event:filterKeyUp'     : { value: -1,    valid: 'number',  autoreset: true },
-                'event:check-journal'   : { value: false, valid: 'boolean', autoreset: true },
-                'state:record'          : { value: true,  valid: 'boolean'                  },
-                'event:continuous'      : { value: false, valid: 'boolean', autoreset: true },
-                'state:continuously'    : { value: false, valid: 'boolean', store: true     },
-                'data:filter'           : { value: '',    valid: 'string'                   }
+                'event:record'        : { value: false, valid: 'boolean', autoreset: true },
+                'event:load'          : { value: false, valid: 'boolean', autoreset: true },
+                'event:save'          : { value: false, valid: 'boolean', autoreset: true },
+                'event:clear'         : { value: false, valid: 'boolean', autoreset: true },
+                'event:filterKeyUp'   : { value: -1,    valid: 'number',  autoreset: true },
+                'event:check-journal' : { value: false, valid: 'boolean', autoreset: true },
+                'state:record'        : { value: true,  valid: 'boolean'                  },
+                'event:continuous'    : { value: false, valid: 'boolean', autoreset: true },
+                'state:continuously'  : { value: false, valid: 'boolean', store: true     },
+                'data:filter'         : { value: '',    valid: 'string'                   }
             })
         },
         prepare: function () {
             var toolbarItems = [{
                 label: 'Record',
                 icon:  "microphone",
-                event: 'event:record',
                 type: 'button',
                 id: 'recordBtn'
             }, {
                 label: 'Load',
                 icon:  "upload-alt",
-                event: 'event:load',
-                type: 'button'
+                type: 'button',
+                id: 'loadBtn'
             }, {
                 label: 'Save',
                 icon:  "download-alt",
-                event: 'event:save',
+                id: 'saveBtn',
                 type: 'button'
             }, {
                 label: 'Clear',
                 icon:  "remove-sign",
-                event: 'event:clear',
-                type: 'button'
+                type: 'button',
+                id: 'clearBtn'
             }, {
                 label: 'Check Once',
                 icon:  "ok-sign",
-                event: 'event:check-journal',
-                type: 'button'
+                type: 'button',
+                id: 'journalBtn'
             }, {
                 label: 'Check Continuously',
                 icon: "repeat",
-                event: 'event:continuous',
                 type: 'button',
                 id: 'continuousBtn'
             }, {
@@ -68,9 +69,17 @@ app.ui.comp.tracing = cs.clazz({
                 type: 'text'
             }, {
                 type: 'input',
-                data: 'data:filter',
-                event: 'event:filterKeyUp'
+                id: 'filterInp'
             }]
+
+            cs(this).property({ name: 'clicked', scope: 'toolbarModel/view/loadBtn',       value: 'event:load'          })
+            cs(this).property({ name: 'clicked', scope: 'toolbarModel/view/recordBtn',     value: 'event:record'        })
+            cs(this).property({ name: 'clicked', scope: 'toolbarModel/view/saveBtn',       value: 'event:save'          })
+            cs(this).property({ name: 'clicked', scope: 'toolbarModel/view/clearBtn',      value: 'event:clear'         })
+            cs(this).property({ name: 'clicked', scope: 'toolbarModel/view/journalBtn',    value: 'event:check-journal' })
+            cs(this).property({ name: 'clicked', scope: 'toolbarModel/view/continuousBtn', value: 'event:continuous'    })
+            cs(this).property({ name: 'keyup',   scope: 'toolbarModel/view/filterInp',     value: 'event:filterKeyUp'   })
+            cs(this).property({ name: 'data',    scope: 'toolbarModel/view/filterInp',     value: 'data:filter'         })
 
             cs(this, 'toolbarModel').value('data:items', toolbarItems)
 
