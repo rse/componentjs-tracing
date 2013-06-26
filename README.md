@@ -1,4 +1,3 @@
-
 # ComponentJS Tracing
 
 Run-Time Tracing for ComponentJS
@@ -13,9 +12,9 @@ User-Interface dialogs of complex HTML5-based Rich Clients
 
 The ComponentJS Tracing application consists of three major components:
 
-- a forwarding proxy service for instrumenting the target ComponentJS application 
-- a Websocket service for routing the tracing information between the target ComponentJS application and the tracing UI.
-- an origin webserver delivering a tracing UI for collecting the tracing information, provisioning constraint sets and
+* A forwarding proxy service for instrumenting the target ComponentJS application 
+* A Websocket service for routing the tracing information between the target ComponentJS application and the tracing UI.
+* An origin webserver delivering a tracing UI for collecting the tracing information, provisioning constraint sets and
   applying constraint sets once or continuously against the tracing information.
 
 ## Screenshots
@@ -88,6 +87,6 @@ You can obtain one at http://mozilla.org/MPL/2.0/.
 
 ## Authors
 
-- Ralf S. Engelschall (rse@engelschall.com)
-- Christian Vaas (christianvaas@auspex.eu)
+* Ralf S. Engelschall (rse@engelschall.com)
+* Christian Vaas (christianvaas@auspex.eu)
 
