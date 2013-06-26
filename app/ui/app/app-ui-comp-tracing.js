@@ -149,13 +149,6 @@ app.ui.comp.tracing = cs.clazz({
             })
 
             cs(self).observe({
-                name: 'data:filter', spool: 'rendered',
-                func: function (ev, nVal) {
-                    cs(self, 'grid').call('filter', nVal)
-                }
-            })
-
-            cs(self).observe({
                 name: 'event:record', spool: 'rendered',
                 func: function () {
                     cs(self).value('state:record', !cs(self).value('state:record'))
@@ -193,9 +186,12 @@ app.ui.comp.tracing = cs.clazz({
             cs(self).observe({
                 name: 'event:filterKeyUp', spool: 'rendered',
                 func: function (ev, nVal) {
-                    if (nVal === 27) {
+                    if (nVal === 27 /* ESCAPE */) {
                         cs(self).value('data:filter', '')
+                        cs(self, 'grid').call('filter', '')
                     }
+                    else if (nVal === 13 /* RETURN */)
+                        cs(self, 'grid').call('filter', cs(self).value('data:filter'))
                 }
             })
 

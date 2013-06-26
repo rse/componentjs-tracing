@@ -62,9 +62,8 @@ app.ui.widget.toolbar.items.input = cs.clazz({
 
             var btn = $.markup('toolbar-input')
 
-            $('input[type=text]', btn).keyup(function (event) {
-                if (event.keyCode === 13 /* RETURN */)
-                    cs(self).value(cs(self).property('data'), event.target.value)
+            $('input[type=text]', btn).change(function (event) {
+                cs(self).value(cs(self).property('data'), event.target.value)
             })
 
             $('input[type=text]', btn).keyup(function (event) {
