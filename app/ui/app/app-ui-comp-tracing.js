@@ -135,7 +135,8 @@ app.ui.comp.tracing = cs.clazz({
                     var reader = new FileReader()
                     reader.onload = (function () {
                         return function (e) {
-                            var content = e.target.result.split('\n')
+                            var file = e.target.result.trim()
+                            var content = file.split('\n')
                             var tuples = cs('/sv').call('parseLogfile', content)
                             cs(self, 'grid').call('tuples', tuples)
                             if (cs(self).value('state:continuously'))
