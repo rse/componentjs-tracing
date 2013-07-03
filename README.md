@@ -66,6 +66,7 @@ command line or in the included [server.ini](server.ini) file.
 * **--latestcjs, --lcjs:** Overwrites applications ComponentJS file with the supplied version
 * **--proxyfwd, -F:** Host and port of forwarding proxy (eg when you are behind a corporate proxy)
 * **--config=&lt;cfg&gt;:** Adds the specified section of the ini file to overwrite defaults
+* **--runfile, -rf:** Directs the traces to a separate runfile bypassing the websocket logic and thus the user interface
 
 ## Limitations
 
