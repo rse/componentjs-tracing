@@ -95,6 +95,9 @@ var parseLog = function (lines) {
         }
         tuples.push(newTuple)
     }
+
+    tuples.sort(function (a, b) { return b.time - a.time })
+
     return tuples
 }
 
