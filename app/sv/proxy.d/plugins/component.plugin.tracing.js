@@ -179,7 +179,7 @@ ComponentJS.plugin("tracing", function (_cs, $cs, GLOBAL) {
         "unplug":      [],
 
         /*  model facility  */
-        "model":       [],
+        "model":       [ "model" ],
         "observe":     [ "name", "touch", "operation" ],
         "unobserve":   [],
         "value":       [ "name", "value", "force" ],
