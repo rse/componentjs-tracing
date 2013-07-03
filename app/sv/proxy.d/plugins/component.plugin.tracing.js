@@ -182,7 +182,7 @@ ComponentJS.plugin("tracing", function (_cs, $cs, GLOBAL) {
         "model":       [],
         "observe":     [ "name", "touch", "operation" ],
         "unobserve":   [],
-        "value":       [ "name", "force" ],
+        "value":       [ "name", "value", "force" ],
         "touch":       [ "name" ],
 
         /*  event facility  */
