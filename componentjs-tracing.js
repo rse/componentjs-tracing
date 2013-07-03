@@ -86,6 +86,8 @@ var options = [
         help: "Display logfile also on console." },
     {   names: [ "addr", "a" ], type: "string", "default": "127.0.0.1",
         help: "IP address to listen", helpArg: "ADDRESS" },
+    {   names: [ "runfile", "rf" ], type: "string", "default": "",
+        help: "File to log the current run into", helpArg: "FILENAME" },
     {   names: [ "port", "p" ], type: "integer", "default": 8080,
         help: "TCP port to listen", helpArg: "PORT" },
     {   names: [ "backlog", "b" ], type: "integer", "default": 511,
