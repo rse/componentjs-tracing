@@ -51,9 +51,13 @@ module.exports = {
         proxyserver.on("http-intercept-response", function (cid, request, response, remoteResponse, remoteResponseBody, performResponse) {
             /*  did we inject anything? If yes, fix the HTTP request  */
             var finishResponse = function () {
+                /*  calculate the actual payload size in bytes  */
+                var moreThanOneByteChars = encodeURIComponent(remoteResponseBody).match(/%[89ABab]/g)
+                var contentLength =  remoteResponseBody.length + (moreThanOneByteChars ? moreThanOneByteChars.length : 0)
+
                 /*  make sure the file is never marked as loaded from cache  */
                 remoteResponse.statusCode = 200
-                remoteResponse.headers["content-length"] = remoteResponseBody.length
+                remoteResponse.headers["content-length"] = contentLength
                 remoteResponse.headers["content-type"] = "application/javascript"
                 remoteResponse.headers["accept-ranges"] = "bytes"
 
@@ -102,7 +106,7 @@ module.exports = {
             else if (remoteResponse.req.path.match(cmpFiles) !== null) {
                 /*  read original remoteResponseBody, instrument it and write instrumented remoteResponseBody  */
                 remoteResponseBody = remoteResponseBody.toString("utf8")
-                remoteResponseBody = tracing.instrument("cs", remoteResponseBody)
+                remoteResponseBody = tracing.instrument(opts.symbol, remoteResponseBody)
                 ctx.logger.log("info", "proxy: transpiled component file: " + request.url)
                 finishResponse()
             }
