@@ -78,7 +78,7 @@ var die = function (msg) {
 
 /*  command-line argument parsing  */
 var options = [
-    {   name: "version", type: "bool", "default": false,
+    {   name: [ "version", "v" ], type: "bool", "default": false,
         help: "Print tool version and exit." },
     {   names: [ "help", "h" ], type: "bool", "default": false,
         help: "Print this help and exit." },
