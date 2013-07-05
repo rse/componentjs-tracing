@@ -104,6 +104,8 @@ var options = [
         help: "TCP port to listen", helpArg: "PORT" },
     {   names: [ "proxyfwd", "F" ], type: "string", "default": "",
         help: "host and port of forwarding proxy", helpArg: "HOST:PORT" },
+    {   names: [ "symbol", "s" ], type: "string", "default": "cs",
+        help: "The symbol of the ComponentJS library", helpArg: "COMPONENTJS SYMBOL" },
     {   names: [ "app", "X" ], type: "arrayOfString", "default": "",
         help: "application to load", helpArg: "APP" }
 ]
