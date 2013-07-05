@@ -52,12 +52,11 @@ module.exports = {
             /*  did we inject anything? If yes, fix the HTTP request  */
             var finishResponse = function () {
                 /*  calculate the actual payload size in bytes  */
-                var moreThanOneByteChars = encodeURIComponent(remoteResponseBody).match(/%[89ABab]/g)
-                var contentLength =  remoteResponseBody.length + (moreThanOneByteChars ? moreThanOneByteChars.length : 0)
+                var buffer = new Buffer(remoteResponseBody, "utf8")
 
                 /*  make sure the file is never marked as loaded from cache  */
                 remoteResponse.statusCode = 200
-                remoteResponse.headers["content-length"] = contentLength
+                remoteResponse.headers["content-length"] = buffer.length
                 remoteResponse.headers["content-type"] = "application/javascript"
                 remoteResponse.headers["accept-ranges"] = "bytes"
 
