@@ -67,7 +67,7 @@ command line or in the included [server.ini](server.ini) file.
 * **--proxyfwd, --F:** Host and port of forwarding proxy (eg when you are behind a corporate proxy)
 * **--config=&lt;cfg&gt;:** Adds the specified section of the ini file to overwrite defaults
 * **--runfile, --rf:** Directs the traces to a separate runfile bypassing the websocket logic and thus the user interface
-* **--symbol, --s:** Defines the symbol under which ComponentJS is made available
+* **--symbol, --s:** Defines the symbol that makes ComponentJS available
 
 ## Limitations
 
