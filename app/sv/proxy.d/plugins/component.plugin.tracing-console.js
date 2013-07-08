@@ -54,7 +54,7 @@ ComponentJS.plugin("tracing-console", function (_cs, $cs, GLOBAL) {
             for (var name in p) {
                 if (params !== "")
                     params += ", ";
-                params += name + ": " + JSON.stringify(p[name]);
+                params += name + ": " + _cs.json(p[name]);
             }
             if (params !== "")
                 params = "{ " + params + " }";
