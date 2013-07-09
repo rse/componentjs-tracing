@@ -52,6 +52,16 @@ ComponentJS.plugin("tracing-remote", function (_cs, $cs, GLOBAL) {
             var sourceType = typeofcomp(tracing.sourceType())
             var originType = typeofcomp(tracing.originType())
 
+            var seen = []
+            var params = JSON.stringify(tracing.parameters(), function(key, val) {
+               if (typeof val === "object") {
+                    if (seen.indexOf(val) >= 0)
+                        return
+                    seen.push(val)
+                }
+                return val
+            })
+
             /*  create transferable trace object  */
             var trace = {
                 id: tracing.id,
@@ -61,7 +71,7 @@ ComponentJS.plugin("tracing-remote", function (_cs, $cs, GLOBAL) {
                 origin: origin,
                 originType: originType,
                 operation: tracing.operation(),
-                parameters: tracing.parameters()
+                parameters: JSON.parse(params)
             }
 
             /*  send the new trace to the server  */
