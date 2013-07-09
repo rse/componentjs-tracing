@@ -136,6 +136,11 @@ app.ui.widget.grid.model = cs.clazz({
 
                         for (var i = 0; i < unfiltered.length; i++) {
                             var tuple = unfiltered[i]
+                            /*  expand abbreviations for sourceType and originType  */
+                            if (tmp[0] === 'OT')
+                                tmp[0] = 'originType'
+                            if (tmp[0] === 'ST')
+                                tmp[0] = 'sourceType'
                             if (tmp.length === 2 && tuple[tmp[0]]) {
                                 if (tuple[tmp[0]].toLowerCase().indexOf(tmp[1].toLowerCase()) !== -1)
                                     result.push(tuple)
