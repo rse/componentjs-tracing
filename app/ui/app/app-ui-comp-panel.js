@@ -69,10 +69,6 @@ app.ui.comp.panel = cs.clazz({
                 cs(self, 'panel/panel/statusbar').publish('message', 'Connected')
                 cs(self, 'panel/panel/statusbar').publish('color', 'black')
             })
-            socket.on('reconnect_error', function () {
-                cs(self, 'panel/panel/statusbar').publish('message', 'Unable to reconnect')
-                cs(self, 'panel/panel/statusbar').publish('color', 'red')
-            })
             socket.on('reconnect', function () {
                 cs(self, 'panel/panel/statusbar').publish('message', 'Reconnected')
                 cs(self, 'panel/panel/statusbar').publish('color', 'black')
