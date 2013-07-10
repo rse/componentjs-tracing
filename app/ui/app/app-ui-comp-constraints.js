@@ -9,19 +9,43 @@
 
 app.ui.comp.constraints = cs.clazz({
     mixin: [ cs.marker.controller ],
+    dynamics: {
+        domain: null
+    },
+    cons: function (dom) {
+        this.domain = dom
+    },
     protos: {
         create: function () {
-            cs(this).create('{toolbarModel/view/,constraintset}',
+            var self = this
+
+            cs(self).create('{toolbarModel/view/,tabs}',
                 app.ui.widget.toolbar.model,
                 app.ui.widget.toolbar.view,
                 app.ui.widget.vertical.tabs.controller
             )
 
-            cs(this).model({
-                'event:add'    : { value: false, valid: 'boolean', autoreset: true },
-                'event:remove' : { value: false, valid: 'boolean', autoreset: true },
-                'event:load'   : { value: false, valid: 'boolean', autoreset: true },
-                'event:save'   : { value: false, valid: 'boolean', autoreset: true }
+            var standard = 'static/' + self.domain + '_standard_rules.txt'
+            cs(self).model({
+                'event:add' :          { value: false, valid: 'boolean', autoreset: true },
+                'event:remove' :       { value: false, valid: 'boolean', autoreset: true },
+                'event:load' :         { value: false, valid: 'boolean', autoreset: true },
+                'event:save' :         { value: false, valid: 'boolean', autoreset: true },
+                'state:highlighting' : { value: self.domain, valid: 'string'             },
+                'data:standard' :      { value: standard, valid: 'string'                }
+            })
+
+            cs(self).subscribe({
+                name: 'setChanged', spool: 'created',
+                func: function (ev, nVal) {
+                    if (cs(self).value('state:highlighting') === 'cjsc') {
+                        var merged = _.flatten(nVal)
+                        var sorted = app.lib.sorter(merged)
+                        cs(self, '..').publish('constraintSetChanged', sorted)
+                    }
+                    else
+                        cs(self, '..').publish('temporalConstraintSetChanged', nVal)
+                }
             })
         },
         prepare: function () {
@@ -64,7 +88,7 @@ app.ui.comp.constraints = cs.clazz({
             })
 
             cs(self).socket({
-                scope: 'constraintset',
+                scope: 'tabs',
                 ctx: $('.vertical-tabs-container', content)
             })
 
@@ -79,7 +103,7 @@ app.ui.comp.constraints = cs.clazz({
                     reader.onload = (function () {
                         return function (e) {
                             var content = e.target.result
-                            cs(self, 'constraintset').call('addConstraintset', content)
+                            cs(self, 'tabs').call('addConstraintset', content)
                         }
                     })(f)
 
@@ -91,7 +115,7 @@ app.ui.comp.constraints = cs.clazz({
             cs(self).observe({
                 name: 'event:add', spool: 'rendered',
                 func: function () {
-                    cs(self, 'constraintset').call('addConstraintset', '')
+                    cs(self, 'tabs').call('addConstraintset', '')
                 }
             })
 
@@ -100,10 +124,10 @@ app.ui.comp.constraints = cs.clazz({
                 func: function () {
                     /* global confirm: true */
                     if (confirm('Do you want to save this constraint set first?')) {
-                        cs(self, 'constraintset').call('saveCurrent')
-                        cs(self, 'constraintset').call('removeConstraintset')
+                        cs(self, 'tabs').call('saveCurrent')
+                        cs(self, 'tabs').call('removeConstraintset')
                     } else {
-                        cs(self, 'constraintset').call('removeConstraintset')
+                        cs(self, 'tabs').call('removeConstraintset')
                     }
                 }
             })
@@ -118,7 +142,7 @@ app.ui.comp.constraints = cs.clazz({
             cs(self).observe({
                 name: 'event:save', spool: 'rendered',
                 func: function () {
-                    cs(self, 'constraintset').call('saveCurrent')
+                    cs(self, 'tabs').call('saveCurrent')
                 }
             })
         },
