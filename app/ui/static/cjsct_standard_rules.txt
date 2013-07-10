@@ -1,0 +1,25 @@
+temporal-constraint observe-value {
+	rationale {
+		Value expects an observe beforehand otherwise it would be useless.
+	}
+
+	sequence {
+		a << b
+	}
+
+	filter a {
+			originType != 'S'
+		&& 	operation == 'observe'	
+	}
+
+	filter b {
+			originType == 'V'
+		&&	operation == 'value'
+		&&	parameters.value != undefined
+	}
+
+	link b {
+			a.parameters.name == b.parameters.name
+		&&	isParent(a.origin, b.origin)
+	}
+}
