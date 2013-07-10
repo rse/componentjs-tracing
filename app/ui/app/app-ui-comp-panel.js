@@ -10,7 +10,8 @@
 app.ui.comp.panel = cs.clazz({
     mixin: [ cs.marker.controller ],
     dynamics: {
-        constraintSet: []
+        constraintSet: [],
+        temporalConstraintSet: []
     },
     protos: {
         create: function () {
@@ -18,12 +19,13 @@ app.ui.comp.panel = cs.clazz({
 
             cs(self).create(
                 'panel/panel/' +
-                '{tracing,checking,constraints,statusbar}',
+                '{tracing,checking,constraints,temporalConstraints,statusbar}',
                 app.ui.widget.panel.model,
                 app.ui.widget.panel.view,
                 app.ui.comp.tracing,
                 app.ui.comp.checking,
-                app.ui.comp.constraints,
+                new app.ui.comp.constraints('cjsc'),
+                new app.ui.comp.constraints('cjsct'),
                 app.ui.widget.statusbar
             )
 
@@ -35,6 +37,13 @@ app.ui.comp.panel = cs.clazz({
                 name: 'constraintSetChanged', spool: 'created',
                 func: function (ev, nVal) {
                     self.constraintSet = nVal
+                }
+            })
+
+            cs(self).subscribe({
+                name: 'temporalConstraintSetChanged', spool: 'created',
+                func: function (ev, nVal) {
+                    self.temporalConstraintSet = nVal
                 }
             })
 
@@ -84,9 +93,10 @@ app.ui.comp.panel = cs.clazz({
         },
         prepare: function () {
             cs(this, 'panel').value('data:tabs', [
-                { id: 'tracing',     name: 'Tracing',     icon: "gears" },
-                { id: 'checking',    name: 'Checking',    icon: "thumbs-down" },
-                { id: 'constraints', name: 'Constraints', icon: "legal" }
+                { id: 'tracing',             name: 'Tracing',     icon: "gears"       },
+                { id: 'checking',            name: 'Checking',    icon: "thumbs-down" },
+                { id: 'constraints',         name: 'Constraints', icon: "legal"       },
+                { id: 'temporalConstraints', name: 'Constraints', icon: "time"        }
             ])
         },
         render: function () {
