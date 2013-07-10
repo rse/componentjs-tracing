@@ -43,10 +43,10 @@ var cjscHighlightRules = function() {
     this.$rules = { start:
        [{
             token: 'keyword',
-            regex: 'constraint|rationale'
+            regex: 'temporal-constraint|constraint|rationale'
         }, {
             token: 'keyword',
-            regex: 'condition'
+            regex: 'condition|sequence|filter|link'
         }, {
             token: 'keyword',
             regex: 'result'
@@ -55,10 +55,10 @@ var cjscHighlightRules = function() {
             regex: '==|!=|<=|>=|<|>|=~|!~|!|&&|\\|\\|'
         }, {
             token: 'function',
-            regex: 'parent|distance|contains'
+            regex: 'isParent|distance|contains'
         }, {
             token: 'constant',
-            regex: 'sourceType|originType|operation|origin|source'
+            regex: 'sourceType|originType|operation|origin|source|params'
         }, {
             token: 'constant',
             regex: 'last|first|PASS_FINAL|FAIL_FINAL|PASS|FAIL'

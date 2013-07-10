@@ -1,5 +1,0 @@
-Name:      mode-cjsct
-Summary:   ACE Mode for ComponentJS Temporal Constaints
-Homepage:  -
-Version:   -
-License:   MPL
