@@ -14,7 +14,7 @@ module.exports = function(grunt) {
         jshint: {
             options: {
                 jshintrc: "jshint.json",
-                ignores:  [ "app/ui/app/lib-grammar.js" ]
+                ignores:  [ "app/ui/app/lib-cjsc-grammar.js", "app/ui/app/lib-cjsct-grammar.js" ]
             },
             gruntfile: [ "Gruntfile.js" ],
             sourcefiles: [
@@ -25,13 +25,18 @@ module.exports = function(grunt) {
         },
         peg: {
             constraints: {
-                grammar:    "app/ui/app/lib-grammar.peg",
-                outputFile: "app/ui/app/lib-grammar.js",
+                grammar:    "app/ui/app/lib-cjsc-grammar.peg",
+                outputFile: "app/ui/app/lib-cjsc-grammar.js",
                 exportVar:  "app.lib.constraint_parser"
+            },
+            temporals: {
+                grammar:    "app/ui/app/lib-cjsct-grammar.peg",
+                outputFile: "app/ui/app/lib-cjsct-grammar.js",
+                exportVar:  "app.lib.temporal_constraint_parser"
             }
         },
         clean: {
-            clean:     [ "app/ui/app/lib-grammar.js" ],
+            clean:     [ "app/ui/app/lib-cjsc-grammar.js", "app/ui/app/lib-cjsct-grammar.js" ],
             distclean: [ "node_modules" ]
         }
     });
