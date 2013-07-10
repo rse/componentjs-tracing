@@ -27,6 +27,17 @@ app.sv = cs.clazz({
                 }
             })
 
+            /*  parses a given string using the PEG parser for the temporal constraint grammar  */
+            cs(this).register("parseTemporalConstraintset", function (content) {
+                try {
+                    var constraintSet = app.lib.temporal_constraint_parser.parse(content)
+                    return { success: true, constraints: constraintSet }
+                }
+                catch (err) {
+                    return { success: false, error: err }
+                }
+            })
+
             /*  checks an array of traces against a given set of constraints  */
             cs(this).register("checkTuples", function (traces, constraintSet) {
                 var resTraces = []
