@@ -62,8 +62,8 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                     var tabs = cs(self, 'model').value('data:tabs')
                     var constraintsets = []
 
-                    for (var i = 0; i < tabs.length; i++) {
-                        var tab = cs(self, 'model/view/' + tabs[i].id)
+                    _.map(tabs, function (tabData) {
+                        var tab = cs(self, 'model/view/' + tabData.id)
                         var content = tab.value('data:savable')
                         var result
                         if (cs(self).value('state:highlighting') === 'cjsc')
@@ -71,15 +71,25 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                         else if (cs(self).value('state:highlighting') === 'cjsct')
                             result = cs('/sv').call('parseTemporalConstraintset', content)
 
-
                         if (result.success) {
                             tab.call('displayError', null)
-                            if (tabs[i].enabled)
+                            if (tabData.enabled)
                                 constraintsets.push(result.constraints)
                         }
                         else
                             tab.call('displayError', result.error)
+                    })
+                    /*  check for semantic correctness in temporal constraints  */
+                    //TODO - add semantic validation
+                    /*if (cs(self).value('state:highlighting') === 'cjsct') {
+                        var resultSem = cs('/sv').call('validateTemporalConstraints', constraintsets)
+                        if (resultSem.success)
+                            cs(self).publish('setChanged', constraintsets)
+                        }
+                        else
+                            tab.call('displayError', resultSem.error)
                     }
+                    else*/
                     cs(self).publish('setChanged', constraintsets)
                 }
             })
