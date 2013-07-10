@@ -10,7 +10,7 @@
 /* global ace: true */
 cs.ns('app.ui.widget.constraintset')
 
-app.ui.widget.constraintset.model = cs.clazz({
+app.ui.widget.constraintset = cs.clazz({
     mixin: [ cs.marker.model, cs.marker.view ],
     dynamics: {
         editor: null
@@ -21,8 +21,8 @@ app.ui.widget.constraintset.model = cs.clazz({
 
             /*  presentation model for items  */
             cs(self).model({
-                'data:constraintset': { value: '', valid: 'string', store: true },
-                'data:savable':       { value: '', valid: 'string' }
+                'data:constraintset' : { value: '', valid: 'string', store: true     },
+                'data:savable' :       { value: '', valid: 'string'                  }
             })
 
             /*  calculate the savable content on demand  */
@@ -51,7 +51,7 @@ app.ui.widget.constraintset.model = cs.clazz({
             var suspend = false
 
             self.editor = ace.edit(id)
-            self.editor.getSession().setMode('ace/mode/cjsc')
+            self.editor.getSession().setMode('ace/mode/' + cs(self).value('state:highlighting'))
             self.editor.on('change', function (ev, editor) {
                 if (suspend)
                     return;
@@ -72,6 +72,13 @@ app.ui.widget.constraintset.model = cs.clazz({
                     self.editor.clearSelection()
                     cs(self).publish('editorChanged')
                     suspend = false
+                }
+            })
+
+            cs(self).observe({
+                name: 'state:highlighting', spool: 'rendered',
+                func: function (ev, nVal) {
+                    self.editor.getSession().setMode('ace/mode/' + nVal)
                 }
             })
 
