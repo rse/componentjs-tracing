@@ -17,7 +17,7 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
     },
     protos: {
         create: function () {
-            cs(this).create('tabsModel/view',
+            cs(this).create('model/view',
                 app.ui.widget.vertical.tabs.model,
                 app.ui.widget.vertical.tabs.view
             )
@@ -25,9 +25,9 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
         prepare: function () {
             var self = this
 
-            var tabs = cs(self, 'tabsModel').value('data:tabs')
+            var tabs = cs(self, 'model').value('data:tabs')
             if (tabs.length === 0) {
-                cs(self, 'tabsModel').value('data:tabs', [
+                cs(self, 'model').value('data:tabs', [
                     { id: 'standard', name: 'Standard', enabled: true }
                 ])
             }
@@ -35,11 +35,11 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                 for (var i = 0; i < tabs.length; i++) {
                     delete tabs[i].socket
                 }
-                cs(self, 'tabsModel').value('data:tabs', tabs, true)
+                cs(self, 'model').value('data:tabs', tabs, true)
             }
 
-            $.get('static/standard_rules.txt', function (data) {
-                cs(self, 'tabsModel/view/standard').value('data:constraintset', data)
+            $.get(cs(self).value('data:standard'), function (data) {
+                cs(self, 'model/view/standard').value('data:constraintset', data)
             })
 
             cs(self).subscribe({
@@ -59,13 +59,17 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
             cs(self).register({
                 name: 'parseConstraintsets', spool: 'prepared',
                 func: function () {
-                    var tabs = cs(self, 'tabsModel').value('data:tabs')
+                    var tabs = cs(self, 'model').value('data:tabs')
                     var constraintsets = []
 
                     for (var i = 0; i < tabs.length; i++) {
-                        var tab = cs(self, 'tabsModel/view/' + tabs[i].id)
+                        var tab = cs(self, 'model/view/' + tabs[i].id)
                         var content = tab.value('data:savable')
-                        var result = cs('/sv').call('parseConstraintset', content)
+                        var result
+                        if (cs(self).value('state:highlighting') === 'cjsc')
+                            result = cs('/sv').call('parseConstraintset', content)
+                        else if (cs(self).value('state:highlighting') === 'cjsct')
+                            result = cs('/sv').call('parseTemporalConstraintset', content)
 
 
                         if (result.success) {
@@ -76,10 +80,7 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                         else
                             tab.call('displayError', result.error)
                     }
-                    var merged = _.flatten(constraintsets)
-                    var sorted = app.lib.sorter(merged)
-
-                    cs(self).publish('constraintSetChanged', sorted)
+                    cs(self).publish('setChanged', constraintsets)
                 }
             })
         },
@@ -89,7 +90,7 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
             cs(self).register({
                 name: 'saveCurrent', spool: 'rendered',
                 func: function () {
-                    var content = cs(self, 'tabsModel').value('data:savable')
+                    var content = cs(self, 'model').value('data:savable')
                     /* global btoa: true */
                     window.location = 'data:application/octet-stream;base64,' + btoa(content)
                 }
@@ -98,11 +99,11 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
             cs(self).register({
                 name: 'addConstraintset', spool: 'rendered',
                 func: function (/* content */) {
-                    var current = cs(self, 'tabsModel').value('data:tabs')
+                    var current = cs(self, 'model').value('data:tabs')
                     current.push({ id: 'custom_' + self.customs, name: 'Custom ' + self.customs, enabled: false })
 
-                    cs(self, 'tabsModel').value('state:active-tab', current.length - 1)
-                    cs(self, 'tabsModel').value('data:tabs', current, true)
+                    cs(self, 'model').value('state:active-tab', current.length - 1)
+                    cs(self, 'model').value('data:tabs', current, true)
 
                     self.customs++
                 }
@@ -111,7 +112,8 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
             cs(self).subscribe({
                 name: 'addConstraintset', spool: 'rendered',
                 func: function (ev, tab) {
-                    var newCustom = cs(this, 'tabsModel/view').create(tab.id, app.ui.widget.constraintset.model)
+                    var newCustom = cs(this, 'model/view').create(tab.id, app.ui.widget.constraintset)
+                    newCustom.value('state:highlighting', self.highlighting)
                     newCustom.state('visible')
 
                     if (tab.id.indexOf('custom') !== -1)
@@ -122,19 +124,19 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
             cs(self).register({
                 name: 'removeConstraintset', spool: 'rendered',
                 func: function () {
-                    var tabs = cs(self, 'tabsModel').value('data:tabs')
-                    var idx = cs(self, 'tabsModel').value('state:active-tab')
+                    var tabs = cs(self, 'model').value('data:tabs')
+                    var idx = cs(self, 'model').value('state:active-tab')
                     var activeTab = tabs[idx]
                     if (activeTab.id === 'standard') {
                         /* global alert: true */
                         alert('You cannot delete the standard constraint set')
                         return;
                     }
-                    var tab = cs(self, 'tabsModel/view/' + activeTab.id)
+                    var tab = cs(self, 'model/view/' + activeTab.id)
                     tab.value('data:constraintset', '')
                     cs.destroy(tab)
                     activeTab.deleted = true
-                    cs(self, 'tabsModel').value('data:tabs', tabs, true)
+                    cs(self, 'model').value('data:tabs', tabs, true)
                 }
             })
         },
@@ -165,6 +167,7 @@ app.ui.widget.vertical.tabs.model = cs.clazz({
                 name: 'data:savable', spool: 'created',
                 operation: 'get',
                 func: function () {
+                    /*  retrieve content of the tab that's currently active  */
                     var activeTab = cs(self).value('data:tabs')[cs(self).value('state:active-tab')]
                     var content = cs(self, 'view/' + activeTab.id).value('data:savable')
                     cs(self).value('data:savable', content)
@@ -174,8 +177,9 @@ app.ui.widget.vertical.tabs.model = cs.clazz({
             cs(self).observe({
                 name: 'event:tab-checked', spool: 'created',
                 func: function (ev, checkEvent) {
-                    cs(self).value('data:tabs')[checkEvent.tabIndex].enabled = checkEvent.state
-                    cs(self).touch('data:tabs')
+                    var tabs = cs(self).value('data:tabs')
+                    tabs[checkEvent.tabIndex].enabled = checkEvent.state
+                    cs(self).value('data:tabs', tabs, true)
                     cs(self).publish('editorChanged')
                 }
             })
