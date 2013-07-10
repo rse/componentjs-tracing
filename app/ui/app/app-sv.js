@@ -38,14 +38,32 @@ app.sv = cs.clazz({
                 }
             })
 
+            /*  validates the given constraints semantically  */
+            cs(this).register("validateTemporalConstraints", function (constraintSets) {
+                _.map(constraintSets, function (constraintSet) {
+                    _.map(constraintSet, function (constraint) {
+                        var participants = constraint.constraintBody.sequence
+                        _.map(constraint.constraintBody.filters, function (filter) {
+                            if (_.indexOf(participants, filter.id) === -1)
+                                return { success: false, error: { row: 1, column: 0, text: filter.id + " is not defined in the sequence section but used in a filter expression", type: "error" } }
+                        })
+                        _.map(constraint.constraintBody.links, function (link) {
+                            if (_.indexOf(participants, link.id) === -1)
+                                return { success: false, error: { row: 1, column: 0, text: link.id + " is not defined in the sequence section but used in a link expression", type: "error" } }
+                        })
+                        //TODO - enforce invariants
+                    })
+                })
+            })
+
             /*  checks an array of traces against a given set of constraints  */
             cs(this).register("checkTuples", function (traces, constraintSet) {
                 var resTraces = []
-                for (var i = 0; i < traces.length; i++) {
-                    var tuple = app.lib.constraintChecker.checkTuple(constraintSet, traces[i])
-                    if (tuple.result === "UNCLASSIFIED" || tuple.result === "FAIL")
-                        resTraces.push(tuple)
-                }
+                _.map(traces, function (trace) {
+                    var mTrace = app.lib.constraintChecker.checkTuple(constraintSet, trace)
+                    if (mTrace.result === "UNCLASSIFIED" || mTrace.result === "FAIL")
+                        resTraces.push(mTrace)
+                })
                 return resTraces
             })
         }
