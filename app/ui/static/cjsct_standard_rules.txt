@@ -15,11 +15,11 @@ temporal-constraint observe-value {
 	filter b {
 			originType == 'V'
 		&&	operation == 'value'
-		&&	parameters.value != undefined
+		&&	params.value != undefined
 	}
 
 	link b {
-			a.parameters.name == b.parameters.name
+			a.params.name == b.params.name
 		&&	isParent(a.origin, b.origin)
 	}
 }
