@@ -51,7 +51,7 @@ app.ui.widget.constraintset = cs.clazz({
             var suspend = false
 
             self.editor = ace.edit(id)
-            self.editor.getSession().setMode('ace/mode/' + cs(self).value('state:highlighting'))
+            self.editor.getSession().setMode('ace/mode/cjsc')
             self.editor.on('change', function (ev, editor) {
                 if (suspend)
                     return;
