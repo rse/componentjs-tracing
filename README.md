@@ -4,8 +4,6 @@ Run-Time Tracing for ComponentJS
 
 <p/>
 <img src="https://nodei.co/npm/componentjs-tracing.png?downloads=true&stars=true" alt=""/>
-<br/>
-<img src="https://nodei.co/npm-dl/componentjs-tracing.png?months=6" alt=""/>
 
 <p/>
 <img src="https://david-dm.org/rse/componentjs-tracing.png" alt=""/>
