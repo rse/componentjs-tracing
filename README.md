@@ -2,6 +2,10 @@
 
 Run-Time Tracing for ComponentJS
 
+![NPM](https://nodei.co/npm/componentjs-tracing.png)](https://nodei.co/npm/componentjs-tracing/) 
+
+<img src="https://david-dm.org/rse/componentjs-tracing.png" alt=""/>
+
 ## Overview
 
 This is a [Node.js](http://nodejs.org/) based tracing
