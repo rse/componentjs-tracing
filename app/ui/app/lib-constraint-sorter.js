@@ -15,8 +15,7 @@ var sort = function (constraintSet) {
     var last = graph.addVertex({data: {id: 'first'} })
     var root = last
     var vertices = [ root ]
-    for (var i = 0; i < constraintSet.length; i++) {
-        var constraint = constraintSet[i]
+    _.map(constraintSet, function (constraint) {
         if (constraint.constraints)
             constraint.constraints = sort(constraint.constraints)
         var vertex = graph.addVertex({ data: constraint })
@@ -27,16 +26,19 @@ var sort = function (constraintSet) {
         /*  Add the implicit dependency, resulting of the rule order within the file  */
         graph.addEdge(last.id, vertex.id)
         /*  Create edges in the dependency graph for the after and before relationships  */
-        for (var x = 0; x < dependencies.after.length; x++)
-            graph.addEdge(dependencies.after[x], vertex.id, 2)
-        for (var y = 0; y < dependencies.before.length; y++)
-            graph.addEdge(vertex.id, dependencies.before[y], 2)
+        _.map(dependencies.after, function (after) {
+            graph.addEdge(after, vertex.id, 2)
+        })
+        _.map(dependencies.before, function (before) {
+            graph.addEdge(vertex.id, before, 2)
+        })
         /*  Remember current rule  */
         last = vertex
-    }
+    })
     /*  Ensure that the 'last' node really comes last  */
-    for (var k = 0; k < vertices.length; k++)
-        graph.addEdge(vertices[k].id, 'last')
+    _.map(vertices, function (vertex) {
+        graph.addEdge(vertex.id, 'last')
+    })
     /*  Add 'last' node  */
     graph.addVertex({ data: {id: 'last'} })
     graph.setRoot(root)
@@ -46,11 +48,10 @@ var sort = function (constraintSet) {
     constraintSet = graph.topSort()
     var clearedConstraintSet = []
     /*  Filter artificial 'first' and 'last' node out  */
-    for (var z = 0; z < constraintSet.length; z++) {
-        var constr = constraintSet[z]
+    _.map(constraintSet, function (constr) {
         if (constr.id !== 'first' && constr.id !== 'last')
             clearedConstraintSet.push(constr)
-    }
+    })
     return clearedConstraintSet
 }
 
