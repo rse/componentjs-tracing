@@ -48,6 +48,10 @@ The diagram below illustrates the underlying architecture of the ComponentJS tra
 2. Use Node.js's [NPM](https://npmjs.org/) to install ComponentJS Tracing:
 
         $ npm install -g componentjs-tracing
+        
+3. Clone the latest version of [PegJS](https://github.com/dmajda/pegjs) to your local machine
+4. And use [NPM](https://npmjs.org/) to install it globally:
+	$ npm install -g .
 
 ## Update Existing Installation
 
