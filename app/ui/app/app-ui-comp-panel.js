@@ -11,7 +11,8 @@ app.ui.comp.panel = cs.clazz({
     mixin: [ cs.marker.controller ],
     dynamics: {
         constraintSet: [],
-        temporalConstraintSet: []
+        temporalConstraintSet: [],
+        temporalMonitors: []
     },
     protos: {
         create: function () {
@@ -44,6 +45,12 @@ app.ui.comp.panel = cs.clazz({
                 name: 'temporalConstraintSetChanged', spool: 'created',
                 func: function (ev, nVal) {
                     self.temporalConstraintSet = nVal
+                    self.temporalMonitors = []
+                    _.map(nVal, function (temporalSet) {
+                        _.map(temporalSet, function (temporal) {
+                            self.temporalMonitors.push(new app.lib.happens_before_monitor(temporal))
+                        })
+                    })
                 }
             })
 
@@ -61,8 +68,12 @@ app.ui.comp.panel = cs.clazz({
                 name: 'checkTrace', spool: 'created',
                 func: function (ev, trace) {
                     var resTuples = cs('/sv').call('checkTuples', [ trace ], self.constraintSet)
+                    _.map(self.temporalMonitors, function (monitor) {
+                        resTuples.push(monitor.processTrace(trace))
+                    })
                     if (resTuples.length === 0)
                         return
+                    debugger
                     cs(self, 'panel/panel/checking').call('unshift', resTuples[0])
                 }
             })
