@@ -38,7 +38,7 @@ app.ui.comp.constraints = cs.clazz({
             cs(self).subscribe({
                 name: 'setChanged', spool: 'created',
                 func: function (ev, nVal) {
-                    if (cs(self).value('state:highlighting') === 'cjsc') {
+                    if (cs(self).value('state:highlighting') === 'cjscp') {
                         var merged = _.flatten(nVal)
                         var sorted = app.lib.sorter(merged)
                         cs(self, '..').publish('constraintSetChanged', sorted)

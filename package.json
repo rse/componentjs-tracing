@@ -1,60 +1,70 @@
 {
-    "name":           "componentjs-tracing",
-    "description":    "Run-Time Tracing for ComponentJS based Rich Client UIs",
-    "keywords":       [ "componentjs", "tracing", "checking", "constraint", "runtime" ],
-    "version":        "0.9.2",
-    "author": {       
-        "name":       "Ralf S. Engelschall",
-        "email":      "rse@engelschall.com",
-        "url":        "http://engelschall.com/"
+  "name": "componentjs-tracing",
+  "description": "Run-Time Tracing for ComponentJS based Rich Client UIs",
+  "keywords": [
+    "componentjs",
+    "tracing",
+    "checking",
+    "constraint",
+    "runtime"
+  ],
+  "version": "0.9.2",
+  "author": {
+    "name": "Ralf S. Engelschall",
+    "email": "rse@engelschall.com",
+    "url": "http://engelschall.com/"
+  },
+  "maintainers": [
+    {
+      "name": "Ralf S. Engelschall",
+      "email": "rse@engelschall.com",
+      "url": "http://engelschall.com/"
     },
-    "maintainers": [{       
-        "name":       "Ralf S. Engelschall",
-        "email":      "rse@engelschall.com",
-        "url":        "http://engelschall.com/"
-    }, {
-        "name":       "Christian Vaas",
-        "email":      "christianvaas@auspex.eu"
-    }],
-    "repository": {
-        "type":       "git",
-        "url":        "https://github.com/rse/componentjs-tracing.git"
-    },                
-    "licenses": [{
-        "type":       "MPL/2.0",
-        "url":        "http://mozilla.org/MPL/2.0/"
-    }],
-    "homepage":       "https://github.com/rse/jquery-markup",
-    "bugs":           "https://github.com/rse/componentjs-tracing-proxy/issues",
-    "readmeFilename": "README.md",
-    "bin": {
-        "componentjs-tracing": "./componentjs-tracing.js"
-    },
-    "dependencies": {
-        "node-ini":             "*",
-        "dashdash":             "*",
-        "express":              "*",
-        "express-api-helper":   "*",
-        "express-winston":      "*",
-        "express.io":           "*",
-        "winston":              "*",
-        "cors":                 "*",
-        "http-proxy-simple":    "*",
-        "request":              "*"
-    },
-    "devDependencies": {
-        "grunt":                "~0.4.1",
-        "grunt-cli":            "~0.1.8",
-        "grunt-contrib-jshint": "~0.4.3",
-        "grunt-contrib-uglify": "~0.2.0",
-        "grunt-contrib-clean":  "~0.4.1",
-        "grunt-peg":            "~0.2.0",
-        "pegjs":                "~0.7.0"
-    },
-    "engines": {
-        "node":                 ">=0.10.0"
-    },
-    "scripts": {
-        "prepublish": "make"
+    {
+      "name": "Christian Vaas",
+      "email": "christianvaas@auspex.eu"
     }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rse/componentjs-tracing.git"
+  },
+  "licenses": [
+    {
+      "type": "MPL/2.0",
+      "url": "http://mozilla.org/MPL/2.0/"
+    }
+  ],
+  "homepage": "https://github.com/rse/jquery-markup",
+  "bugs": "https://github.com/rse/componentjs-tracing-proxy/issues",
+  "readmeFilename": "README.md",
+  "bin": {
+    "componentjs-tracing": "./componentjs-tracing.js"
+  },
+  "dependencies": {
+    "node-ini": "*",
+    "dashdash": "*",
+    "express": "*",
+    "express-api-helper": "*",
+    "express-winston": "*",
+    "express.io": "*",
+    "winston": "*",
+    "cors": "*",
+    "http-proxy-simple": "*",
+    "request": "*"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-cli": "~0.1.8",
+    "grunt-contrib-jshint": "~0.4.3",
+    "grunt-contrib-uglify": "~0.2.0",
+    "grunt-contrib-clean": "~0.4.1",
+    "grunt-shell": "~0.3.1"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "prepublish": "make"
+  }
 }

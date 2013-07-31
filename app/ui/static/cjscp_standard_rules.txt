@@ -1,4 +1,4 @@
-constraint view-self {
+peephole-constraint view-self {
   rationale {
     Specifies the calls, allowed for a view performed
     onto itself.
@@ -8,7 +8,7 @@ constraint view-self {
     &&  source == origin
   }
 
-  constraint view-self-observe {
+  peephole-constraint view-self-observe {
     rationale {
       Views must only observe their underlying presentation
       models through direct observation onto themselves.
@@ -20,7 +20,7 @@ constraint view-self {
     result PASS
   }
 
-  constraint view-self-value {
+  peephole-constraint view-self-value {
     rationale {
       Views must only access their underlying presentation
       models through direct value access onto themselves.
@@ -33,7 +33,7 @@ constraint view-self {
   }
 }
 
-constraint service-calls {
+peephole-constraint service-calls {
   rationale {
     Always allow calls to explicit service components.
   }
@@ -45,7 +45,7 @@ constraint service-calls {
   result PASS
 }
 
-constraint model-models {
+peephole-constraint model-models {
   rationale {
     Models may define a model onto themselves.
   }
@@ -58,7 +58,7 @@ constraint model-models {
   result PASS
 }
 
-constraint view-self-guard {
+peephole-constraint view-self-guard {
   rationale {
     Views may be able to set guards onto themselves.
   }
@@ -69,7 +69,7 @@ constraint view-self-guard {
   result PASS
 }
 
-constraint register-self {
+peephole-constraint register-self {
   rationale {
     A service may only be registered onto the component itself and onto a service component.
   }

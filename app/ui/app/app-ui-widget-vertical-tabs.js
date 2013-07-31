@@ -66,7 +66,7 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                         var tab = cs(self, 'model/view/' + tabData.id)
                         var content = tab.value('data:savable')
                         var result
-                        if (cs(self).value('state:highlighting') === 'cjsc')
+                        if (cs(self).value('state:highlighting') === 'cjscp')
                             result = cs('/sv').call('parseConstraintset', content)
                         else if (cs(self).value('state:highlighting') === 'cjsct')
                             result = cs('/sv').call('parseTemporalConstraintset', content)

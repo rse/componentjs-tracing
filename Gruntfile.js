@@ -14,7 +14,7 @@ module.exports = function(grunt) {
         jshint: {
             options: {
                 jshintrc: "jshint.json",
-                ignores:  [ "app/ui/app/lib-cjsc-grammar.js", "app/ui/app/lib-cjsct-grammar.js" ]
+                ignores:  [ "app/ui/app/lib-cjscp-grammar.js", "app/ui/app/lib-cjsct-grammar.js" ]
             },
             gruntfile: [ "Gruntfile.js" ],
             sourcefiles: [
@@ -23,29 +23,25 @@ module.exports = function(grunt) {
                 "app/ui/app/app-*.js"
             ]
         },
-        peg: {
-            constraints: {
-                grammar:    "app/ui/app/lib-cjsc-grammar.peg",
-                outputFile: "app/ui/app/lib-cjsc-grammar.js",
-                exportVar:  "app.lib.constraint_parser"
+        shell: {
+            peephole: {
+                command: "pegjs -e app.lib.peephole_constraint_parser app/ui/app/lib-cjscp-grammar.peg app/ui/app/lib-cjscp-grammar.js"
             },
-            temporals: {
-                grammar:    "app/ui/app/lib-cjsct-grammar.peg",
-                outputFile: "app/ui/app/lib-cjsct-grammar.js",
-                exportVar:  "app.lib.temporal_constraint_parser"
+            temporal: {
+                command: "pegjs -e app.lib.temporal_constraint_parser app/ui/app/lib-cjsct-grammar.peg app/ui/app/lib-cjsct-grammar.js"
             }
         },
         clean: {
-            clean:     [ "app/ui/app/lib-cjsc-grammar.js", "app/ui/app/lib-cjsct-grammar.js" ],
+            clean:     [ "app/ui/app/lib-cjscp-grammar.js", "app/ui/app/lib-cjsct-grammar.js" ],
             distclean: [ "node_modules" ]
         }
     });
 
-    grunt.loadNpmTasks("grunt-peg");
+    grunt.loadNpmTasks("grunt-shell");
     grunt.loadNpmTasks("grunt-contrib-jshint");
     grunt.loadNpmTasks("grunt-contrib-clean");
 
-    grunt.registerTask("default", [ "peg", "jshint" ]);
-    grunt.registerTask("grammar", [ "peg" ]);
+    grunt.registerTask("default", [ "grammar", "jshint" ]);
+    grunt.registerTask("grammar", [ "shell" ]);
 };
 

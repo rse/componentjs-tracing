@@ -5,7 +5,7 @@ constraintset
   = _ cts:constraint+ _ { return cts }
 
 constraint
-  = _ "constraint" _ id:id _ "{" _ body:constraintBody _ "}" _ { return { type: 'constraint', id: id, constraintBody: body } }
+  = _ "peephole-constraint" _ id:id _ "{" _ body:constraintBody _ "}" _ { return { type: 'constraint', id: id, constraintBody: body } }
 
 constraintBody
   = after:after? before:before? rat:rationale cond:condition res:result { var obj = { dependencies: { before: before === '' ? [] : before, after: after === '' ? [] : after }, rationale : rat, condition: cond, result: res }; return obj }
@@ -48,8 +48,8 @@ value
   / "undefined" { return { type: 'value', value: 'undefined' } }
   / '"' content:( '\\"' / [^"])* '"' { return '"' + content.join('') + '"' }
   / "'" content:( '\\\'' / [^'])* "'" { return '"' + content.join('') + '"' }
-  / first:[0-9]+ last:(.[0-9]+)? { return first.concat(last).join('') }
-  / '/' content:('\\/' / [^/])* '/' { return { type: 'regex', value: '/' + content.join('') + '/' } }
+  / foo:$([0-9]+(.[0-9]+)?) { return foo }
+  / '/' content:('\\/' / [^/])* '/' { return { type: 'regex', value: '/' + content.join('').replace(/\\//g, '/') + '/' } }
 
 op
   = "=="

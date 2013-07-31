@@ -43,7 +43,7 @@ var cjscHighlightRules = function() {
     this.$rules = { start:
        [{
             token: 'keyword',
-            regex: 'temporal-constraint|constraint|rationale'
+            regex: 'temporal-constraint|peephole-constraint|rationale'
         }, {
             token: 'keyword',
             regex: 'condition|sequence|filter|link'
