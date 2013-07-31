@@ -24,7 +24,7 @@ app.ui.comp.panel = cs.clazz({
                 app.ui.widget.panel.view,
                 app.ui.comp.tracing,
                 app.ui.comp.checking,
-                new app.ui.comp.constraints('cjsc'),
+                new app.ui.comp.constraints('cjscp'),
                 new app.ui.comp.constraints('cjsct'),
                 app.ui.widget.statusbar
             )
@@ -62,7 +62,7 @@ app.ui.comp.panel = cs.clazz({
                 func: function (ev, trace) {
                     var resTuples = cs('/sv').call('checkTuples', [ trace ], self.constraintSet)
                     if (resTuples.length === 0)
-                        return;
+                        return
                     cs(self, 'panel/panel/checking').call('unshift', resTuples[0])
                 }
             })
@@ -95,7 +95,7 @@ app.ui.comp.panel = cs.clazz({
             cs(this, 'panel').value('data:tabs', [
                 { id: 'tracing',             name: 'Tracing',     icon: "gears"       },
                 { id: 'checking',            name: 'Checking',    icon: "thumbs-down" },
-                { id: 'constraints',         name: 'Constraints', icon: "legal"       },
+                { id: 'constraints',         name: 'Constraints', icon: "screenshot"  },
                 { id: 'temporalConstraints', name: 'Constraints', icon: "time"        }
             ])
         },
