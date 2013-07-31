@@ -19,7 +19,6 @@ app.sv = cs.clazz({
             /*  parses a given string using the PEG parser for the constraint grammar  */
             cs(this).register("parseConstraintset", function (content) {
                 try {
-                    debugger
                     var constraintSet = app.lib.peephole_constraint_parser.parse(content)
                     return { success: true, constraints: constraintSet }
                 }
