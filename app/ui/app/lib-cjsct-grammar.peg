@@ -71,8 +71,6 @@ rationale
   = "rationale" _ "{" _ text:([^}]*) "}" _ { return text.join('').trim() }
 
 id
-  = "last" { return 'last' }
-  / "first" { return 'first' }
-  / id:([a-zA-Z][a-zA-Z0-9-_]*) { if (id.length > 1) { return id[0]+id[1].join('') } else { return id } }
+  = id:([a-zA-Z][a-zA-Z0-9-_]*) { if (id.length > 1) { return id[0]+id[1].join('') } else { return id } }
 _
   = [ \t\r\n]*
