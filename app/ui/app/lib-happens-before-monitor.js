@@ -16,12 +16,11 @@ var monitor = function (temporalConstraint) {
     //TODO - init - process the constraint
 
     this.processTrace = function (trace) {
-        trace.result = "UNCLASSIFIED"
-        trace.checks = {
+        trace.checks = [{
             constraint: temporalConstraint,
             subs: [],
             result: 'FAIL'
-        }
+        }]
 
         return trace
     }
