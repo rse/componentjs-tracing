@@ -56,6 +56,7 @@ app.ui.widget.rationales.view = cs.clazz({
                         var item = checks[i].constraint
                         data.title = item.id
                         data.rationale = item.constraintBody.rationale
+                        data.icon = item.type !== 'temporal-constraint' ? 'icon-screenshot' : 'icon-time'
 
                         var rationale = $.markup('rationales/rationales-item', data)
                         var clazz = 'red'
@@ -72,6 +73,7 @@ app.ui.widget.rationales.view = cs.clazz({
                     if (tuple.result === 'UNCLASSIFIED') {
                         data.title = 'No constraint found, that matches this tuple'
                         data.rationale = 'None of the given constraints conditions matched this tuple, thus no assumption about its validity could be made'
+                        data.icon = 'icon-screenshot'
                         $('.table', rationales).append($.markup('rationales/rationales-item', data))
                     }
                 }
