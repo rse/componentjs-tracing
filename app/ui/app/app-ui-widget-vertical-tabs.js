@@ -56,6 +56,14 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                 }
             })
 
+            var parseTemporalConstraints = function (tabData) {
+
+            }
+
+            var parsePeepholeConstraints = function (tabData) {
+
+            }
+
             cs(self).register({
                 name: 'parseConstraintsets', spool: 'prepared',
                 func: function () {
@@ -72,12 +80,15 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                             result = cs('/sv').call('parseTemporalConstraintset', content)
 
                         if (result.success) {
-                            tab.call('displayError', null)
+                            tab.call('displayError', [])
                             if (tabData.enabled)
                                 constraintsets.push(result.constraints)
                         }
-                        else
-                            tab.call('displayError', result.error)
+                        else {
+                            result.error.expected = _.filter(result.error.expected, function (exp) { return exp !== '[ \\t\\r\\n]' })
+                            result.error.message = 'Expected ' + result.error.expected.join(' or ') + ' but "' + result.error.found + '" found.'
+                            tab.call('displayError', [ result.error ])
+                        }
                     })
                     /*  check for semantic correctness in temporal constraints  */
                     //TODO - add semantic validation
@@ -87,7 +98,7 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                             cs(self).publish('setChanged', constraintsets)
                         }
                         else
-                            tab.call('displayError', resultSem.error)
+                            tab.call('displayError', [ resultSem.error ])
                     }
                     else*/
                     cs(self).publish('setChanged', constraintsets)
