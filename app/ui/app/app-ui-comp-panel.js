@@ -73,7 +73,6 @@ app.ui.comp.panel = cs.clazz({
                     })
                     if (resTuples.length === 0)
                         return
-                    debugger
                     cs(self, 'panel/panel/checking').call('unshift', resTuples[0])
                 }
             })
@@ -106,8 +105,8 @@ app.ui.comp.panel = cs.clazz({
             cs(this, 'panel').value('data:tabs', [
                 { id: 'tracing',             name: 'Tracing',     icon: "gears"       },
                 { id: 'checking',            name: 'Checking',    icon: "thumbs-down" },
-                { id: 'constraints',         name: 'Constraints', icon: "screenshot"  },
-                { id: 'temporalConstraints', name: 'Constraints', icon: "time"        }
+                { id: 'constraints',         name: 'Peephole Constraints', icon: "screenshot"  },
+                { id: 'temporalConstraints', name: 'Temporal Constraints', icon: "time"        }
             ])
         },
         render: function () {
