@@ -84,16 +84,19 @@ app.ui.widget.constraintset = cs.clazz({
 
             cs(self).register({
                 name: 'displayError', spool: 'rendered',
-                func: function (error) {
-                    if (error === null)
+                func: function (errors) {
+                    if (errors.length === 0)
                         self.editor.getSession().setAnnotations([])
                     else {
-                        self.editor.getSession().setAnnotations([{
-                            row: error.line - 1,
-                            column: error.column,
-                            text: error.message,
-                            type: 'error'
-                        }])
+                        errors = _.map(errors, function (error) {
+                            return {
+                                row: error.line - 1,
+                                column: error.column,
+                                text: error.message,
+                                type: error.type
+                            }
+                        })
+                        self.editor.getSession().setAnnotations(errors)
                     }
                     self.editor.focus()
                 }
