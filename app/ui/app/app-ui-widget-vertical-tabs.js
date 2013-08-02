@@ -69,39 +69,44 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                 func: function () {
                     var tabs = cs(self, 'model').value('data:tabs')
                     var constraintsets = []
+                    var highlighting = cs(self).value('state:highlighting')
+                    var syntacticallyCorrect = true
 
                     _.map(tabs, function (tabData) {
                         var tab = cs(self, 'model/view/' + tabData.id)
                         var content = tab.value('data:savable')
                         var result
-                        if (cs(self).value('state:highlighting') === 'cjscp')
+                        if (highlighting === 'cjscp')
                             result = cs('/sv').call('parseConstraintset', content)
-                        else if (cs(self).value('state:highlighting') === 'cjsct')
+                        else if (highlighting === 'cjsct')
                             result = cs('/sv').call('parseTemporalConstraintset', content)
 
                         if (result.success) {
                             tab.call('displayError', [])
-                            if (tabData.enabled)
-                                constraintsets.push(result.constraints)
+
+                            /*  check for semantic correctness in temporal constraints  */
+                            var errors
+                            if (highlighting === 'cjscp')
+                                errors = cs('/sv').call('validatePeepholeConstraints', result.constraints)
+                            else if (highlighting === 'cjsct')
+                                errors = cs('/sv').call('validateTemporalConstraints', result.constraints)
+
+                            if (errors.length !== 0)
+                                tab.call('displayError', errors)
+                            else
+                                if (tabData.enabled) {
+                                    constraintsets.push(result.constraints)
+                                    cs(self).publish('setChanged', constraintsets)
+                                }
                         }
                         else {
                             result.error.expected = _.filter(result.error.expected, function (exp) { return exp !== '[ \\t\\r\\n]' })
+                            result.error.type = 'error'
                             result.error.message = 'Expected ' + result.error.expected.join(' or ') + ' but "' + result.error.found + '" found.'
                             tab.call('displayError', [ result.error ])
+                            syntacticallyCorrect = false
                         }
                     })
-                    /*  check for semantic correctness in temporal constraints  */
-                    //TODO - add semantic validation
-                    /*if (cs(self).value('state:highlighting') === 'cjsct') {
-                        var resultSem = cs('/sv').call('validateTemporalConstraints', constraintsets)
-                        if (resultSem.success)
-                            cs(self).publish('setChanged', constraintsets)
-                        }
-                        else
-                            tab.call('displayError', [ resultSem.error ])
-                    }
-                    else*/
-                    cs(self).publish('setChanged', constraintsets)
                 }
             })
         },

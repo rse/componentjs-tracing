@@ -39,21 +39,30 @@ app.sv = cs.clazz({
             })
 
             /*  validates the given constraints semantically  */
-            cs(this).register("validateTemporalConstraints", function (constraintSets) {
-                _.map(constraintSets, function (constraintSet) {
-                    _.map(constraintSet, function (constraint) {
-                        var participants = constraint.constraintBody.sequence
-                        _.map(constraint.constraintBody.filters, function (filter) {
-                            if (_.indexOf(participants, filter.id) === -1)
-                                return { success: false, error: { row: 1, column: 0, text: filter.id + " is not defined in the sequence section but used in a filter expression", type: "error" } }
-                        })
-                        _.map(constraint.constraintBody.links, function (link) {
-                            if (_.indexOf(participants, link.id) === -1)
-                                return { success: false, error: { row: 1, column: 0, text: link.id + " is not defined in the sequence section but used in a link expression", type: "error" } }
-                        })
-                        //TODO - enforce invariants
+            cs(this).register("validateTemporalConstraints", function (constraintSet) {
+                var result = []
+                _.map(constraintSet, function (constraint) {
+                    var participants = constraint.constraintBody.sequence
+                    _.map(participants, function (participant) {
+                        var filterIds = _.map(constraint.constraintBody.filters, function (filter) { return filter.id })
+                        if (_.indexOf(filterIds, participant) === -1)
+                            result.push({ line: 1, column: 0, type: 'warning', message: "There is no filter expression specified for " + participant })
+                    })
+                    _.map(constraint.constraintBody.filters, function (filter) {
+                        if (_.indexOf(participants, filter.id) === -1)
+                            result.push({ line: 1, column: 0, type: 'error', message: filter.id + " is not defined in the sequence section but used in a filter expression" })
+                    })
+                    _.map(constraint.constraintBody.links, function (link) {
+                        if (_.indexOf(participants, link.id) === -1)
+                            result.push({ line: 1, column: 0, type: 'error', message: link.id + " is not defined in the sequence section but used in a link expression" })
                     })
                 })
+                return result
+            })
+
+            /*  validates the given constraints semantically  */
+            cs(this).register('validatePeepholeConstraints', function (constraintSet) {
+                return []
             })
 
             /*  checks an array of traces against a given set of constraints  */
