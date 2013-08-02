@@ -1,5 +1,0 @@
-Name:    Underscore.JS
-Summary: Functional Programming Utility Library
-Home:    http://underscorejs.org/
-Version: 1.4.4
-License: MIT
