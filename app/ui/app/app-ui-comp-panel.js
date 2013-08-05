@@ -69,7 +69,9 @@ app.ui.comp.panel = cs.clazz({
                 func: function (ev, trace) {
                     var resTuples = cs('/sv').call('checkTuples', [ trace ], self.constraintSet)
                     _.map(self.temporalMonitors, function (monitor) {
-                        resTuples.push(monitor.processTrace(trace))
+                        var res = monitor.processTrace(trace)
+                        if (res)
+                            resTuples.push(res)
                     })
                     if (resTuples.length === 0)
                         return
