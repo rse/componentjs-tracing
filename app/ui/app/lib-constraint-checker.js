@@ -162,7 +162,7 @@ var constraintChecker = function () {
             var sourceType = ctx.sourceType
             var originType = ctx.originType
             var operation = ctx.operation
-            var params = ctx.params
+            var params = ctx.parameters
 
             return eval(term.field + ' ' + term.op + ' ' + term.value)
         }
