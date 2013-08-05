@@ -82,7 +82,7 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                             result = cs('/sv').call('parseTemporalConstraintset', content)
 
                         if (result.success) {
-                            tab.call('displayError', [])
+                            tab.call('displaySyntacticError', [])
 
                             /*  check for semantic correctness in temporal constraints  */
                             var errors
@@ -92,7 +92,7 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                                 errors = cs('/sv').call('validateTemporalConstraints', result.constraints)
 
                             if (errors.length !== 0)
-                                tab.call('displayError', errors)
+                                tab.call('displaySemanticError', errors)
                             else
                                 if (tabData.enabled) {
                                     constraintsets.push(result.constraints)
@@ -103,7 +103,7 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                             result.error.expected = _.filter(result.error.expected, function (exp) { return exp !== '[ \\t\\r\\n]' })
                             result.error.type = 'error'
                             result.error.message = 'Expected ' + result.error.expected.join(' or ') + ' but "' + result.error.found + '" found.'
-                            tab.call('displayError', [ result.error ])
+                            tab.call('displaySyntacticError', [ result.error ])
                             syntacticallyCorrect = false
                         }
                     })

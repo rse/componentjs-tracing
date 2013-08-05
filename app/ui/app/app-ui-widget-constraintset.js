@@ -83,7 +83,7 @@ app.ui.widget.constraintset = cs.clazz({
             })
 
             cs(self).register({
-                name: 'displayError', spool: 'rendered',
+                name: 'displaySyntacticError', spool: 'rendered',
                 func: function (errors) {
                     if (errors.length === 0)
                         self.editor.getSession().setAnnotations([])
@@ -91,6 +91,28 @@ app.ui.widget.constraintset = cs.clazz({
                         errors = _.map(errors, function (error) {
                             return {
                                 row: error.line - 1,
+                                column: error.column,
+                                text: error.message,
+                                type: error.type
+                            }
+                        })
+                        self.editor.getSession().setAnnotations(errors)
+                    }
+                    self.editor.focus()
+                }
+            })
+
+            cs(self).register({
+                name: 'displaySemanticError', spool: 'rendered',
+                func: function (errors) {
+                    if (errors.length === 0)
+                        self.editor.getSession().setAnnotations([])
+                    else {
+                        var linesAry = self.editor.getSession().getValue().split('\n')
+
+                        errors = _.map(errors, function (error) {
+                            return {
+                                row: _.findIndex(linesAry, function (line) { return line.indexOf(error.constraint.id) !== -1 }),
                                 column: error.column,
                                 text: error.message,
                                 type: error.type
