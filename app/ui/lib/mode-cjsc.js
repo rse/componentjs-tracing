@@ -58,7 +58,7 @@ var cjscHighlightRules = function() {
             regex: 'isParent|distance|contains'
         }, {
             token: 'constant',
-            regex: 'sourceType|originType|operation|origin|source|params'
+            regex: 'sourceType|originType|operation|origin|source|parameters'
         }, {
             token: 'constant',
             regex: 'last|first|PASS_FINAL|FAIL_FINAL|PASS|FAIL'
