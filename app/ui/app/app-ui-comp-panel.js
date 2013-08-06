@@ -10,13 +10,15 @@
 app.ui.comp.panel = cs.clazz({
     mixin: [ cs.marker.controller ],
     dynamics: {
-        constraintSet: [],
+        peepholeConstraintSet: [],
         temporalConstraintSet: [],
         temporalMonitors: []
     },
     protos: {
         create: function () {
             var self = this
+
+            cs(self).property('ComponentJS:state-auto-increase', true)
 
             cs(self).create(
                 'panel/panel/' +
@@ -29,29 +31,38 @@ app.ui.comp.panel = cs.clazz({
                 new app.ui.comp.constraints('cjsct'),
                 app.ui.widget.statusbar
             )
-
             cs(self).create('headline', app.ui.widget.headline.view)
 
-            cs(self).property('ComponentJS:state-auto-increase', true)
+            /*  this may cause constraints to be overwritten, since no
+            **  disjunct naming among different constraint sets is enforced
+            */
+            var computeHierarchy = function (constraintSets) {
+                var flat = _.flatten(constraintSets)
+                var actual = {}
+                var result = []
+                _.each(flat, function (constraint) { actual[constraint.id] = constraint })
+                _.forIn(actual, function (value) {
+                    result.push(value)
+                })
+                return result
+            }
 
             cs(self).subscribe({
                 name: 'peepholeConstraintSetChanged', spool: 'created',
                 func: function (ev, nVal) {
-                    //  TODO make constraints with the same id override each other
-                    self.constraintSet = app.lib.sorter(_.flatten(nVal))
+                    nVal = computeHierarchy(nVal)
+                    self.peepholeConstraintSet = app.lib.sorter(nVal)
                 }
             })
 
             cs(self).subscribe({
                 name: 'temporalConstraintSetChanged', spool: 'created',
                 func: function (ev, nVal) {
-                    //  TODO make constraints with the same id override each other
+                    nVal = computeHierarchy(nVal)
                     self.temporalConstraintSet = nVal
                     self.temporalMonitors = []
-                    _.map(nVal, function (temporalSet) {
-                        _.map(temporalSet, function (temporal) {
-                            self.temporalMonitors.push(new app.lib.happens_before_monitor(temporal))
-                        })
+                    _.each(self.temporalConstraintSet, function (temporal) {
+                        self.temporalMonitors.push(new app.lib.happens_before_monitor(temporal))
                     })
                 }
             })
@@ -60,7 +71,7 @@ app.ui.comp.panel = cs.clazz({
                 name: 'checkJournal', spool: 'created',
                 func: function () {
                     var traces = cs(self, 'panel/panel/tracing').call('traces')
-                    var resTraces = cs('/sv').call('checkTraces', traces, self.constraintSet)
+                    var resTraces = cs('/sv').call('checkTraces', traces, self.peepholeConstraintSet)
 
                     cs(self, 'panel/panel/checking').call('displayTraces', resTraces)
                 }
@@ -70,7 +81,7 @@ app.ui.comp.panel = cs.clazz({
                 name: 'checkTrace', spool: 'created',
                 func: function (ev, trace) {
                     trace = app.lib.richTrace.enrich(trace)
-                    var resTraces = cs('/sv').call('checkTraces', [ trace ], self.constraintSet)
+                    var resTraces = cs('/sv').call('checkTraces', [ trace ], self.peepholeConstraintSet)
                     _.map(self.temporalMonitors, function (monitor) {
                         var res = monitor.processTrace(trace)
                         if (res)
@@ -108,14 +119,13 @@ app.ui.comp.panel = cs.clazz({
         },
         prepare: function () {
             cs(this, 'panel').value('data:tabs', [
-                { id: 'tracing',             name: 'Tracing',     icon: "gears"       },
-                { id: 'checking',            name: 'Checking',    icon: "thumbs-down" },
+                { id: 'tracing',             name: 'Tracing',              icon: "gears"       },
+                { id: 'checking',            name: 'Checking',             icon: "thumbs-down" },
                 { id: 'constraints',         name: 'Peephole Constraints', icon: "screenshot"  },
                 { id: 'temporalConstraints', name: 'Temporal Constraints', icon: "time"        }
             ])
         },
         render: function () {
-
             var ui = $('body').markup('comp-panel')
             cs(this).socket({ spool: 'materialized', ctx: ui, type: 'jquery' })
             cs(this).spool('materialized', this, function () { $(ui).remove() })
