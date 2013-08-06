@@ -56,14 +56,6 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                 }
             })
 
-            var parseTemporalConstraints = function (tabData) {
-
-            }
-
-            var parsePeepholeConstraints = function (tabData) {
-
-            }
-
             cs(self).register({
                 name: 'parseConstraintsets', spool: 'prepared',
                 func: function () {

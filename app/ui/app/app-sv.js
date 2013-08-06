@@ -42,7 +42,6 @@ app.sv = cs.clazz({
             cs(this).register('validateTemporalConstraints', function (constraintSet) {
                 var result = []
                 var noDups = _.uniq(constraintSet, function (constraint) { return constraint.id })
-                //  TODO - check for duplicates within the whole constraint set
                 if (noDups.length !== constraintSet.length) {
                     var diff = _.difference(constraintSet, noDups)
                     _.each(diff, function (constraint) {
