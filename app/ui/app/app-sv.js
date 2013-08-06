@@ -124,7 +124,7 @@ app.sv = cs.clazz({
             })
 
             /*  checks an array of traces against a given set of constraints  */
-            cs(this).register('checkTuples', function (traces, constraintSet) {
+            cs(this).register('checkTraces', function (traces, constraintSet) {
                 var resTraces = []
                 _.map(traces, function (trace) {
                     var mTrace = app.lib.constraintChecker.checkTuple(constraintSet, trace)

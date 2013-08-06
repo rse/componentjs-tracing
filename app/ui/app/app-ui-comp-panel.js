@@ -58,7 +58,7 @@ app.ui.comp.panel = cs.clazz({
                 name: 'checkJournal', spool: 'created',
                 func: function () {
                     var tuples = cs(self, 'panel/panel/tracing').call('tuples')
-                    var resTuples = cs('/sv').call('checkTuples', tuples, self.constraintSet)
+                    var resTuples = cs('/sv').call('checkTraces', tuples, self.constraintSet)
 
                     cs(self, 'panel/panel/checking').call('displayTuples', resTuples)
                 }
@@ -67,7 +67,8 @@ app.ui.comp.panel = cs.clazz({
             cs(self).subscribe({
                 name: 'checkTrace', spool: 'created',
                 func: function (ev, trace) {
-                    var resTuples = cs('/sv').call('checkTuples', [ trace ], self.constraintSet)
+                    trace = app.lib.richTrace.enrich(trace)
+                    var resTuples = cs('/sv').call('checkTraces', [ trace ], self.constraintSet)
                     _.map(self.temporalMonitors, function (monitor) {
                         var res = monitor.processTrace(trace)
                         if (res)
