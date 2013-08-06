@@ -113,8 +113,37 @@ app.sv = cs.clazz({
             /*  validates the given constraints semantically  */
             cs(this).register('validatePeepholeConstraints', function (constraintSet) {
                 var result = []
+                var containsDup = function (constraint) {
+                    if (constraint.constraintBody.constraints) {
+                        var dups = {}
+                        _.each(constraint.constraintBody.constraints, function (constraint) {
+                            if (dups[constraint.id])
+                                dups[constraint.id] = dups[constraint.id] + 1
+                            else
+                                dups[constraint.id] = 1
+                        })
+                        dups = _.omit(dups, function (value) { return value <= 1 })
+                        var keys = _.keys(dups)
+                        if (keys.length > 0)
+                            return keys
+
+                        /*  for loop is necessary here!  */
+                        for (var i = 0; i < constraint.constraintBody.constraints.length; i++)
+                            return containsDup(constraint.constraintBody.constraints[i])
+                    }
+                    return false
+                }
+                _.each(constraintSet, function (constraint) {
+                    var res = containsDup(constraint)
+                    if (res)
+                        result.push({
+                            constraint: constraint,
+                            column: 0,
+                            type: 'error',
+                            message: 'The name for the nested constraint' + (res.length > 1 ? 's' : '') + ' "' + res.join('", "') + '" is ambiguous'
+                        })
+                })
                 var noDups = _.uniq(constraintSet, function (constraint) { return constraint.id })
-                // TODO - also take into account the nested character of peephole constraints, when checking for uniqueness
                 if (noDups.length !== constraintSet.length) {
                     var diff = _.difference(constraintSet, noDups)
                     _.each(diff, function (constraint) {
