@@ -27,21 +27,19 @@ app.ui.comp.constraints = cs.clazz({
 
             var standard = 'static/' + self.domain + '_standard_rules.txt'
             cs(self).model({
-                'event:add' :          { value: false, valid: 'boolean', autoreset: true },
-                'event:remove' :       { value: false, valid: 'boolean', autoreset: true },
-                'event:load' :         { value: false, valid: 'boolean', autoreset: true },
-                'event:save' :         { value: false, valid: 'boolean', autoreset: true },
-                'state:highlighting' : { value: self.domain, valid: 'string'             },
-                'data:standard' :      { value: standard, valid: 'string'                }
+                'event:add' :          { value: false,          valid: 'boolean', autoreset: true },
+                'event:remove' :       { value: false,          valid: 'boolean', autoreset: true },
+                'event:load' :         { value: false,          valid: 'boolean', autoreset: true },
+                'event:save' :         { value: false,          valid: 'boolean', autoreset: true },
+                'state:highlighting' : { value: self.domain,    valid: 'string'                   },
+                'data:standard' :      { value: standard,       valid: 'string'                   }
             })
 
             cs(self).subscribe({
                 name: 'setChanged', spool: 'created',
                 func: function (ev, nVal) {
                     if (cs(self).value('state:highlighting') === 'cjscp') {
-                        var merged = _.flatten(nVal)
-                        var sorted = app.lib.sorter(merged)
-                        cs(self, '..').publish('constraintSetChanged', sorted)
+                        cs(self, '..').publish('peepholeConstraintSetChanged', nVal)
                     }
                     else
                         cs(self, '..').publish('temporalConstraintSetChanged', nVal)

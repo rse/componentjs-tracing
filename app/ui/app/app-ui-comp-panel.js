@@ -35,15 +35,17 @@ app.ui.comp.panel = cs.clazz({
             cs(self).property('ComponentJS:state-auto-increase', true)
 
             cs(self).subscribe({
-                name: 'constraintSetChanged', spool: 'created',
+                name: 'peepholeConstraintSetChanged', spool: 'created',
                 func: function (ev, nVal) {
-                    self.constraintSet = nVal
+                    //  TODO make constraints with the same id override each other
+                    self.constraintSet = app.lib.sorter(_.flatten(nVal))
                 }
             })
 
             cs(self).subscribe({
                 name: 'temporalConstraintSetChanged', spool: 'created',
                 func: function (ev, nVal) {
+                    //  TODO make constraints with the same id override each other
                     self.temporalConstraintSet = nVal
                     self.temporalMonitors = []
                     _.map(nVal, function (temporalSet) {
