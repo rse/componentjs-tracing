@@ -15,10 +15,11 @@ app.ui.widget.rationales.model = cs.clazz({
         create: function () {
             /*  presentation model for items  */
             cs(this).model({
-                'data:tuple'        : { value: null, valid: '(null | { id?: number, time: number,' +
+                'data:trace'        : { value: null, valid: '(null | { id?: number, time: number,' +
                     ' source: string, sourceType: string, origin: string, originType: string,' +
-                    ' operation: string, parameters: any, result: string, checks: any })'},
-                'data:rationales'   : { value: [], valid: '[any*]'}
+                    ' operation: string, parameters: any, result: string, checks: any, evaluateExpr: any,' +
+                    ' evaluateTerm: any, evaluateFunc: any, stringifyExpr: any })' },
+                'data:rationales'   : { value: [], valid: '[any*]' }
             })
         }
     }
@@ -67,12 +68,12 @@ app.ui.widget.rationales.view = cs.clazz({
                         $('.table', rationales).append(rationale)
                     }
 
-                    var tuple = cs(self).value('data:tuple')
-                    if (tuple === null)
+                    var trace = cs(self).value('data:trace')
+                    if (trace === null)
                         return;
-                    if (tuple.result === 'UNCLASSIFIED') {
-                        data.title = 'No constraint found, that matches this tuple'
-                        data.rationale = 'None of the given constraints conditions matched this tuple, thus no assumption about its validity could be made'
+                    if (trace.result === 'UNCLASSIFIED') {
+                        data.title = 'No constraint found, that matches this trace'
+                        data.rationale = 'None of the given constraints conditions matched this trace, thus no assumption about its validity could be made'
                         data.icon = 'icon-screenshot'
                         $('.table', rationales).append($.markup('rationales/rationales-item', data))
                     }

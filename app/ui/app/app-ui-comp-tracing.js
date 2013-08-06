@@ -137,8 +137,8 @@ app.ui.comp.tracing = cs.clazz({
                         return function (e) {
                             var file = e.target.result.trim()
                             var content = file.split('\n')
-                            var tuples = cs('/sv').call('parseLogfile', content)
-                            cs(self, 'grid').call('tuples', tuples)
+                            var traces = cs('/sv').call('parseLogfile', content)
+                            cs(self, 'grid').call('traces', traces)
                             if (cs(self).value('state:continuously'))
                                 cs(self).publish('checkJournal')
                         }
@@ -197,9 +197,9 @@ app.ui.comp.tracing = cs.clazz({
             })
 
             cs(self).register({
-                name: 'tuples', spool: 'rendered',
+                name: 'traces', spool: 'rendered',
                 func: function () {
-                    return cs(self, 'grid').call('tuples')
+                    return cs(self, 'grid').call('traces')
                 }
             })
 

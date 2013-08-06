@@ -76,7 +76,7 @@ var parseObject = function (param, params) {
 }
 
 var parseLog = function (lines) {
-    var tuples = []
+    var traces = []
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i]
         var matches = line.match(pattern)
@@ -84,7 +84,7 @@ var parseLog = function (lines) {
         params.skip()
         var param = {}
         parseObject(param, params)
-        var newTuple = {
+        var newTrace = {
             time: parseInt(matches[1], 10),
             source: matches[2],
             sourceType: matches[3],
@@ -93,15 +93,15 @@ var parseLog = function (lines) {
             operation: matches[6],
             parameters: param
         }
-        tuples.push(newTuple)
+        traces.push(newTrace)
     }
 
-    tuples.sort(function (a, b) { return b.time - a.time })
+    traces.sort(function (a, b) { return b.time - a.time })
 
-    return tuples
+    return traces
 }
 
-app.lib.tupleParser = {}
-app.lib.tupleParser.parseLog = parseLog
+app.lib.traceParser = {}
+app.lib.traceParser.parseLog = parseLog
 
 })()

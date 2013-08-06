@@ -7,33 +7,34 @@
 **  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-cs.ns('app.ui.widget.tuple.details')
+cs.ns('app.ui.widget.trace.details')
 
-app.ui.widget.tuple.details.model = cs.clazz({
+app.ui.widget.trace.details.model = cs.clazz({
     mixin: [ cs.marker.model ],
     protos: {
         create: function () {
             /*  presentation model for items  */
             cs(this).model({
-                'data:tuple'  : { value: null, valid: '(null | { id?: number, time: number, ' +
-                    'source: string, sourceType: string, origin: string, originType: ' +
-                    'string, operation: string, parameters: any, checks: any, result: string })' }
+                'data:trace'        : { value: null, valid: '(null | { id?: number, time: number,' +
+                    ' source: string, sourceType: string, origin: string, originType: string,' +
+                    ' operation: string, parameters: any, result: string, checks: any, evaluateExpr: any,' +
+                    ' evaluateTerm: any, evaluateFunc: any, stringifyExpr: any })' }
             })
         }
     }
 })
 
-app.ui.widget.tuple.details.view = cs.clazz({
+app.ui.widget.trace.details.view = cs.clazz({
     mixin: [ cs.marker.view ],
     protos: {
         render: function () {
             var self = this
-            var details = $.markup('tuple-details')
+            var details = $.markup('trace-details')
 
             cs(self).plug(details)
 
             cs(self).observe({
-                name: 'data:tuple', spool: 'rendered',
+                name: 'data:trace', spool: 'rendered',
                 touch: true,
                 func: function (ev, nVal) {
                     if (nVal !== null) {

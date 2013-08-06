@@ -20,7 +20,7 @@ app.ui.comp.checking = cs.clazz({
                 "rationalesModel/view}",
                 app.ui.widget.toolbar.model, app.ui.widget.toolbar.view,
                 app.ui.widget.grid.ctrl,
-                app.ui.widget.tuple.details.model, app.ui.widget.tuple.details.view,
+                app.ui.widget.trace.details.model, app.ui.widget.trace.details.view,
                 app.ui.widget.rationales.model, app.ui.widget.rationales.view
             )
 
@@ -59,16 +59,16 @@ app.ui.comp.checking = cs.clazz({
             cs(self, "grid").call("columns", columns)
 
             cs(self).register({
-                name: "displayTuples", spool: "prepared",
-                func: function (tuples) {
-                    cs(self, "grid").call("tuples", tuples)
+                name: "displayTraces", spool: "prepared",
+                func: function (traces) {
+                    cs(self, "grid").call("traces", traces)
                 }
             })
 
             cs(self).register({
                 name: "unshift", spool: "prepared",
-                func: function (tuple) {
-                    cs(self, "grid").call("unshift", tuple)
+                func: function (trace) {
+                    cs(self, "grid").call("unshift", trace)
                 }
             })
 
@@ -101,7 +101,7 @@ app.ui.comp.checking = cs.clazz({
 
             cs(self).socket({
                 scope: "detailsModel/view",
-                ctx: $(".tuple-details-container", content)
+                ctx: $(".trace-details-container", content)
             })
 
             cs(self).plug(content)
@@ -117,8 +117,8 @@ app.ui.comp.checking = cs.clazz({
             cs(self).subscribe({
                 name: "objectSelected", spool: "rendered",
                 func: function (ev, nVal) {
-                    cs(self, "detailsModel").value("data:tuple", nVal)
-                    cs(self, "rationalesModel").value("data:tuple", nVal)
+                    cs(self, "detailsModel").value("data:trace", nVal)
+                    cs(self, "rationalesModel").value("data:trace", nVal)
                     cs(self, "rationalesModel").value("data:rationales", nVal !== null ? nVal.checks : [])
                 }
             })

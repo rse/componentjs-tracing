@@ -9,7 +9,7 @@
 
 /*
  *  This is a small ComponentJS plugin which sends all
- *  captured tracing tuples to the server using websockets.
+ *  captured traces to the server using websockets.
  */
 
 /* global ComponentJS:false */

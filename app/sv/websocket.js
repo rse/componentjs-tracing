@@ -62,7 +62,7 @@ module.exports = {
                 buffer.push(req.data)
             }
             else {
-                /*  send new tracing tuple to all clients in the tracing room  */
+                /*  send new trace to all clients in the tracing room  */
                 for (var i = 0; i < clients.length; i++)
                     clients[i].emit("newTrace", req.data)
             }

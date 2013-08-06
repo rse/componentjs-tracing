@@ -9,7 +9,7 @@
 
 /*
  *  This is a small ComponentJS plugin which just logs all
- *  captured tracing tuples to the console.
+ *  captured traces to the console.
  */
 
 /* global ComponentJS:false */
@@ -61,7 +61,7 @@ ComponentJS.plugin("tracing-console", function (_cs, $cs, GLOBAL) {
             else
                 params = "{}";
 
-            /*  print the tracing tuple to the console  */
+            /*  print the trace to the console  */
             GLOBAL.console.log("TRACING: " +
                 "#" + tracing.id + ": < " +
                 tracing.timestamp() + ", " +

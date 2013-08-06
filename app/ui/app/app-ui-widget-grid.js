@@ -31,9 +31,9 @@ app.ui.widget.grid.ctrl = cs.clazz({
             cs(self).register({
                 name: 'unshift', spool: 'created',
                 func: function (trace) {
-                    var tuples = cs(self, 'gridModel').value('data:rows')
-                    tuples.unshift(trace)
-                    cs(self, 'gridModel').value('data:rows', tuples)
+                    var traces = cs(self, 'gridModel').value('data:rows')
+                    traces.unshift(trace)
+                    cs(self, 'gridModel').value('data:rows', traces)
                     cs(self, 'gridModel/view').call('unshift', trace)
                 }
             })
@@ -48,10 +48,10 @@ app.ui.widget.grid.ctrl = cs.clazz({
             })
 
             cs(self).register({
-                name: 'tuples' , spool: 'created',
-                func: function (tuples) {
-                    if (tuples) {
-                        cs(self, 'gridModel').value('data:rows', tuples, true)
+                name: 'traces' , spool: 'created',
+                func: function (traces) {
+                    if (traces) {
+                        cs(self, 'gridModel').value('data:rows', traces, true)
                     } else {
                         return cs(self, 'gridModel').value('data:rows')
                     }
@@ -99,9 +99,10 @@ app.ui.widget.grid.model = cs.clazz({
         create: function () {
             var self = this
 
-            var validTuplesSet = '[{ id?: number, time: number, source: string, sourceType: string,' +
+            var validTracesSet = '[{ id?: number, time: number, source: string, sourceType: string,' +
                 ' origin: string, originType: string, operation: string,' +
-                ' parameters: any, result?: string, checks?: any }*]'
+                ' parameters: any, result?: string, checks?: any, evaluateExpr: any, evaluateTerm: any,' +
+                ' evaluateFunc: any, stringifyExpr: any }*]'
 
             /*  presentation model for items  */
             cs(self).model({
@@ -110,8 +111,8 @@ app.ui.widget.grid.model = cs.clazz({
                 'state:filter'      : { value: '',   valid: 'string' },
                 'data:selected-obj' : { value: null, valid: 'object' },
                 'data:savable'      : { value: '',   valid: 'string' },
-                'data:filtered'     : { value: [],   valid: validTuplesSet },
-                'data:rows'         : { value: [],   valid: validTuplesSet }
+                'data:filtered'     : { value: [],   valid: validTracesSet },
+                'data:rows'         : { value: [],   valid: validTracesSet }
             })
 
             cs(self).observe({
@@ -135,25 +136,25 @@ app.ui.widget.grid.model = cs.clazz({
                         var tmp = nVal.split(':')
 
                         for (var i = 0; i < unfiltered.length; i++) {
-                            var tuple = unfiltered[i]
+                            var trace = unfiltered[i]
                             /*  expand abbreviations for sourceType and originType  */
                             if (tmp[0] === 'OT')
                                 tmp[0] = 'originType'
                             if (tmp[0] === 'ST')
                                 tmp[0] = 'sourceType'
-                            if (tmp.length === 2 && tuple[tmp[0]]) {
-                                if (tuple[tmp[0]].toLowerCase().indexOf(tmp[1].toLowerCase()) !== -1)
-                                    result.push(tuple)
+                            if (tmp.length === 2 && trace[tmp[0]]) {
+                                if (trace[tmp[0]].toLowerCase().indexOf(tmp[1].toLowerCase()) !== -1)
+                                    result.push(trace)
                             }
                             else {
-                                for (var key in tuple) {
+                                for (var key in trace) {
                                     if (key === 'time' || key === 'id' || key === 'checks')
                                         continue;
-                                    var val = tuple[key]
+                                    var val = trace[key]
                                     if (key === 'parameters')
                                         val = JSON.stringify(val)
                                     if (val.toLowerCase().indexOf(nVal.toLowerCase()) !== -1) {
-                                        result.push(tuple)
+                                        result.push(trace)
                                         break;
                                     }
                                 }
