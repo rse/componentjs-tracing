@@ -11,7 +11,7 @@
 
 var Run = function () {
     return {
-        tuple: null,
+        trace: null,
         checks: [],
         result: 'FAIL'
     }
@@ -29,21 +29,21 @@ var constraintChecker = function () {
     return {
         failed: 0,
         passed: 0,
-        tuples: 0,
+        traces: 0,
         unclassified: 0,
         displayStats: function () {
-            console.log('Passed tuples ' + this.passed)
-            console.log('Failed tuples ' + this.failed)
-            console.log('Unclassified tuples ' + this.unclassified)
-            console.log('Processed tuples ' + this.tuples)
+            console.log('Passed traces ' + this.passed)
+            console.log('Failed traces ' + this.failed)
+            console.log('Unclassified traces ' + this.unclassified)
+            console.log('Processed traces ' + this.traces)
         },
-        checkTuple: function (constraintSet, tuple) {
+        checkTrace: function (constraintSet, trace) {
             var run = new Run()
-            run.tuple = tuple
-            this.tuples++
+            run.trace = trace
+            this.traces++
             for (var i = 0; i < constraintSet.length; i++) {
                 var check = new Check()
-                this.checkConstraint(constraintSet[i], tuple, check)
+                this.checkConstraint(constraintSet[i], trace, check)
 
                 if (check.constraint !== null) {
                     run.checks.push(check)
@@ -66,10 +66,10 @@ var constraintChecker = function () {
             else if (run.result === 'FAIL') {
                 this.failed++
             }
-            tuple.result = run.result
-            tuple.checks = run.checks
+            trace.result = run.result
+            trace.checks = run.checks
 
-            return tuple
+            return trace
         },
         printReason: function (checks, depth) {
             depth = depth || 0
@@ -85,16 +85,16 @@ var constraintChecker = function () {
                 this.printReason(checks[i].subs, depth + 1)
             }
         },
-        checkConstraint: function (constraint, tuple, check) {
+        checkConstraint: function (constraint, trace, check) {
             var condition = constraint.constraintBody.condition
 
-            if (this.evaluateExpr(tuple, condition)) {
+            if (trace.evaluateExpr(condition)) {
                 if (constraint.constraintBody.constraints) {
                     for (var i = 0; i < constraint.constraintBody.constraints.length; i++) {
                         condition = constraint.constraintBody.constraints[i].constraintBody.condition
 
                         var chk = new Check()
-                        this.checkConstraint(constraint.constraintBody.constraints[i], tuple, chk)
+                        this.checkConstraint(constraint.constraintBody.constraints[i], trace, chk)
                         if (chk.constraint !== null) {
                             check.subs.push(chk)
                             check.result = chk.result
@@ -111,60 +111,9 @@ var constraintChecker = function () {
                 }
             }
         },
-        stringifyTuple: function (tuple) {
-            return '< ' + tuple.source + ', ' + tuple.sourceType + ', ' + tuple.origin + ', ' + tuple.originType +
-            ', ' + tuple.operation + ', ' + JSON.stringify(tuple.params) + ' >'
-        },
-        stringifyExpr: function (expression) {
-            var type = expression.type
-
-            if (type === 'true')
-                return ' true '
-            else if (type === 'false')
-                return ' false '
-            else if (type === 'and')
-                return this.stringifyExpr(expression.left) + ' && ' + this.stringifyExpr(expression.right)
-            else if (type === 'or')
-                return this.stringifyExpr(expression.left) + ' || ' + this.stringifyExpr(expression.right)
-            else if (type === 'not')
-                return '! ' + this.stringifyExpr(expression.expression)
-            else if (type === 'clasped')
-                return '( ' + this.stringifyExpr(expression.expression) + ' )'
-            else if (type === 'term')
-                return this.stringifyTerm(expression)
-        },
-        stringifyTerm: function (term) {
-            return term.field + ' ' + term.op + ' ' + term.value
-        },
-        evaluateExpr: function (ctx, expression) {
-            var type = expression.type
-
-            if (type === 'true')
-                return true
-            else if (type === 'false')
-                return false
-            else if (type === 'and')
-                return this.evaluateExpr(ctx, expression.left) && this.evaluateExpr(ctx, expression.right)
-            else if (type === 'or')
-                return this.evaluateExpr(ctx, expression.left) || this.evaluateExpr(ctx, expression.right)
-            else if (type === 'not')
-                return !this.evaluateExpr(ctx, expression.expression)
-            else if (type === 'clasped')
-                return this.evaluateExpr(ctx, expression.expression)
-            else if (type === 'term')
-                return this.evaluateTerm(ctx, expression)
-        },
-        evaluateTerm: function (ctx, term) {
-            var op = term.op
-
-            var source = ctx.source
-            var origin = ctx.origin
-            var sourceType = ctx.sourceType
-            var originType = ctx.originType
-            var operation = ctx.operation
-            var params = ctx.parameters
-
-            return eval(term.field + ' ' + term.op + ' ' + term.value)
+        stringifyTrace: function (trace) {
+            return '< ' + trace.source + ', ' + trace.sourceType + ', ' + trace.origin + ', ' + trace.originType +
+            ', ' + trace.operation + ', ' + JSON.stringify(trace.params) + ' >'
         }
     }
 }

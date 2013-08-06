@@ -56,10 +56,43 @@ var evaluateTerm = function (ctx, term, binding) {
     return eval(expr)
 }
 
+var stringifyExpr = function (expression) {
+    var type = expression.type
+
+    if (type === 'true')
+        return ' true '
+    else if (type === 'false')
+        return ' false '
+    else if (type === 'and')
+        return stringifyExpr(expression.left) + ' && ' + stringifyExpr(expression.right)
+    else if (type === 'or')
+        return stringifyExpr(expression.left) + ' || ' + stringifyExpr(expression.right)
+    else if (type === 'not')
+        return '! ' + stringifyExpr(expression.expression)
+    else if (type === 'clasped')
+        return '( ' + stringifyExpr(expression.expression) + ' )'
+    else if (type === 'term')
+        return stringifyTerm(expression)
+    else if (type === 'function')
+        return stringifyFunc(expression)
+}
+
+var stringifyTerm = function (term) {
+    return term.field + ' ' + term.op + ' ' + term.value
+}
+
+var stringifyFunc = function (statement) {
+    if (statement.name === 'isParent') {
+        return statement.name + '(' + statement.params[0].join('.') + ', ' + statement.params[1].join('.') + ')'
+    }
+    return 'NaF'
+}
+
 var enrich = function (trace) {
     trace.evaluateExpr = function (expression, binding) { return evaluateExpr(trace, expression, binding) }
     trace.evaluateTerm = function (term, binding) { return evaluateTerm(trace, term, binding) }
     trace.evaluateFunc = function (statement, binding) { return evaluateFunc(trace, statement, binding)}
+    trace.stringifyExpr = stringifyExpr
 
     return trace
 }
