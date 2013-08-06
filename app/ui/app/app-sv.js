@@ -42,6 +42,7 @@ app.sv = cs.clazz({
             cs(this).register('validateTemporalConstraints', function (constraintSet) {
                 var result = []
                 var noDups = _.uniq(constraintSet, function (constraint) { return constraint.id })
+                //  TODO - check for duplicates within the whole constraint set
                 if (noDups.length !== constraintSet.length) {
                     var diff = _.difference(constraintSet, noDups)
                     _.each(diff, function (constraint) {
@@ -60,7 +61,7 @@ app.sv = cs.clazz({
                             constraint: constraint,
                             column: 0,
                             type: 'error',
-                            message: 'The sequence of a temporal constraint must no exceed two'
+                            message: 'The number of participating traces of a temporal constraint must no exceed two'
                         })
                     var noDups = _.uniq(participants)
                     if (noDups.length !== 2)
@@ -89,6 +90,13 @@ app.sv = cs.clazz({
                                 message: filter.id + ' is not defined in the sequence section but used in a filter expression'
                             })
                     })
+                    if (constraint.constraintBody.links.length > 1)
+                        result.push({
+                            constraint: constraint,
+                            column: 0,
+                            type: 'error',
+                            message: 'There can only be a link expression for the second participating trace'
+                        })
                     _.map(constraint.constraintBody.links, function (link) {
                         if (_.indexOf(participants, link.id) === -1)
                             result.push({

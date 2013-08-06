@@ -27,7 +27,8 @@ The ComponentJS Tracing application consists of three major components:
 
 <img src="https://raw.github.com/rse/componentjs-tracing/master/doc/screenshot-tracing.png" width="100%"/><br/>
 <img src="https://raw.github.com/rse/componentjs-tracing/master/doc/screenshot-checking.png" width="100%"/><br/>
-<img src="https://raw.github.com/rse/componentjs-tracing/master/doc/screenshot-constraints.png" width="100%"/><br/>
+<img src="https://raw.github.com/rse/componentjs-tracing/master/doc/screenshot-peephole-constraints.png" width="100%"/><br/>
+<img src="https://raw.github.com/rse/componentjs-tracing/master/doc/screenshot-temporal-constraints.png" width="100%"/><br/>
 
 ## Architecture
 
