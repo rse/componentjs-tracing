@@ -33,15 +33,28 @@ module.exports = function(grunt) {
         },
         clean: {
             clean:     [ "app/ui/app/lib-cjscp-grammar.js", "app/ui/app/lib-cjsct-grammar.js" ],
+            grammar:   [ "app/ui/app/lib-cjscp-grammar.peg", "app/ui/app/lib-cjsct-grammar.peg" ],
             distclean: [ "node_modules" ]
+        },
+        "expand-include": {
+            temporalGrammar: {
+                src: [ "app/ui/app/grammar-fragments/lib-cjsct-grammar.main" ],
+                dest: "app/ui/app/lib-cjsct-grammar.peg",
+                directiveSyntax: "js"
+            },
+            peepholeGrammar: {
+                src: [ "app/ui/app/grammar-fragments/lib-cjscp-grammar.main" ],
+                dest: "app/ui/app/lib-cjscp-grammar.peg",
+                directiveSyntax: "js"
+            }
         }
     });
 
+    grunt.loadNpmTasks("grunt-expand-include");
     grunt.loadNpmTasks("grunt-shell");
     grunt.loadNpmTasks("grunt-contrib-jshint");
     grunt.loadNpmTasks("grunt-contrib-clean");
 
     grunt.registerTask("default", [ "grammar", "jshint" ]);
-    grunt.registerTask("grammar", [ "shell" ]);
-};
-
+    grunt.registerTask("grammar", [ "expand-include", "shell", "clean:grammar" ]);
+}
