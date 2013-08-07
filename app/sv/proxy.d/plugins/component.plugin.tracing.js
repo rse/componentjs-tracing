@@ -121,6 +121,42 @@ ComponentJS.plugin("tracing", function (_cs, $cs, GLOBAL) {
         _cs.internal = new _cs.comp("<internal>", null, []);
     });
 
+    _cs.latch("ComponentJS:comp-created", function (comp) {
+        var tracing = new Tracing();
+        /*  on-the-fly make an implicit tracing source  */
+        var source = resolve("tracing:source");
+
+        /*  act on all non-internal sources  */
+        if (source && source !== _cs.internal)
+            tracing.source(source);
+        else
+            tracing.source(_cs.none);
+        tracing.sourceType('');
+        tracing.origin(comp);
+        tracing.originType(compType(comp));
+        tracing.operation('create');
+        tracing.parameters({});
+        tracing.flush();
+    })
+
+    _cs.latch("ComponentJS:comp-destroyed", function (comp) {
+        var tracing = new Tracing();
+        /*  on-the-fly make an implicit tracing source  */
+        var source = resolve("tracing:source");
+
+        /*  act on all non-internal sources  */
+        if (source && source !== _cs.internal)
+            tracing.source(source);
+        else
+            tracing.source(_cs.none);
+        tracing.sourceType('');
+        tracing.origin(comp);
+        tracing.originType(compType(comp));
+        tracing.operation('destroy');
+        tracing.parameters({});
+        tracing.flush();
+    })
+
     /*  latch into the component state enter/leave call hooks
         in order to annotate each enter/leave function with the
         enclosing component  */

@@ -10,7 +10,7 @@
 /* global Handlebars: true */
 
 app.ui.comp.checking = cs.clazz({
-    mixin: [ cs.marker.controller ],
+    mixin: [ cs.marker.controller, cs.marker.view ],
     protos: {
         create: function () {
             cs(this).create(

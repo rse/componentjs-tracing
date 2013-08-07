@@ -22,13 +22,14 @@ app.ui.comp.panel = cs.clazz({
 
             cs(self).create(
                 'panel/panel/' +
-                '{tracing,checking,constraints,temporalConstraints,statusbar}',
+                '{tracing,checking,constraints,temporalConstraints,componentTree,statusbar}',
                 app.ui.widget.panel.model,
                 app.ui.widget.panel.view,
                 app.ui.comp.tracing,
                 app.ui.comp.checking,
                 new app.ui.comp.constraints('cjscp'),
                 new app.ui.comp.constraints('cjsct'),
+                app.ui.comp.componentTree,
                 app.ui.widget.statusbar
             )
             cs(self).create('headline', app.ui.widget.headline.view)
@@ -119,10 +120,11 @@ app.ui.comp.panel = cs.clazz({
         },
         prepare: function () {
             cs(this, 'panel').value('data:tabs', [
-                { id: 'tracing',             name: 'Tracing',              icon: "gears"       },
-                { id: 'checking',            name: 'Checking',             icon: "thumbs-down" },
-                { id: 'constraints',         name: 'Peephole Constraints', icon: "screenshot"  },
-                { id: 'temporalConstraints', name: 'Temporal Constraints', icon: "time"        }
+                { id: 'tracing',             name: 'Tracing',              icon: "gears"        },
+                { id: 'checking',            name: 'Checking',             icon: "thumbs-down"  },
+                { id: 'constraints',         name: 'Peephole Constraints', icon: "screenshot"   },
+                { id: 'temporalConstraints', name: 'Temporal Constraints', icon: "time"         },
+                { id: 'componentTree',       name: 'Component Tree',       icon: "puzzle-piece" }
             ])
         },
         render: function () {
