@@ -1,6 +1,6 @@
-include("start.frag")
+include('start.frag')
 
-include("constraintset.frag")
+include('constraintset.frag')
 
 constraint
   = _ "temporal-constraint" _ id:id _ "{" _ body:constraintBody _ "}" _ { return { type: 'temporal-constraint', id: id, constraintBody: body } }
@@ -11,7 +11,7 @@ constraintBody
 sequence
   = _ "sequence" _ "{" _ first:id ids:(_ "<<" _ id)* _ "}" _ { var ary = [first]; for(var i = 0; i < ids.length; i++) { ary.push(ids[i][ids[i].length - 1]) }; return ary }
 
-include("expr.frag")
+include('expr.frag')
 
 filter
   = _ "filter" _ id:id _ "{" _ ex:expr _ "}" _ { return { id:id, condition: ex } }
@@ -19,11 +19,11 @@ filter
 link
   = _ "link" _ id:id _ "{" _ ex:expr _ "}" _ { return { id:id, condition: ex } }
 
-include("term.frag")
+include('term.frag')
 
-include("rationale.frag")
+include('rationale.frag')
 
 id
   = id:([a-zA-Z][a-zA-Z0-9-_]*) { if (id.length > 1) { return id[0]+id[1].join('') } else { return id } }
 
-include("whitespaces.frag")
+include('whitespaces.frag')

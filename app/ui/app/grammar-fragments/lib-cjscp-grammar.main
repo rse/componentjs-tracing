@@ -1,6 +1,6 @@
-include("start.frag")
+include('start.frag')
 
-include("constraintset.frag")
+include('constraintset.frag')
 
 constraint
   = _ "peephole-constraint" _ id:id _ "{" _ body:constraintBody _ "}" _ { return { type: 'peephole-constraint', id: id, constraintBody: body } }
@@ -11,11 +11,11 @@ constraintBody
 condition
   = "condition" _ "{" _ ex:expr _ "}" _ { return ex }
 
-include("expr.frag")
+include('expr.frag')
 
-include("term.frag")
+include('term.frag')
 
-include("rationale.frag")
+include('rationale.frag')
 
 result
   = "result" _ val:("FAIL_FINAL" / "PASS_FINAL" / "PASS" / "FAIL") { return val }
@@ -33,4 +33,4 @@ after
 idseq
   = first:id ids:("," id)* { var tmp = [first];for (var i = 0; i < ids.length; i++) {if (i % 2 == 0) { tmp.push(ids[i][1])} }; return tmp }
 
-include("whitespaces.frag")
+include('whitespaces.frag')
