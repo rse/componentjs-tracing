@@ -17,7 +17,7 @@ field
 value
   = "true"
   / "false"
-  / "undefined" { return { type: 'value', value: 'undefined' } }
+  / "undefined" { return 'undefined' }
   / '"' content:( '\\"' / [^"])* '"' { return '"' + content.join('') + '"' }
   / "'" content:( '\\\'' / [^'])* "'" { return '"' + content.join('') + '"' }
   / num:$([0-9]+(.[0-9]+)?) { return num }
