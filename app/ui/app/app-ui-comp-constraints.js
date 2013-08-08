@@ -18,7 +18,6 @@ app.ui.comp.constraints = cs.clazz({
     protos: {
         create: function () {
             var self = this
-
             cs(self).create('{toolbarModel/view/,tabs}',
                 app.ui.widget.toolbar.model,
                 app.ui.widget.toolbar.view,

@@ -17,7 +17,6 @@ app.ui.comp.panel = cs.clazz({
     protos: {
         create: function () {
             var self = this
-
             cs(self).property('ComponentJS:state-auto-increase', true)
 
             cs(self).create(
