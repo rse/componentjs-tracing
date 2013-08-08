@@ -72,10 +72,13 @@ app.ui.widget.panel.view = cs.clazz({
 
             /*  react on active tab change  */
             cs(self).observe({
-                name: "state:active-tab", spool: "rendered", touch: true,
+                name: "state:active-tab", spool: "rendered",
+                touch: true,
                 func: function (ev, active) {
                     if (active > cs(self).value("data:tabs").length)
                         throw new Error("invalid tab number to activate")
+                    if (active < 0)
+                        active = 0
                     $(".tabs .tab.active", ui).removeClass("active")
                     $(".tabs .tab", ui).eq(active).addClass("active")
                     $(".contents .content.active", ui).removeClass("active")
