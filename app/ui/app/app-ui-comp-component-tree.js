@@ -54,8 +54,8 @@ app.ui.comp.componentTree.view = cs.clazz({
                 spool: 'rendered'
             })
 
-            $('#componentTree-content').click(function () { self.addAsChildByName(prompt('Add where?','/'), self.newNode(self.idx++)) })
-            //$('#componentTree-content').click(function () { self.removeByName(prompt('Delete which?','Library')) })
+            //$('#componentTree-content').click(function () { self.addAsChildByName(prompt('Add where?','/'), self.newNode(self.idx++)) })
+            $('#componentTree-content').click(function () { self.removeByName(prompt('Delete which?','Library')) })
         },
         show: function () {
             var self = this
@@ -184,9 +184,9 @@ app.ui.comp.componentTree.view = cs.clazz({
                 var links = tree.links(nodes)
                 var margin = 20
                 var elbow = function (d) {
-                  return 'M' + d.source.x + ',' + (d.source.y + options.nodeRadius) +
-                        'V' + (d.source.y + margin) + 'H' + d.target.x +
-                        'V' + (d.target.y - options.nodeRadius )
+                  return 'M' + d.source.x + ',' + (-d.source.y + size.height - options.nodeRadius - 40) +
+                        'V' + (-d.source.y + size.height - 40 - margin) + 'H' + d.target.x +
+                        'V' + (-d.target.y + size.height - 40 - options.nodeRadius )
                 }
 
                 var exitLinks = layoutRoot.selectAll('path')
@@ -226,7 +226,7 @@ app.ui.comp.componentTree.view = cs.clazz({
                     //.delay(600)
                     .attr("transform", function (d)
                         {
-                            return "translate(" + d.x + "," + d.y + ")"
+                            return "translate(" + d.x + "," + (-d.y + size.height - 40) + ")"
                         })
 
                 layoutRoot.selectAll('g')
@@ -251,7 +251,7 @@ app.ui.comp.componentTree.view = cs.clazz({
                     .attr('class', 'node')
                     .attr('transform', function (d)
                         {
-                            return 'translate(' + d.x + ',' + d.y + ')'
+                            return 'translate(' + d.x + ',' + (-d.y + size.height - 40) + ')'
                         })
 
                 enterNodes.append('svg:circle')
@@ -320,6 +320,9 @@ app.ui.comp.componentTree.view = cs.clazz({
                     node.contents.push(newNode)
                 update(treeData)
             }
+        },
+        hide: function () {
+            $('svg').remove()
         },
         release: function () {
             cs(this).unspool('rendered')
