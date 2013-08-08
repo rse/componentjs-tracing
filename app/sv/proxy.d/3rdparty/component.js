@@ -4277,12 +4277,13 @@
         /*  debug hint  */
         $cs.debug(1, "component: " + comp.path("/") + ": created component [" + comp.id() + "]");
 
+        _cs.hook("ComponentJS:comp-created", "none", comp);
+
         /*  switch state from "dead" to "created"
             (here synchronously as one expects that after a creation of a
             component, the state is really already "created", of course)  */
         comp.state({ state: "created", sync: true });
 
-        _cs.hook("ComponentJS:comp-created", "none", comp);
         /*  give plugins a chance to react  */
         _cs.hook("ComponentJS:state-invalidate", "none", "components");
         _cs.hook("ComponentJS:state-change", "none");
