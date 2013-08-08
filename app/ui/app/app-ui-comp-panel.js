@@ -120,11 +120,11 @@ app.ui.comp.panel = cs.clazz({
         },
         prepare: function () {
             cs(this, 'panel').value('data:tabs', [
-                { id: 'tracing',             name: 'Tracing',              icon: "gears"        },
-                { id: 'checking',            name: 'Checking',             icon: "thumbs-down"  },
-                { id: 'constraints',         name: 'Peephole Constraints', icon: "screenshot"   },
-                { id: 'temporalConstraints', name: 'Temporal Constraints', icon: "time"         },
-                { id: 'componentTree',       name: 'Component Tree',       icon: "puzzle-piece" }
+                { id: 'tracing',             name: 'Tracing',              icon: 'gears'        },
+                { id: 'checking',            name: 'Checking',             icon: 'thumbs-down'  },
+                { id: 'constraints',         name: 'Peephole Constraints', icon: 'screenshot'   },
+                { id: 'temporalConstraints', name: 'Temporal Constraints', icon: 'time'         },
+                { id: 'componentTree',       name: 'Component Tree',       icon: 'puzzle-piece' }
             ])
         },
         render: function () {

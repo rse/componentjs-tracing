@@ -80,6 +80,12 @@ app.ui.widget.panel.view = cs.clazz({
                     $(".tabs .tab", ui).eq(active).addClass("active")
                     $(".contents .content.active", ui).removeClass("active")
                     $(".contents .content", ui).eq(active).addClass("active")
+                    var toHide = _.filter(cs(self).value('data:tabs'), function (tab, idx) { return idx !== active})
+                    _.each(toHide, function (tab) {
+                        cs(self, tab.id).state('materialized')
+                    })
+                    cs(self, cs(self).value('data:tabs')[active].id).state('visible')
+
                 }
             })
 
