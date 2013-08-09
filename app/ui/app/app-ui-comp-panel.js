@@ -71,9 +71,9 @@ app.ui.comp.panel = cs.clazz({
                 name: 'checkJournal', spool: 'created',
                 func: function () {
                     var traces = cs(self, 'panel/panel/tracing').call('traces')
-                    var resTraces = cs('/sv').call('checkTraces', traces, self.peepholeConstraintSet)
-
-                    cs(self, 'panel/panel/checking').call('displayTraces', resTraces)
+                    _.each(traces.reverse(), function (trace) {
+                        cs(self).publish('checkTrace', trace)
+                    })
                 }
             })
 
@@ -81,6 +81,8 @@ app.ui.comp.panel = cs.clazz({
                 name: 'checkTrace', spool: 'created',
                 func: function (ev, trace) {
                     trace = app.lib.richTrace.enrich(trace)
+                    if (trace.operation === 'destroy' || trace.operation === 'create')
+                        cs(self, 'panel/panel/componentTree').call('componentEvent', trace)
                     var resTraces = cs('/sv').call('checkTraces', [ trace ], self.peepholeConstraintSet)
                     _.map(self.temporalMonitors, function (monitor) {
                         var res = monitor.processTrace(trace)

@@ -15,81 +15,83 @@
         <title>ComponentJS Tracing</title>
 
         <!-- load third-party libraries -->
-        <link  href="lib/normalize.css"                         rel="stylesheet" type="text/css"/>
-        <script src="lib/lodash.min.js"                         type="text/javascript"></script>
-        <script src="lib/jquery.js"                             type="text/javascript"></script>
-        <script src="lib/handlebars.js"                         type="text/javascript"></script>
-        <script src="lib/component.js"                          type="text/javascript"></script>
-        <script src="lib/component.plugin.debugger.js"          type="text/javascript"></script>
-        <script src="lib/component.plugin.localstorage.js"      type="text/javascript"></script>
-        <script src="lib/component.plugin.jquery.js"            type="text/javascript"></script>
-        <script src="lib/jquery.markup.js"                      type="text/javascript"></script>
-        <script src="lib/less.js"                               type="text/javascript"></script>
-        <script src="lib/ace.js"                                type="text/javascript"></script>
-        <script src="lib/taffy.js"                              type="text/javascript"></script>
-        <script src="lib/socket.io.js"                          type="text/javascript"></script>
-        <script src="lib/d3.v3.min.js"                          type="text/javascript"></script>
-        <link  href="res/DejaVu.css"                            rel="stylesheet" type="text/css"/>
-        <link  href="res/FontAwesome.css"                       rel="stylesheet" type="text/css"/>
+        <link  href="lib/normalize.css"                             rel="stylesheet" type="text/css"/>
+        <script src="lib/lodash.min.js"                             type="text/javascript"></script>
+        <script src="lib/jquery.js"                                 type="text/javascript"></script>
+        <script src="lib/handlebars.js"                             type="text/javascript"></script>
+        <script src="lib/component.js"                              type="text/javascript"></script>
+        <script src="lib/component.plugin.debugger.js"              type="text/javascript"></script>
+        <script src="lib/component.plugin.localstorage.js"          type="text/javascript"></script>
+        <script src="lib/component.plugin.jquery.js"                type="text/javascript"></script>
+        <script src="lib/jquery.markup.js"                          type="text/javascript"></script>
+        <script src="lib/less.js"                                   type="text/javascript"></script>
+        <script src="lib/ace.js"                                    type="text/javascript"></script>
+        <script src="lib/taffy.js"                                  type="text/javascript"></script>
+        <script src="lib/socket.io.js"                              type="text/javascript"></script>
+        <script src="lib/d3.v3.min.js"                              type="text/javascript"></script>
+        <link  href="res/DejaVu.css"                                rel="stylesheet" type="text/css"/>
+        <link  href="res/FontAwesome.css"                           rel="stylesheet" type="text/css"/>
 
         <!-- load application -->
-        <script src="app/app-boot.js"                           type="text/javascript"></script>
-        <link  href="app/app-ui.less"                           rel="stylesheet/less" type="text/css"/>
-        <script src="app/app-ui-widget-statusbar.js"            type="text/javascript"></script>
-        <link  href="app/app-ui-widget-statusbar.less"          rel="stylesheet/less" type="text/css"/>
-        <link  href="app/app-ui-widget-statusbar.html"          rel="markup/handlebars" type="text/html"/>
-        <script src="app/app-ui-widget-panel.js"                type="text/javascript"></script>
-        <link  href="app/app-ui-widget-panel.less"              rel="stylesheet/less" type="text/css"/>
-        <link  href="app/app-ui-widget-panel.html"              rel="markup/handlebars" type="text/html"/>
-        <script src="app/app-ui-widget-grid.js"                 type="text/javascript"></script>
-        <link  href="app/app-ui-widget-grid.less"               rel="stylesheet/less" type="text/css"/>
-        <link  href="app/app-ui-widget-grid.html"               rel="markup/handlebars" type="text/html"/>
-        <script src="app/app-ui-widget-trace-details.js"        type="text/javascript"></script>
-        <link  href="app/app-ui-widget-trace-details.less"      rel="stylesheet/less" type="text/css"/>
-        <link  href="app/app-ui-widget-trace-details.html"      rel="markup/handlebars" type="text/html"/>
-        <script src="app/app-ui-comp-component-tree.js"         type="text/javascript"></script>
-        <link  href="app/app-ui-comp-component-tree.less"       rel="stylesheet/less" type="text/css"/>
-        <link  href="app/app-ui-comp-component-tree.html"       rel="markup/handlebars" type="text/html"/>
-        <script src="app/app-ui-comp-panel.js"                  type="text/javascript"></script>
-        <link  href="app/app-ui-comp-panel.less"                rel="stylesheet/less" type="text/css"/>
-        <link  href="app/app-ui-comp-panel.html"                rel="markup/handlebars" type="text/html"/>
-        <script src="app/app-ui-widget-constraintset.js"        type="text/javascript"></script>
-        <link  href="app/app-ui-widget-constraintset.less"      rel="stylesheet/less" type="text/css"/>
-        <link  href="app/app-ui-widget-constraintset.html"      rel="markup/handlebars" type="text/html"/>
-        <script src="app/app-ui-widget-headline.js"             type="text/javascript"></script>
-        <link  href="app/app-ui-widget-headline.less"           rel="stylesheet/less" type="text/css"/>
-        <link  href="app/app-ui-widget-headline.html"           rel="markup/handlebars" type="text/html"/>
-        <script src="app/app-ui-widget-toolbar.js"              type="text/javascript"></script>
-        <link  href="app/app-ui-widget-toolbar.less"            rel="stylesheet/less" type="text/css"/>
-        <link  href="app/app-ui-widget-toolbar.html"            rel="markup/handlebars" type="text/html"/>
-        <script src="app/app-ui-comp-tracing.js"                type="text/javascript"></script>
-        <link  href="app/app-ui-comp-tracing.less"              rel="stylesheet/less" type="text/css"/>
-        <link  href="app/app-ui-comp-tracing.html"              rel="markup/handlebars" type="text/html"/>
-        <script src="app/app-ui-widget-rationales.js"           type="text/javascript"></script>
-        <link  href="app/app-ui-widget-rationales.less"         rel="stylesheet/less" type="text/css"/>
-        <link  href="app/app-ui-widget-rationales.html"         rel="markup/handlebars" type="text/html"/>
-        <script src="app/app-ui-comp-checking.js"               type="text/javascript"></script>
-        <link  href="app/app-ui-comp-checking.less"             rel="stylesheet/less" type="text/css"/>
-        <link  href="app/app-ui-comp-checking.html"             rel="markup/handlebars" type="text/html"/>
-        <script src="app/app-ui-widget-vertical-tabs.js"        type="text/javascript"></script>
-        <link  href="app/app-ui-widget-vertical-tabs.less"      rel="stylesheet/less" type="text/css"/>
-        <link  href="app/app-ui-widget-vertical-tabs.html"      rel="markup/handlebars" type="text/html"/>
-        <script src="app/app-ui-comp-constraints.js"            type="text/javascript"></script>
-        <link  href="app/app-ui-comp-constraints.less"          rel="stylesheet/less" type="text/css"/>
-        <link  href="app/app-ui-comp-constraints.html"          rel="markup/handlebars" type="text/html"/>
-        <link  href="app/app-ui-widget-toolbar-items.html"      rel="markup/handlebars" type="text/html"/>
-        <script src="app/app-ui-widget-toolbar-items.js"        type="text/javascript"></script>
-        <script src="app/app-sv.js"                             type="text/javascript"></script>
+        <script src="app/app-boot.js"                               type="text/javascript"></script>
+        <link  href="app/app-ui.less"                               rel="stylesheet/less" type="text/css"/>
+        <script src="app/app-ui-widget-statusbar.js"                type="text/javascript"></script>
+        <link  href="app/app-ui-widget-statusbar.less"              rel="stylesheet/less" type="text/css"/>
+        <link  href="app/app-ui-widget-statusbar.html"              rel="markup/handlebars" type="text/html"/>
+        <script src="app/app-ui-widget-panel.js"                    type="text/javascript"></script>
+        <link  href="app/app-ui-widget-panel.less"                  rel="stylesheet/less" type="text/css"/>
+        <link  href="app/app-ui-widget-panel.html"                  rel="markup/handlebars" type="text/html"/>
+        <script src="app/app-ui-widget-grid.js"                     type="text/javascript"></script>
+        <link  href="app/app-ui-widget-grid.less"                   rel="stylesheet/less" type="text/css"/>
+        <link  href="app/app-ui-widget-grid.html"                   rel="markup/handlebars" type="text/html"/>
+        <script src="app/app-ui-widget-trace-details.js"            type="text/javascript"></script>
+        <link  href="app/app-ui-widget-trace-details.less"          rel="stylesheet/less" type="text/css"/>
+        <link  href="app/app-ui-widget-trace-details.html"          rel="markup/handlebars" type="text/html"/>
+        <script src="app/app-ui-comp-component-tree.js"             type="text/javascript"></script>
+        <link  href="app/app-ui-comp-component-tree.less"           rel="stylesheet/less" type="text/css"/>
+        <link  href="app/app-ui-comp-component-tree.html"           rel="markup/handlebars" type="text/html"/>
+        <link  href="app/app-ui-widget-component-tree-tooltip.html" rel="markup/handlebars" type="text/html"/>
+        <link  href="app/app-ui-widget-component-tree-legend.html"  rel="markup/handlebars" type="text/html"/>
+        <script src="app/app-ui-comp-panel.js"                      type="text/javascript"></script>
+        <link  href="app/app-ui-comp-panel.less"                    rel="stylesheet/less" type="text/css"/>
+        <link  href="app/app-ui-comp-panel.html"                    rel="markup/handlebars" type="text/html"/>
+        <script src="app/app-ui-widget-constraintset.js"            type="text/javascript"></script>
+        <link  href="app/app-ui-widget-constraintset.less"          rel="stylesheet/less" type="text/css"/>
+        <link  href="app/app-ui-widget-constraintset.html"          rel="markup/handlebars" type="text/html"/>
+        <script src="app/app-ui-widget-headline.js"                 type="text/javascript"></script>
+        <link  href="app/app-ui-widget-headline.less"               rel="stylesheet/less" type="text/css"/>
+        <link  href="app/app-ui-widget-headline.html"               rel="markup/handlebars" type="text/html"/>
+        <script src="app/app-ui-widget-toolbar.js"                  type="text/javascript"></script>
+        <link  href="app/app-ui-widget-toolbar.less"                rel="stylesheet/less" type="text/css"/>
+        <link  href="app/app-ui-widget-toolbar.html"                rel="markup/handlebars" type="text/html"/>
+        <script src="app/app-ui-comp-tracing.js"                    type="text/javascript"></script>
+        <link  href="app/app-ui-comp-tracing.less"                  rel="stylesheet/less" type="text/css"/>
+        <link  href="app/app-ui-comp-tracing.html"                  rel="markup/handlebars" type="text/html"/>
+        <script src="app/app-ui-widget-rationales.js"               type="text/javascript"></script>
+        <link  href="app/app-ui-widget-rationales.less"             rel="stylesheet/less" type="text/css"/>
+        <link  href="app/app-ui-widget-rationales.html"             rel="markup/handlebars" type="text/html"/>
+        <script src="app/app-ui-comp-checking.js"                   type="text/javascript"></script>
+        <link  href="app/app-ui-comp-checking.less"                 rel="stylesheet/less" type="text/css"/>
+        <link  href="app/app-ui-comp-checking.html"                 rel="markup/handlebars" type="text/html"/>
+        <script src="app/app-ui-widget-vertical-tabs.js"            type="text/javascript"></script>
+        <link  href="app/app-ui-widget-vertical-tabs.less"          rel="stylesheet/less" type="text/css"/>
+        <link  href="app/app-ui-widget-vertical-tabs.html"          rel="markup/handlebars" type="text/html"/>
+        <script src="app/app-ui-comp-constraints.js"                type="text/javascript"></script>
+        <link  href="app/app-ui-comp-constraints.less"              rel="stylesheet/less" type="text/css"/>
+        <link  href="app/app-ui-comp-constraints.html"              rel="markup/handlebars" type="text/html"/>
+        <link  href="app/app-ui-widget-toolbar-items.html"          rel="markup/handlebars" type="text/html"/>
+        <script src="app/app-ui-widget-toolbar-items.js"            type="text/javascript"></script>
+        <script src="app/app-sv.js"                                 type="text/javascript"></script>
 
         <!-- custom libraries -->
-        <script src="app/lib-trace-parser.js"                   type="text/javascript"></script>
-        <script src="app/lib-cjscp-grammar.js"                  type="text/javascript"></script>
-        <script src="app/lib-cjsct-grammar.js"                  type="text/javascript"></script>
-        <script src="app/lib-graph.js"                          type="text/javascript"></script>
-        <script src="app/lib-rich-trace.js"                     type="text/javascript"></script>
-        <script src="app/lib-constraint-sorter.js"              type="text/javascript"></script>
-        <script src="app/lib-constraint-checker.js"             type="text/javascript"></script>
-        <script src="app/lib-happens-before-monitor.js"         type="text/javascript"></script>
+        <script src="app/lib-trace-parser.js"                       type="text/javascript"></script>
+        <script src="app/lib-cjscp-grammar.js"                      type="text/javascript"></script>
+        <script src="app/lib-cjsct-grammar.js"                      type="text/javascript"></script>
+        <script src="app/lib-graph.js"                              type="text/javascript"></script>
+        <script src="app/lib-rich-trace.js"                         type="text/javascript"></script>
+        <script src="app/lib-constraint-sorter.js"                  type="text/javascript"></script>
+        <script src="app/lib-constraint-checker.js"                 type="text/javascript"></script>
+        <script src="app/lib-happens-before-monitor.js"             type="text/javascript"></script>
     </head>
 
     <body>

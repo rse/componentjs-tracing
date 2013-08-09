@@ -20,18 +20,64 @@
     height: 100%;
 
     g.node {
-        font-family:    Verdana, Helvetica;
-        font-size:      12px;
-        font-weight:    bold;
+        font-size:          @font-size;
+        font-weight:        bold;
     }
-    circle.node-dot {
-        fill:           lightsalmon;
-        stroke:         red;
-        stroke-width:   1px;
+
+    circle {
+
+        stroke-width:       1px;
+
+        &.default {
+            stroke:         #777777;
+            fill:           #cccccc;
+        }
+
+        &.view {
+            stroke:         #2068b0;
+            fill:           #adcef0;
+        }
+
+        &.model {
+            stroke:         #9a6f1c;
+            fill:           #e8c581;
+        }
+
+        &.service {
+            stroke:         #ffffff;
+            fill:           #666666;
+        }
+    }
+
+    #legend {
+        height:             73px;
+        width:              80px;
+        position:           absolute;
+        bottom:             30px;
+        padding:            5px;
+        border:             1px solid;
+        right:              5px;
+
+        .text {
+            padding-bottom: 4px;
+        }
     }
 
     path.link {
-        fill:           none;
-        stroke:         gray;
+        fill:               none;
+        stroke:             gray;
+    }
+
+    div.tooltip {
+        position:           absolute;
+        text-align:         left;
+        width:              auto;
+        height:             auto;
+        padding:            5px;
+        font:               @font-size;
+        background:         lightsteelblue;
+        border:             0px;
+        border-radius:      8px;
+        pointer-events:     none;
     }
 }
