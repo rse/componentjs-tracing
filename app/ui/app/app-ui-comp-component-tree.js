@@ -27,14 +27,128 @@ app.ui.comp.componentTree.model = cs.clazz({
     mixin: [ cs.marker.model ],
     protos: {
         create: function () {
+            cs(this).model({
+                'data:tree': { value: null, valid: 'object' }
+            })
         },
         prepare: function () {
+            var testdata = {
+                name: "/",
+                children: [
+                    {
+                        name: "Applications",
+                        children: [
+                            { name: "Mail.app" },
+                            { name: "iPhoto.app" },
+                            { name: "Keynote.app" },
+                            { name: "iTunes.app" },
+                            { name: "XCode.app" },
+                            { name: "Numbers.app" },
+                            { name: "Pages.app" }
+                        ]
+                    },
+                    {
+                        name: "System",
+                        children: []
+                    },
+                    {
+                        name: "Library",
+                        children: [
+                            {
+                                name: "Application Support",
+                                children: [
+                                    { name: "Adobe" },
+                                    { name: "Apple" },
+                                    { name: "Google" },
+                                    { name: "Microsoft" }
+                                ]
+                            },
+                            {
+                                name: "Languages",
+                                children: [
+                                    { name: "Ruby" },
+                                    { name: "Python" },
+                                    { name: "Javascript" },
+                                    { name: "C#" }
+                                ]
+                            },
+                            {
+                                name: "Developer",
+                                children: [
+                                    { name: "4.2" },
+                                    { name: "4.3" },
+                                    { name: "5.0" },
+                                    { name: "Documentation" }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        name: "opt",
+                        children: []
+                    },
+                    {
+                        name: "Users",
+                        children: [
+                            { name: "pavanpodila" },
+                            { name: "admin" },
+                            { name: "test-user" }
+                        ]
+                    }
+                ]
+            }
+            cs(this).value('data:tree', testdata)
         },
         render: function () {
+            var self = this
+            var findInTree = function (tree, name) {
+                var acc = []
+                if (tree.name === name) {
+                    acc.push(tree)
+                }
+                _.each(tree.children, function (child) {
+                    acc = acc.concat(findInTree(child, name))
+                })
+                return acc
+            }
+
+            var removeFromTree = function (tree, name) {
+                //  We want to remove the root node
+                if (tree.name === name)
+                    return {}
+                tree.children = _.filter(tree.children, function (child) { return child.name !== name })
+                _.each(tree.children, function (child) { removeFromTree(child, name) })
+            }
+
+            cs(self).register({
+                name: 'remove', spool: 'rendered',
+                func: function (name) {
+                    var tree = cs(self).value('data:tree')
+                    if (findInTree(tree, name).length === 0)
+                        return
+                    removeFromTree(tree, name)
+                    cs(this).value('data:tree', tree, true)
+                }
+            })
+
+            cs(self).register({
+                name: 'add', spool: 'rendered',
+                func: function (name, newNode) {
+                    var tree = cs(self).value('data:tree')
+                    var node = findInTree(tree, name)[0]
+                    /*  does the node exist?  */
+                    if (!node || findInTree(tree, newNode.name).length !== 0)
+                        return
+                    if (!node.children)
+                        node.children = [ newNode ]
+                    else
+                        node.children.push(newNode)
+                    cs(this).value('data:tree', tree, true)
+                }
+            })
         },
         release: function () {
-        },
-        cleanup: function () {
+            cs(this).unspool('rendered')
         }
     }
 })
@@ -55,81 +169,17 @@ app.ui.comp.componentTree.view = cs.clazz({
             })
 
             //$('#componentTree-content').click(function () { self.addAsChildByName(prompt('Add where?','/'), self.newNode(self.idx++)) })
-            $('#componentTree-content').click(function () { self.removeByName(prompt('Delete which?','Library')) })
+            $('#componentTree-content').click(function () {
+                cs(self).call('remove', prompt('Delete which?','Library'))
+            })
         },
         show: function () {
             var self = this
 
-            var treeData = {
-                name: "/",
-                contents: [
-                    {
-                        name: "Applications",
-                        contents: [
-                            { name: "Mail.app" },
-                            { name: "iPhoto.app" },
-                            { name: "Keynote.app" },
-                            { name: "iTunes.app" },
-                            { name: "XCode.app" },
-                            { name: "Numbers.app" },
-                            { name: "Pages.app" }
-                        ]
-                    },
-                    {
-                        name: "System",
-                        contents: []
-                    },
-                    {
-                        name: "Library",
-                        contents: [
-                            {
-                                name: "Application Support",
-                                contents: [
-                                    { name: "Adobe" },
-                                    { name: "Apple" },
-                                    { name: "Google" },
-                                    { name: "Microsoft" }
-                                ]
-                            },
-                            {
-                                name: "Languages",
-                                contents: [
-                                    { name: "Ruby" },
-                                    { name: "Python" },
-                                    { name: "Javascript" },
-                                    { name: "C#" }
-                                ]
-                            },
-                            {
-                                name: "Developer",
-                                contents: [
-                                    { name: "4.2" },
-                                    { name: "4.3" },
-                                    { name: "5.0" },
-                                    { name: "Documentation" }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        name: "opt",
-                        contents: []
-                    },
-                    {
-                        name: "Users",
-                        contents: [
-                            { name: "pavanpodila" },
-                            { name: "admin" },
-                            { name: "test-user" }
-                        ]
-                    }
-                ]
-            }
-
             self.newNode = function (idx) {
                 return {
                 name: "Döner" + idx,
-                contents: [
+                children: [
                     { name: 'Chris' + idx },
                     { name: 'Uwe' + idx },
                     { name: 'Adrian' + idx}
@@ -142,23 +192,6 @@ app.ui.comp.componentTree.view = cs.clazz({
 
             var containerName = "#componentTree-content"
 
-            var visit = function (parent, visitFn)
-            {
-                if (!parent) return
-                visitFn(parent)
-                if (parent.contents) {
-                    var count = parent.contents.length
-                    for (var i = 0; i < count; i++) {
-                        visit(parent.contents[i], visitFn)
-                    }
-                }
-            }
-
-            var maxLabelLength = 0
-            visit(treeData, function (d) {
-                maxLabelLength = Math.max(d.name.length, maxLabelLength)
-            })
-
             var options = $.extend({
                 nodeRadius: 5, fontSize: 12
             })
@@ -167,20 +200,22 @@ app.ui.comp.componentTree.view = cs.clazz({
 
             var tree = d3.layout.tree()
                 .sort(null)
-                .size([ size.width, size.height - maxLabelLength - 20 ])
-                .children(function (d)
-                {
-                    return (!d.contents || d.contents.length === 0) ? null : d.contents
-                })
+                .size([ size.width, size.height - 35 ])
 
             var layoutRoot = d3.select(containerName)
                 .append('svg:svg').attr('width', size.width).attr('height', size.height)
                 .append('svg:g')
                 .attr('class', 'container')
-                .attr('transform', 'translate(0,' + maxLabelLength + ')')
+                .attr('transform', 'translate(0,30)')
 
-            var update = function (data) {
-                var nodes = tree.nodes(treeData)
+            var update = function (root) {
+                if (!root) {
+                    layoutRoot.selectAll('g').remove()
+                    layoutRoot.selectAll('path').remove()
+                    return
+                }
+
+                var nodes = tree.nodes(root)
                 var links = tree.links(nodes)
                 var margin = 20
                 var elbow = function (d) {
@@ -189,41 +224,41 @@ app.ui.comp.componentTree.view = cs.clazz({
                         'V' + (-d.target.y + size.height - 40 - options.nodeRadius )
                 }
 
-                var exitLinks = layoutRoot.selectAll('path')
-                    .data(links, function (d) { return d.source.name + '#' + d.target.name })
+                var exitNodes = layoutRoot.selectAll('g')
+                    .data(nodes, function (d) { return d.name })
                     .exit()
-                    //.transition()
-                    //.duration(400)
+                    .transition()
+                    .duration(400)
                     .style('opacity', 0)
                     .remove()
 
-                var currentLinks = layoutRoot.selectAll('path')
+                var exitLinks = layoutRoot.selectAll('path.link')
                     .data(links, function (d) { return d.source.name + '#' + d.target.name })
-                    //.transition()
-                    //.delay(600)
+                    .exit()
+                    .transition()
+                    .duration(400)
+                    .style('opacity', 0)
+                    .remove()
+
+                var currentLinks = layoutRoot.selectAll('path.link')
+                    .data(links, function (d) { return d.source.name + '#' + d.target.name })
+                    .transition()
+                    .delay(600)
                     .attr('d', elbow)
 
                 var enterLinks = layoutRoot.selectAll('path.link')
                     .data(links, function (d) { return d.source.name + '#' + d.target.name })
                     .enter()
                     .append('svg:path')
-                    //.transition()
-                    //.delay(700)
+                    .transition()
+                    .delay(700)
                     .attr('class', 'link')
                     .attr('d', elbow)
 
-                var exitNodes = layoutRoot.selectAll('g')
-                    .data(nodes, function (d) { return d.name })
-                    .exit()
-                    //.transition()
-                    //.duration(400)
-                    .style('opacity', 0)
-                    .remove()
-
                 var currentNodes = layoutRoot.selectAll('g')
                     .data(nodes, function (d) { return d.name })
-                    //.transition()
-                    //.delay(600)
+                    .transition()
+                    .delay(600)
                     .attr("transform", function (d)
                         {
                             return "translate(" + d.x + "," + (-d.y + size.height - 40) + ")"
@@ -231,17 +266,23 @@ app.ui.comp.componentTree.view = cs.clazz({
 
                 layoutRoot.selectAll('g')
                     .select('text')
+                    .transition()
+                    .delay(700)
                     .attr('text-anchor', function (d)
                         {
-                            return d.contents ? 'start' : 'end'
+                            return d.children && d.children.length > 0 ? 'start' : 'end'
                         })
                     .attr('dx', function (d)
                         {
                             var gap = 2 * options.nodeRadius
-                            return d.contents ? -gap : gap
+                            return d.children && d.children.length > 0 ? gap : -gap
                         })
                     .attr('dy', function (d) {
-                            return d.contents && d.parent ? -5 : 3
+                            return d.children && d.children.length > 0 && d.parent ? -5 : 3
+                        })
+                    .text(function(d)
+                        {
+                            return d.name
                         })
 
                 var enterNodes = layoutRoot.selectAll('g')
@@ -255,25 +296,25 @@ app.ui.comp.componentTree.view = cs.clazz({
                         })
 
                 enterNodes.append('svg:circle')
-                    //.transition()
-                    //.delay(700)
+                    .transition()
+                    .delay(700)
                     .attr('class', 'node-dot')
                     .attr('r', options.nodeRadius)
 
                 enterNodes.append('svg:text')
-                    //.transition()
-                    //.delay(700)
+                    .transition()
+                    .delay(700)
                     .attr('text-anchor', function (d)
                         {
-                            return d.contents ? 'start' : 'end'
+                            return d.children && d.children.length > 0 ? 'start' : 'end'
                         })
                     .attr('dx', function (d)
                         {
                             var gap = 2 * options.nodeRadius
-                            return d.contents ? gap : -gap
+                            return d.children && d.children.length > 0 ? gap : -gap
                         })
                     .attr('dy', function (d) {
-                            return d.contents && d.parent ? -5 : 3
+                            return d.children && d.children.length > 0 && d.parent ? -5 : 3
                         })
                     .text(function(d)
                         {
@@ -281,47 +322,16 @@ app.ui.comp.componentTree.view = cs.clazz({
                         })
             }
 
-            update(treeData)
-
-            var findInTree = function (tree, name) {
-                var acc = []
-                if (tree.name === name) {
-                    acc.push(tree)
+            cs(self).observe({
+                name: 'data:tree', spool: 'shown',
+                touch: true,
+                func: function (ev, tree) {
+                    update(tree)
                 }
-                _.each(tree.contents, function (content) {
-                    acc = acc.concat(findInTree(content, name))
-                })
-                return acc
-            }
-
-            var removeFromTree = function (tree, name) {
-                //  We want to remove the root node
-                if (tree.name === name)
-                    return {}
-                tree.contents = _.filter(tree.contents, function (content) { return content.name !== name })
-                _.each(tree.contents, function (content) { removeFromTree(content, name) })
-            }
-
-            self.removeByName = function (name) {
-                if (findInTree(treeData, name).length === 0)
-                    return
-                removeFromTree(treeData, name)
-                update(treeData)
-            }
-
-            self.addAsChildByName = function (name, newNode) {
-                var node = findInTree(treeData, name)[0]
-                /*  does the node exist?  */
-                if (!node || findInTree(treeData, newNode.name).length !== 0)
-                    return
-                if (!node.contents)
-                    node.contents = [ newNode ]
-                else
-                    node.contents.push(newNode)
-                update(treeData)
-            }
+            })
         },
         hide: function () {
+            cs(this).unspool('shown')
             $('svg').remove()
         },
         release: function () {
