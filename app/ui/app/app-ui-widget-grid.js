@@ -34,7 +34,8 @@ app.ui.widget.grid.ctrl = cs.clazz({
                     var traces = cs(self, 'gridModel').value('data:rows')
                     traces.unshift(trace)
                     cs(self, 'gridModel').value('data:rows', traces)
-                    cs(self, 'gridModel/view').call('unshift', trace)
+                    if (cs(self, 'gridModel').call('checkFilter', trace))
+                        cs(self, 'gridModel/view').call('unshift', trace)
                 }
             })
 
@@ -102,7 +103,7 @@ app.ui.widget.grid.model = cs.clazz({
             var validTracesSet = '[{ id?: number, time: number, source: string, sourceType: string,' +
                 ' origin: string, originType: string, operation: string,' +
                 ' parameters: any, result?: string, checks?: any, evaluateExpr: any, evaluateTerm: any,' +
-                ' evaluateFunc: any, stringifyExpr: any }*]'
+                ' evaluateFunc: any, stringifyExpr: any, filter: any }*]'
 
             /*  presentation model for items  */
             cs(self).model({
@@ -123,43 +124,35 @@ app.ui.widget.grid.model = cs.clazz({
                 }
             })
 
+            cs(self).register({
+                name: 'checkFilter', spool: 'created',
+                func: function (trace) {
+                    var filter = cs(self).value('state:filter')
+                    var tmp = filter.split(':')
+                    /*  expand abbreviations for sourceType and originType  */
+                    if (tmp[0] === 'OT')
+                        tmp[0] = 'originType'
+                    if (tmp[0] === 'ST')
+                        tmp[0] = 'sourceType'
+                    if (tmp.length === 2 && trace[tmp[0]])
+                        return trace[tmp[0]].toLowerCase().indexOf(tmp[1].toLowerCase()) !== -1
+                    else
+                        return trace.filter(filter)
+                }
+            })
+
             cs(self).observe({
                 name: 'state:filter', spool: 'created',
-                touch: true,
+                operation: 'changed', touch: true,
                 func: function (ev, nVal) {
                     var unfiltered = cs(self).value('data:rows')
                     if (nVal === '')
                         cs(self).value('data:filtered', unfiltered)
                     else {
                         var result = []
-
-                        var tmp = nVal.split(':')
-
-                        for (var i = 0; i < unfiltered.length; i++) {
-                            var trace = unfiltered[i]
-                            /*  expand abbreviations for sourceType and originType  */
-                            if (tmp[0] === 'OT')
-                                tmp[0] = 'originType'
-                            if (tmp[0] === 'ST')
-                                tmp[0] = 'sourceType'
-                            if (tmp.length === 2 && trace[tmp[0]]) {
-                                if (trace[tmp[0]].toLowerCase().indexOf(tmp[1].toLowerCase()) !== -1)
-                                    result.push(trace)
-                            }
-                            else {
-                                for (var key in trace) {
-                                    if (key === 'time' || key === 'id' || key === 'checks')
-                                        continue;
-                                    var val = trace[key]
-                                    if (key === 'parameters')
-                                        val = JSON.stringify(val)
-                                    if (val.toLowerCase().indexOf(nVal.toLowerCase()) !== -1) {
-                                        result.push(trace)
-                                        break;
-                                    }
-                                }
-                            }
-                        }
+                        for (var i = 0; i < unfiltered.length; i++)
+                            if (cs(self).call('checkFilter', unfiltered[i]))
+                                result.push(unfiltered[i])
                         cs(self).value('data:filtered', result)
                     }
                 }

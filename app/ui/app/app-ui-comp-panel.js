@@ -80,9 +80,6 @@ app.ui.comp.panel = cs.clazz({
             cs(self).subscribe({
                 name: 'checkTrace', spool: 'created',
                 func: function (ev, trace) {
-                    trace = app.lib.richTrace.enrich(trace)
-                    if (trace.operation === 'destroy' || trace.operation === 'create')
-                        cs(self, 'panel/panel/componentTree').call('componentEvent', trace)
                     var resTraces = cs('/sv').call('checkTraces', [ trace ], self.peepholeConstraintSet)
                     _.map(self.temporalMonitors, function (monitor) {
                         var res = monitor.processTrace(trace)
@@ -115,8 +112,11 @@ app.ui.comp.panel = cs.clazz({
                 cs(self, 'panel/panel/statusbar').publish('color', 'red')
             })
 
-            socket.on('newTrace', function (data) {
-                cs(self, 'panel/panel/tracing').publish('event:new-trace', data)
+            socket.on('newTrace', function (trace) {
+                trace = app.lib.richTrace.enrich(trace)
+                if (trace.operation === 'destroy' || trace.operation === 'create')
+                    cs(self, 'panel/panel/componentTree').call('componentEvent', trace)
+                cs(self, 'panel/panel/tracing').publish('event:new-trace', trace)
             })
         },
         prepare: function () {

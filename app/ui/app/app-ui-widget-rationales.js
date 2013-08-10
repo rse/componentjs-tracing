@@ -18,7 +18,7 @@ app.ui.widget.rationales.model = cs.clazz({
                 'data:trace'        : { value: null, valid: '(null | { id?: number, time: number,' +
                     ' source: string, sourceType: string, origin: string, originType: string,' +
                     ' operation: string, parameters: any, result: string, checks: any, evaluateExpr: any,' +
-                    ' evaluateTerm: any, evaluateFunc: any, stringifyExpr: any })' },
+                    ' evaluateTerm: any, evaluateFunc: any, stringifyExpr: any, filter: any })' },
                 'data:rationales'   : { value: [], valid: '[any*]' }
             })
         }

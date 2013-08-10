@@ -9,7 +9,7 @@
 
 (function () {
 
-var evaluateExpr = function (ctx, expression, binding) {
+var evaluateExprInternal = function (ctx, expression, binding) {
     var type = expression.type
 
     if (type === 'true')
@@ -17,20 +17,20 @@ var evaluateExpr = function (ctx, expression, binding) {
     else if (type === 'false')
         return false
     else if (type === 'and')
-        return evaluateExpr(ctx, expression.left, binding) && evaluateExpr(ctx, expression.right, binding)
+        return evaluateExprInternal(ctx, expression.left, binding) && evaluateExprInternal(ctx, expression.right, binding)
     else if (type === 'or')
-        return evaluateExpr(ctx, expression.left, binding) || evaluateExpr(ctx, expression.right, binding)
+        return evaluateExprInternal(ctx, expression.left, binding) || evaluateExprInternal(ctx, expression.right, binding)
     else if (type === 'not')
-        return !evaluateExpr(ctx, expression.expression, binding)
+        return !evaluateExprInternal(ctx, expression.expression, binding)
     else if (type === 'clasped')
-        return evaluateExpr(ctx, expression.expression, binding)
+        return evaluateExprInternal(ctx, expression.expression, binding)
     else if (type === 'term')
-        return evaluateTerm(ctx, expression, binding)
+        return evaluateTermInternal(ctx, expression, binding)
     else if (type === 'function')
-        return evaluateFunc(ctx, expression, binding)
+        return evaluateFuncInternal(ctx, expression, binding)
 }
 
-var evaluateFunc = function (ctx, statement, binding) {
+var evaluateFuncInternal = function (ctx, statement, binding) {
     if (statement.name === 'isParent') {
         var child = eval('binding["' + statement.params[1][0] + '"]' + (statement.params[1].length > 1 ? '.' + _.tail(statement.params[1]).join('.') : ''))
         var parent = eval('binding["' + statement.params[0][0] + '"]' + (statement.params[0].length > 1 ? '.' + _.tail(statement.params[0]).join('.') : ''))
@@ -38,7 +38,7 @@ var evaluateFunc = function (ctx, statement, binding) {
     }
 }
 
-var evaluateTerm = function (ctx, term, binding) {
+var evaluateTermInternal = function (ctx, term, binding) {
     binding = binding || {}
     binding.source = ctx.source
     binding.origin = ctx.origin
@@ -56,7 +56,7 @@ var evaluateTerm = function (ctx, term, binding) {
     return eval(expr)
 }
 
-var stringifyExpr = function (expression) {
+var stringifyExprInternal = function (expression) {
     var type = expression.type
 
     if (type === 'true')
@@ -64,17 +64,34 @@ var stringifyExpr = function (expression) {
     else if (type === 'false')
         return ' false '
     else if (type === 'and')
-        return stringifyExpr(expression.left) + ' && ' + stringifyExpr(expression.right)
+        return stringifyExprInternal(expression.left) + ' && ' + stringifyExprInternal(expression.right)
     else if (type === 'or')
-        return stringifyExpr(expression.left) + ' || ' + stringifyExpr(expression.right)
+        return stringifyExprInternal(expression.left) + ' || ' + stringifyExprInternal(expression.right)
     else if (type === 'not')
-        return '! ' + stringifyExpr(expression.expression)
+        return '! ' + stringifyExprInternal(expression.expression)
     else if (type === 'clasped')
-        return '( ' + stringifyExpr(expression.expression) + ' )'
+        return '( ' + stringifyExprInternal(expression.expression) + ' )'
     else if (type === 'term')
         return stringifyTerm(expression)
     else if (type === 'function')
         return stringifyFunc(expression)
+}
+
+var filterInternal = function (trace, filter) {
+    for (var key in trace) {
+        if (key === 'source' || key === 'sourceType' || key === 'origin' || key === 'originType' || key === 'params' || key === 'operation') {
+            var val = trace[key]
+            if (key === 'parameters')
+                val = JSON.stringify(val)
+            if (val.toLowerCase().indexOf(filter.toLowerCase()) !== -1) {
+                return true
+                break
+            }
+        }
+        else
+            continue
+    }
+    return false
 }
 
 var stringifyTerm = function (term) {
@@ -89,10 +106,11 @@ var stringifyFunc = function (statement) {
 }
 
 var enrich = function (trace) {
-    trace.evaluateExpr = function (expression, binding) { return evaluateExpr(trace, expression, binding) }
-    trace.evaluateTerm = function (term, binding) { return evaluateTerm(trace, term, binding) }
-    trace.evaluateFunc = function (statement, binding) { return evaluateFunc(trace, statement, binding)}
-    trace.stringifyExpr = stringifyExpr
+    trace.evaluateExpr = function (expression, binding) { return evaluateExprInternal(trace, expression, binding) }
+    trace.evaluateTerm = function (term, binding) { return evaluateTermInternal(trace, term, binding) }
+    trace.evaluateFunc = function (statement, binding) { return evaluateFuncInternal(trace, statement, binding) }
+    trace.filter = function (filter) { return filterInternal(trace, filter) }
+    trace.stringifyExpr = stringifyExprInternal
 
     return trace
 }
