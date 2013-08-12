@@ -137,8 +137,9 @@ app.ui.comp.componentTree.model = cs.clazz({
     protos: {
         create: function () {
             cs(this).model({
-                'data:tree': { value: null,                             valid: 'object'              },
-                'state:cmd': { value: 'cs(\'/ui\').state(\'created\')', valid: 'string', store: true }
+                'data:tree':             { value: null,                             valid: 'object'              },
+                'state:cmd':             { value: 'cs(\'/ui\').state(\'created\')', valid: 'string', store: true },
+                'state:tooltip-sticky' : { value: false, valid: 'boolean'                                        }
             })
         },
         prepare: function () {
@@ -353,9 +354,13 @@ app.ui.comp.componentTree.view = cs.clazz({
                             .style('top', -y + size.height + 5 + 'px')
                         })
                     .on('mouseout', function () {
-                        self.tooltip.transition()
-                            .duration(500)
-                            .style('opacity', 0)
+                        if (!cs(self).value('state:tooltip-sticky'))
+                            self.tooltip.transition()
+                                .duration(500)
+                                .style('opacity', 0)
+                    })
+                    .on('click', function () {
+                        cs(self).value('state:tooltip-sticky', !cs(self).value('state:tooltip-sticky'))
                     })
                     //.transition()
                     //.delay(700)
