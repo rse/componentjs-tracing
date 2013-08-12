@@ -143,6 +143,7 @@ ComponentJS.plugin("tracing", function (_cs, $cs, GLOBAL) {
     })
 
     _cs.latch("ComponentJS:comp-created", function (comp) {
+        var markers = comp.__obj.__ComponentJS_marker__
         var tracing = new Tracing();
         /*  on-the-fly make an implicit tracing source  */
         var source = resolve("tracing:source");
@@ -156,7 +157,7 @@ ComponentJS.plugin("tracing", function (_cs, $cs, GLOBAL) {
         tracing.origin(comp);
         tracing.originType(compType(comp));
         tracing.operation('create');
-        tracing.parameters({});
+        tracing.parameters({markers: markers});
         tracing.hidden = true;
         tracing.flush();
     })
