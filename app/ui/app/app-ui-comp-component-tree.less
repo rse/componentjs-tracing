@@ -20,6 +20,17 @@
     height: 100%;
     overflow: hidden;
 
+    #console {
+        position:           absolute;
+        bottom:             30px;
+        left:               5px;
+
+        &:hover {
+            text-decoration:underline;
+            cursor:         pointer;
+        }
+    }
+
     g.node {
         font-size:          @font-size;
         font-weight:        bold;
