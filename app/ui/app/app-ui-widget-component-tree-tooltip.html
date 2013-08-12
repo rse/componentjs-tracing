@@ -10,6 +10,29 @@
 -->
 
 <markup id="component-tree-tooltip">
-	{{path}}<br/><br/>
-	{{type}}
+    <b>Name:</b> {{name}}
+    {{#if path}}
+    <br/>
+    <b>Path:</b> {{path}}
+    {{/if}}
+    {{#if markers}}
+    <br/>
+    <b>Markers:</b> {{markers}}
+    {{/if}}
+    {{#if model}}
+    <br/>
+    <b>Model:</b> {{model}}
+    {{/if}}
+    {{#if services}}
+    <br/>
+    <b>Services:</b> {{services}}
+    {{/if}}
+    {{#if subscribtions}}
+    <br/>
+    <b>Subscribtions:</b> {{subscribtions}}
+    {{/if}}
+    {{#if sockets}}
+    <br/>
+    <b>Sockets:</b> {{sockets}}
+    {{/if}}
 </markup>

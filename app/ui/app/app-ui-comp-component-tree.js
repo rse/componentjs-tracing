@@ -46,23 +46,55 @@ app.ui.comp.componentTree = cs.clazz({
             cs(self).register({
                 name: 'componentEvent', spool: 'rendered',
                 func: function (trace) {
+                    var tree = cs(self, 'model').value('data:tree')
+                    var node, list
+                    var handleListPropertyAdd = function (path, name, property) {
+                        node = findInTree(tree, path)[0]
+                        var list = node[property] || []
+                        list.push(name)
+                        node[property] = _.uniq(list)
+                    }
+                    var handleListPropertyRemove = function (path, name, property) {
+                        node = findInTree(tree, path)[0]
+                        list = node.list || []
+                        node[property] = _.without(list, name)
+                    }
                     if (trace.operation === 'create') {
                         var matches = trace.origin.match(nameRegex)
-                        var newNode = { name: matches[1], path: trace.origin, type: trace.originType, state: 'created', children: [] }
+                        var newNode = { name: matches[1], path: trace.origin, type: trace.originType, state: 'created', children: [], markers: _.keys(trace.parameters.markers) }
                         var insPt = trace.origin.substring(0, trace.origin.length - matches[0].length)
                         if (insPt.length === 0)
                             insPt = '/'
                         cs(self).call('add', insPt, newNode)
                     }
                     else if (trace.operation === 'state') {
-                        var tree = cs(self, 'model').value('data:tree')
-                        var node = findInTree(tree, trace.origin)[0]
+                        node = findInTree(tree, trace.origin)[0]
                         if (node) {
                             node.state = trace.parameters.state
                             cs(self, 'model').value('data:tree', tree, true)
                         }
                     }
-                    else
+                    else if (trace.operation === 'register')
+                        handleListPropertyAdd(trace.origin, trace.parameters.name, 'services')
+                    else if (trace.operation === 'unregister')
+                        handleListPropertyRemove(trace.origin, trace.parameters.name, 'services')
+                    else if (trace.operation === 'socket')
+                        handleListPropertyAdd(trace.origin, trace.parameters.name + '@' + trace.parameters.scope, 'sockets')
+                    else if (trace.operation === 'unsocket')
+                        handleListPropertyRemove(trace.origin, trace.parameters.name, 'sockets')
+                    else if (trace.operation === 'subscribe')
+                        handleListPropertyAdd(trace.source, trace.parameters.name, 'subscribtions')
+                    else if (trace.operation === 'unsubscribe')
+                        handleListPropertyRemove(trace.source, trace.parameters.name, 'subscribtions')
+                    else if (trace.operation === 'model') {
+                        var model = trace.parameters.model
+                        node = findInTree(tree, trace.origin)[0]
+                        node.model = []
+                        _.forIn(model, function (value, key) {
+                            node.model.push(key)
+                        })
+                    }
+                    else if (trace.operation === 'destroy')
                         cs(self).call('remove', trace.origin)
                 }
             })
@@ -294,16 +326,28 @@ app.ui.comp.componentTree.view = cs.clazz({
                         if (d.path === '/')
                             self.tooltip.html(d.path)
                         else
-                            $('#componentTree-content > .tooltip').html($.markup('component-tree-tooltip', { path: d.path, type: d.type, state: d.state }))
+                            $('#componentTree-content > .tooltip').html($.markup('component-tree-tooltip',{
+                                name: d.name,
+                                path: d.path,
+                                type: d.type,
+                                state: d.state,
+                                model: (d.model ? d.model.join(', ') : undefined),
+                                services: (d.services ? d.services.join(', ') : undefined),
+                                subscribtions: (d.subscribtions ? d.subscribtions.join(', ') : undefined),
+                                markers: (d.markers ? d.markers.join(', ') : undefined),
+                                sockets: (d.sockets ? d.sockets.join(', ') : undefined)
+                            }))
                         var tooltipWidth = $(self.tooltip[0]).outerWidth()
+                        var tooltipHeight = $(self.tooltip[0]).outerHeight()
                         self.tooltip.transition()
                             .duration(200)
                             .style('opacity', 0.9)
                         var x = d.x + tooltipWidth + 10 < size.width ? d.x + 7 : d.x - tooltipWidth - 7
+                        var y = d.y - tooltipHeight - 10 > 0 ? d.y - 10 : d.y + tooltipHeight - 50
 
                         self.tooltip
                             .style('left', x + 'px')
-                            .style('top', -d.y + size.height + 5 + 'px')
+                            .style('top', -y + size.height + 5 + 'px')
                         })
                     .on('mouseout', function () {
                         self.tooltip.transition()
