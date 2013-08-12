@@ -121,8 +121,7 @@ app.ui.comp.panel = cs.clazz({
 
             socket.on('newTrace', function (trace) {
                 trace = app.lib.richTrace.enrich(trace)
-                if (trace.operation === 'destroy' || trace.operation === 'create' || trace.operation === 'state')
-                    cs(self, 'panel/panel/componentTree').call('componentEvent', trace)
+                cs(self, 'panel/panel/componentTree').call('componentEvent', trace)
                 if (!trace.hidden)
                     cs(self, 'panel/panel/tracing').publish('event:new-trace', trace)
             })
