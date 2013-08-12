@@ -183,13 +183,13 @@ app.ui.comp.componentTree.view = cs.clazz({
 
             $(window).resize(function () {
                 if (self.timer !== null) {
-                    /* global clearTimeout: true */
+                    /*  global clearTimeout: true  */
                     clearTimeout(self.timer)
                 }
-                /* global setTimeout: true */
+                /*  global setTimeout: true  */
                 self.timer = setTimeout(function () {
                     handleResize()
-                }, 500)
+                }, 300)
             })
 
             var size = { width: $(containerName).outerWidth(), height: $(containerName).outerHeight() }
