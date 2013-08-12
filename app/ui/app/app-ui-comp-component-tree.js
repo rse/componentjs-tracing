@@ -7,7 +7,7 @@
 **  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-/* global Handlebars: true */
+/* global clearTimeout: true, setTimeout: true, setInterval: true, prompt: true, escape: true */
 
 app.ui.comp.componentTree = cs.clazz({
     mixin: [ cs.marker.controller ],
@@ -48,11 +48,19 @@ app.ui.comp.componentTree = cs.clazz({
                 func: function (trace) {
                     if (trace.operation === 'create') {
                         var matches = trace.origin.match(nameRegex)
-                        var newNode = { name: matches[1], path: trace.origin, trace: trace,  children: [] }
+                        var newNode = { name: matches[1], path: trace.origin, type: trace.originType, state: 'created', children: [] }
                         var insPt = trace.origin.substring(0, trace.origin.length - matches[0].length)
                         if (insPt.length === 0)
                             insPt = '/'
                         cs(self).call('add', insPt, newNode)
+                    }
+                    else if (trace.operation === 'state') {
+                        var tree = cs(self, 'model').value('data:tree')
+                        var node = findInTree(tree, trace.origin)[0]
+                        if (node) {
+                            node.state = trace.parameters.state
+                            cs(self, 'model').value('data:tree', tree, true)
+                        }
                     }
                     else
                         cs(self).call('remove', trace.origin)
@@ -125,6 +133,7 @@ app.ui.comp.componentTree.view = cs.clazz({
         render: function () {
             var self = this
             var content = $.markup('componentTree-content')
+            $('i', content).addClass('icon-angle-right')
 
             cs(self).plug({
                 object: content,
@@ -134,10 +143,15 @@ app.ui.comp.componentTree.view = cs.clazz({
             self.tooltip = d3.select('#componentTree-content').append('div')
                 .attr('class', 'tooltip')
                 .style('opacity', 0)
-
             self.legend = d3.select('#componentTree-content').append('div')
                 .attr('id', 'legend')
                 .style('opacity', 1)
+
+            $('#console', content).click(function () {
+                var cmd = prompt('Please enter a command', 'cs(\'/ui\').state(\'created\')')
+                if (cmd)
+                    cs(self).publish('sendCommand', escape(cmd))
+            })
         },
         show: function () {
             var self = this
@@ -183,10 +197,8 @@ app.ui.comp.componentTree.view = cs.clazz({
 
             $(window).resize(function () {
                 if (self.timer !== null) {
-                    /*  global clearTimeout: true  */
                     clearTimeout(self.timer)
                 }
-                /*  global setTimeout: true  */
                 self.timer = setTimeout(function () {
                     handleResize()
                 }, 300)
@@ -282,7 +294,7 @@ app.ui.comp.componentTree.view = cs.clazz({
                         if (d.path === '/')
                             self.tooltip.html(d.path)
                         else
-                            $('#componentTree-content > .tooltip').html($.markup('component-tree-tooltip', { path: d.path, type: d.trace.originType }))
+                            $('#componentTree-content > .tooltip').html($.markup('component-tree-tooltip', { path: d.path, type: d.type, state: d.state }))
                         var tooltipWidth = $(self.tooltip[0]).outerWidth()
                         self.tooltip.transition()
                             .duration(200)
@@ -301,13 +313,13 @@ app.ui.comp.componentTree.view = cs.clazz({
                     //.transition()
                     //.delay(700)
                     .attr('class', function (d) {
-                        if (!d.trace)
+                        if (!d.type)
                             return 'default'
-                        else if (d.trace.originType === 'V')
+                        else if (d.type === 'V')
                             return 'view'
-                        else if (d.trace.originType === 'M')
+                        else if (d.type === 'M')
                             return 'model'
-                        else if (d.trace.originType === 'S')
+                        else if (d.type === 'S')
                             return 'service'
                         return 'default'
                     })
@@ -332,6 +344,16 @@ app.ui.comp.componentTree.view = cs.clazz({
                     update(tree)
                 }
             })
+
+            var cursorAnimation = function () {
+                $('#cursor').animate({
+                    opacity: 0
+                }, 'fast', 'swing').animate({
+                    opacity: 1
+                }, 'fast', 'swing');
+            }
+
+            setInterval(cursorAnimation, 300)
         },
         hide: function () {
             cs(this).unspool('shown')
