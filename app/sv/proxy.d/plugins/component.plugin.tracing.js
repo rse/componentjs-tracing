@@ -158,7 +158,6 @@ ComponentJS.plugin("tracing", function (_cs, $cs, GLOBAL) {
         tracing.originType(compType(comp));
         tracing.operation('create');
         tracing.parameters({markers: markers});
-        tracing.hidden = true;
         tracing.flush();
     })
 
