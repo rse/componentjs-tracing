@@ -112,20 +112,28 @@ app.ui.comp.panel = cs.clazz({
                 cs(self, 'panel/panel/statusbar').publish('color', 'red')
             })
 
+            cs(self).subscribe({
+                name: 'sendCommand', spool: 'created',
+                func: function (ev, cmd) {
+                    socket.emit('cmd', cmd)
+                }
+            })
+
             socket.on('newTrace', function (trace) {
                 trace = app.lib.richTrace.enrich(trace)
-                if (trace.operation === 'destroy' || trace.operation === 'create')
+                if (trace.operation === 'destroy' || trace.operation === 'create' || trace.operation === 'state')
                     cs(self, 'panel/panel/componentTree').call('componentEvent', trace)
-                cs(self, 'panel/panel/tracing').publish('event:new-trace', trace)
+                if (!trace.hidden)
+                    cs(self, 'panel/panel/tracing').publish('event:new-trace', trace)
             })
         },
         prepare: function () {
             cs(this, 'panel').value('data:tabs', [
-                { id: 'tracing',             name: 'Tracing',              icon: 'gears'        },
-                { id: 'checking',            name: 'Checking',             icon: 'thumbs-down'  },
-                { id: 'constraints',         name: 'Peephole Constraints', icon: 'screenshot'   },
-                { id: 'temporalConstraints', name: 'Temporal Constraints', icon: 'time'         },
-                { id: 'componentTree',       name: 'Component Tree',       icon: 'puzzle-piece' }
+                { id: 'tracing',             name: 'Tracing',              icon: 'gears'                                   },
+                { id: 'checking',            name: 'Checking',             icon: 'thumbs-down'                             },
+                { id: 'constraints',         name: 'Peephole Constraints', icon: 'screenshot'                              },
+                { id: 'temporalConstraints', name: 'Temporal Constraints', icon: 'time'                                    },
+                { id: 'componentTree',       name: 'Component Tree',       icon: 'sitemap',     classes: 'icon-rotate-180' }
             ])
         },
         render: function () {
