@@ -66,7 +66,14 @@ module.exports = {
                 for (var i = 0; i < clients.length; i++)
                     clients[i].emit("newTrace", req.data)
             }
+        })
 
+        ctx.srv.io.route("cmd", function (req) {
+            var clients = ctx.srv.io.sockets.clients()
+            for (var i = 0; i < clients.length; i++) {
+                if (req.socket.id !== clients[i].id)
+                    clients[i].emit("cmd", req.data)
+            }
         })
 
         return null
