@@ -13,7 +13,7 @@
  */
 
 /* global ComponentJS:false */
-/* global io:false */
+/* global alert:false, io:false, unescape:false */
 /* jshint unused:false */
 
 ComponentJS.plugin("tracing-remote", function (_cs, $cs, GLOBAL) {
@@ -23,6 +23,21 @@ ComponentJS.plugin("tracing-remote", function (_cs, $cs, GLOBAL) {
     /*  ensure the tracing plugin is present  */
     if (!$cs.plugin("tracing"))
         throw _cs.exception("plugin:tracing-remote", "sorry, required 'tracing' plugin not found")
+
+    /*  enable remote execution of ComponentJS commands  */
+    websocket.on("cmd", function (req) {
+        eval(unescape(req))
+    })
+
+    /*  notify the developer, when the websocket connection is re-established  */
+    websocket.on('reconnect', function () {
+        alert("Re-established connection with debugging server!")
+    })
+
+    /*  notify the developer, when the websocket connection to the debugging server is lost  */
+    websocket.on("disconnect", function () {
+        alert("Lost connection to the debugging server!")
+    })
 
     /*  log the tracing information to the console  */
     _cs.latch("ComponentJS:tracing", function (tracing) {
@@ -69,6 +84,7 @@ ComponentJS.plugin("tracing-remote", function (_cs, $cs, GLOBAL) {
                 source: source,
                 sourceType: sourceType,
                 origin: origin,
+                hidden: tracing.hidden,
                 originType: originType,
                 operation: tracing.operation(),
                 parameters: JSON.parse(params)
