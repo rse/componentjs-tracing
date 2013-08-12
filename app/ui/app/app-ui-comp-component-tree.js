@@ -137,7 +137,8 @@ app.ui.comp.componentTree.model = cs.clazz({
     protos: {
         create: function () {
             cs(this).model({
-                'data:tree': { value: null, valid: 'object' }
+                'data:tree': { value: null,                             valid: 'object'              },
+                'state:cmd': { value: 'cs(\'/ui\').state(\'created\')', valid: 'string', store: true }
             })
         },
         prepare: function () {
@@ -180,9 +181,11 @@ app.ui.comp.componentTree.view = cs.clazz({
                 .style('opacity', 1)
 
             $('#console', content).click(function () {
-                var cmd = prompt('Please enter a command', 'cs(\'/ui\').state(\'created\')')
-                if (cmd)
+                var cmd = prompt('Please enter a command', cs(self).value('state:cmd'))
+                if (cmd) {
                     cs(self).publish('sendCommand', escape(cmd))
+                    cs(self).value('state:cmd', cmd)
+                }
             })
         },
         show: function () {
