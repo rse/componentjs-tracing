@@ -81,7 +81,7 @@ app.ui.comp.panel = cs.clazz({
                 name: 'checkTrace', spool: 'created',
                 func: function (ev, trace) {
                     var resTraces = cs('/sv').call('checkTraces', [ trace ], self.peepholeConstraintSet)
-                    _.map(self.temporalMonitors, function (monitor) {
+                    _.each(self.temporalMonitors, function (monitor) {
                         var res = monitor.processTrace(trace)
                         if (res)
                             resTraces.push(res)
