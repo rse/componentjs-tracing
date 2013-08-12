@@ -36,6 +36,13 @@ var evaluateFuncInternal = function (ctx, statement, binding) {
         var parent = eval('binding["' + statement.params[0][0] + '"]' + (statement.params[0].length > 1 ? '.' + _.tail(statement.params[0]).join('.') : ''))
         return child.indexOf(parent) !== -1
     }
+    else if (statement.name === 'contains') {
+        var collection = eval('binding["' + statement.params[0][0] + '"]' + (statement.params[0].length > 1 ? '.' + _.tail(statement.params[0]).join('.') : ''))
+        var needle = eval('binding["' + statement.params[1][0] + '"]' + (statement.params[1].length > 1 ? '.' + _.tail(statement.params[1]).join('.') : ''))
+        if (!_.isArray(collection))
+            collection = _.keys(collection)
+        return _.contains(collection, needle)
+    }
 }
 
 var evaluateTermInternal = function (ctx, term, binding) {
@@ -99,7 +106,7 @@ var stringifyTerm = function (term) {
 }
 
 var stringifyFunc = function (statement) {
-    if (statement.name === 'isParent') {
+    if (statement.name === 'isParent' || statement.name === 'contains') {
         return statement.name + '(' + statement.params[0].join('.') + ', ' + statement.params[1].join('.') + ')'
     }
     return 'NaF'
