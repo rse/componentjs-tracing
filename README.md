@@ -88,17 +88,20 @@ In order to direct the traffic through the proxy server we recommend the Google 
 It provides an easy way to specify the websites which you want to be routed through the proxy server. The example below shows a configuration for the [ComponentJS Demo Application](http://componentjs.com/demo/) in 3 simple steps.
 
 ### Step 1
-#### (Preparing the proxy server)
+(Preparing the proxy server)
+----------------------------
 <img src="https://raw.github.com/rse/componentjs-tracing/master/doc/proxy.png" width="100%"/><br/>
 *(Hint: Do not forget to press "save")*
 
 ### Step 2
-#### (Setting a rule for the ComponentJS Demo Application)
+(Setting a rule for the ComponentJS Demo Application)
+----------------------------
 <img src="https://raw.github.com/rse/componentjs-tracing/master/doc/filter.png" width="100%"/><br/>
 *(Hint: Do not forget to press "save")*
 
 ### Step 3
-#### (Enabling the Plug-In)
+(Enabling the Plug-In)
+----------------------------
 <img src="https://raw.github.com/rse/componentjs-tracing/master/doc/enable.png" /><br/>
 
 ## Limitations
