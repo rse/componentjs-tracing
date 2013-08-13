@@ -89,13 +89,13 @@ It provides an easy way to specify the websites which you want to be routed thro
 
 ### Step 1
 
-We need to tell the Plug-In what proxy server we have avialable.
+We need to tell the Plug-In which proxy server we have at hand.
 
 <img src="https://raw.github.com/rse/componentjs-tracing/master/doc/proxy.png" width="100%"/><br/>
 *(Hint: Do not forget to press "save")*
 
 ### Step 2
-Now we define which website should be routed through the proxy. We use wildcard syntax which means that every request containing "componentjs.com/demo" will cause a hit for this rule.
+Now we define which website should be routed through the proxy. We use wildcard syntax which means that every request containing "componentjs.com/demo" will cause a **hit** for this rule.
 
 <img src="https://raw.github.com/rse/componentjs-tracing/master/doc/filter.png" width="100%"/><br/>
 *(Hint: Do not forget to press "save")*
