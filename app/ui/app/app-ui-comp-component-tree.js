@@ -196,6 +196,12 @@ app.ui.comp.componentTree.view = cs.clazz({
             var options = $.extend({
                 nodeRadius: 5, fontSize: 12
             })
+            var hideTooltip = function () {
+                self.tooltip.transition()
+                    .duration(500)
+                    .style('opacity', 0)
+                    .style('pointer-events', 'none')
+            }
 
             var setup = function () {
                 self.tree = d3.layout.tree()
@@ -207,6 +213,13 @@ app.ui.comp.componentTree.view = cs.clazz({
                     .append('svg:g')
                     .attr('class', 'container')
                     .attr('transform', 'translate(0,30)')
+
+                $(containerName + ' > svg').click(function () {
+                    if (cs(self).value('state:tooltip-sticky')) {
+                        cs(self).value('state:tooltip-sticky', false)
+                        hideTooltip()
+                    }
+                })
 
                 /*  legend circle factory method  */
                 var drawLegendItems = function (clazz) {
@@ -356,14 +369,12 @@ app.ui.comp.componentTree.view = cs.clazz({
                         })
                     .on('mouseout', function () {
                         if (!cs(self).value('state:tooltip-sticky'))
-                            self.tooltip.transition()
-                                .duration(500)
-                                .style('opacity', 0)
-                                .style('pointer-events', 'none')
+                            hideTooltip()
                     })
                     .on('click', function () {
+                        d3.event.stopImmediatePropagation()
                         cs(self).value('state:tooltip-sticky', !cs(self).value('state:tooltip-sticky'))
-                    })
+                    }, true)
                     //.transition()
                     //.delay(700)
                     .attr('class', function (d) {
