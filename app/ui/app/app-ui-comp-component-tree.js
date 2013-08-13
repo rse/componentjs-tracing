@@ -346,6 +346,7 @@ app.ui.comp.componentTree.view = cs.clazz({
                         self.tooltip.transition()
                             .duration(200)
                             .style('opacity', 0.9)
+                            .style('pointer-events', 'all')
                         var x = d.x + tooltipWidth + 10 < size.width ? d.x + 7 : d.x - tooltipWidth - 7
                         var y = d.y - tooltipHeight - 10 > 0 ? d.y - 10 : d.y + tooltipHeight - 50
 
@@ -358,6 +359,7 @@ app.ui.comp.componentTree.view = cs.clazz({
                             self.tooltip.transition()
                                 .duration(500)
                                 .style('opacity', 0)
+                                .style('pointer-events', 'none')
                     })
                     .on('click', function () {
                         cs(self).value('state:tooltip-sticky', !cs(self).value('state:tooltip-sticky'))
