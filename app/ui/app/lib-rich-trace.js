@@ -92,11 +92,11 @@ var filterInternal = function (trace, filter) {
                 val = JSON.stringify(val)
             if (val.toLowerCase().indexOf(filter.toLowerCase()) !== -1) {
                 return true
-                break
+                break;
             }
         }
         else
-            continue
+            continue;
     }
     return false
 }

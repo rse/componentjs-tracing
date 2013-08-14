@@ -6,7 +6,7 @@ constraint
   = _ "temporal-constraint" _ id:id _ "{" _ body:constraintBody _ "}" _ { return { type: 'temporal-constraint', id: id, constraintBody: body } }
 
 constraintBody
-  = rat:rationale seq:sequence filters:filter+ links:link+ { var obj = { rationale: rat, sequence: seq, links: links, filters: filters }; return obj }
+  = rat:rationale seq:sequence filters:filter+ link:link { var obj = { rationale: rat, sequence: seq, link: link, filters: filters }; return obj }
 
 sequence
   = _ "sequence" _ "{" _ first:id ids:(_ "<<" _ id)* _ "}" _ { var ary = [first]; for(var i = 0; i < ids.length; i++) { ary.push(ids[i][ids[i].length - 1]) }; return ary }
@@ -17,7 +17,7 @@ filter
   = _ "filter" _ id:id _ "{" _ ex:expr _ "}" _ { return { id:id, condition: ex } }
 
 link
-  = _ "link" _ id:id _ "{" _ ex:expr _ "}" _ { return { id:id, condition: ex } }
+  = _ "link" _ "{" _ ex:expr _ "}" _ { return { condition: ex } }
 
 include('term.frag')
 

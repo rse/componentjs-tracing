@@ -16,7 +16,7 @@ temporal-constraint observe-value {
 		&&	parameters.value != undefined
 	}
 
-	link b {
+	link {
 			a.parameters.name == b.parameters.name
 		&&	isParent(a.origin, b.origin)
 	}
@@ -39,7 +39,7 @@ temporal-constraint create-basic {
 		operation != 'create'
 	}
 
-	link b {
+	link {
 		b.origin == a.origin
 	}
 }
@@ -61,7 +61,7 @@ temporal-constraint spool-basic {
 			operation == 'unspool'
 	}
 
-	link b {
+	link {
 			a.parameters.name == b.parameters.name
 		&&	a.origin == b.origin
 	}
@@ -85,7 +85,7 @@ temporal-constraint socket-basic {
 		||	operation == 'link'
 	}
 
-	link b {
+	link {
 			a.parameters.name == b.parameters.name
 		&&	isParent(a.origin, b.origin)
 	}
@@ -108,7 +108,7 @@ temporal-constraint subscribe-basic {
 		operation == 'publish'
 	}
 
-	link b {
+	link {
 			a.parameters.name == b.parameters.name
 		&&	isParent(a, b)
 	}
@@ -133,7 +133,7 @@ temporal-constraint model-basic {
 		||  operation == 'touch'
 	}
 
-	link b {
+	link {
 		contains(a.parameters.model, b.parameters.name)
 		&&	isParent(a.origin, b.origin)
 	}
@@ -156,7 +156,7 @@ temporal-constraint register-basic {
 		operation == 'call'
 	}
 
-	link b {
+	link {
 		a.origin == b.origin
 	}
 }

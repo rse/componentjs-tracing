@@ -55,20 +55,20 @@ app.sv = cs.clazz({
                 }
                 _.map(constraintSet, function (constraint) {
                     var participants = constraint.constraintBody.sequence
-                    if (participants.length > 2)
+                    if (participants.length < 2)
                         result.push({
                             constraint: constraint,
                             column: 0,
                             type: 'error',
-                            message: 'The number of participating traces of a temporal constraint must no exceed two'
+                            message: 'The number of participating traces of a temporal constraint must be at least two'
                         })
                     var noDups = _.uniq(participants)
-                    if (noDups.length !== 2)
+                    if (noDups.length !== participants.length)
                         result.push({
                             constraint: constraint,
                             column: 0,
                             type: 'error',
-                            message: 'There have to be exactly two diversely named members in the sequence of a temporal constraint'
+                            message: 'The members in the sequence of a temporal constraint have to be diversely named'
                         })
                     _.map(participants, function (participant) {
                         var filterIds = _.map(constraint.constraintBody.filters, function (filter) { return filter.id })
@@ -89,13 +89,6 @@ app.sv = cs.clazz({
                                 message: filter.id + ' is not defined in the sequence section but used in a filter expression'
                             })
                     })
-                    if (constraint.constraintBody.links.length > 1)
-                        result.push({
-                            constraint: constraint,
-                            column: 0,
-                            type: 'error',
-                            message: 'There can only be a link expression for the second participating trace'
-                        })
                     _.map(constraint.constraintBody.links, function (link) {
                         if (_.indexOf(participants, link.id) === -1)
                             result.push({
