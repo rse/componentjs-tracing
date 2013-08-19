@@ -15,10 +15,7 @@ app.ui.widget.trace.details.model = cs.clazz({
         create: function () {
             /*  presentation model for items  */
             cs(this).model({
-                'data:trace'        : { value: null, valid: '(null | { id?: number, time: number,' +
-                    ' source: string, sourceType: string, origin: string, originType: string,' +
-                    ' operation: string, parameters: any, result: string, checks: any, evaluateExpr: any,' +
-                    ' evaluateTerm: any, evaluateFunc: any, stringifyExpr: any, filter: any })' }
+                'data:trace' : { value: null, valid: 'object' }
             })
         }
     }
