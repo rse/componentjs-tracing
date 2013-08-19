@@ -84,6 +84,17 @@ var stringifyExprInternal = function (expression) {
         return stringifyFunc(expression)
 }
 
+var stringifyTerm = function (term) {
+    return term.field + ' ' + term.op + ' ' + term.value
+}
+
+var stringifyFunc = function (statement) {
+    if (statement.name === 'isParent' || statement.name === 'contains') {
+        return statement.name + '(' + statement.params[0].join('.') + ', ' + statement.params[1].join('.') + ')'
+    }
+    return 'NaF'
+}
+
 var filterInternal = function (trace, filter) {
     for (var key in trace) {
         if (key === 'source' || key === 'sourceType' || key === 'origin' || key === 'originType' || key === 'params' || key === 'operation') {
@@ -101,23 +112,24 @@ var filterInternal = function (trace, filter) {
     return false
 }
 
-var stringifyTerm = function (term) {
-    return term.field + ' ' + term.op + ' ' + term.value
+var compareInternal = function (ctx, other) {
+    return ctx.operation === other.operation && ctx.origin === other.origin && JSON.stringify(ctx.parameters) === JSON.stringify(other.parameters)
 }
 
-var stringifyFunc = function (statement) {
-    if (statement.name === 'isParent' || statement.name === 'contains') {
-        return statement.name + '(' + statement.params[0].join('.') + ', ' + statement.params[1].join('.') + ')'
-    }
-    return 'NaF'
+var hash = function (ctx, ignoreParams) {
+    if (!ctx.hashVal)
+        ctx.hashVal = (ctx.operation + '#' + ctx.origin + '#' + ctx.source + '#' + !ignoreParams ? JSON.stringify(ctx.parameters).replace(' ', '') : '')
+    return ctx.hashVal
 }
 
 var enrich = function (trace) {
     trace.evaluateExpr = function (expression, binding) { return evaluateExprInternal(trace, expression, binding) }
     trace.evaluateTerm = function (term, binding) { return evaluateTermInternal(trace, term, binding) }
     trace.evaluateFunc = function (statement, binding) { return evaluateFuncInternal(trace, statement, binding) }
-    trace.filter = function (filter) { return filterInternal(trace, filter) }
     trace.stringifyExpr = stringifyExprInternal
+    trace.filter = function (filter) { return filterInternal(trace, filter) }
+    trace.compare = function (other) { return compareInternal(trace, other) }
+    trace.hash = function (ignoreParams) { return hash(trace, ignoreParams) }
 
     return trace
 }
