@@ -117,9 +117,7 @@ var compareInternal = function (ctx, other) {
 }
 
 var hash = function (ctx, ignoreParams) {
-    if (!ctx.hashVal)
-        ctx.hashVal = (ctx.operation + '#' + ctx.origin + '#' + ctx.source + '#' + !ignoreParams ? JSON.stringify(ctx.parameters).replace(' ', '') : '')
-    return ctx.hashVal
+        return (ctx.operation + '#' + ctx.origin + '#' + ctx.source + '#' + !ignoreParams ? JSON.stringify(ctx.parameters).replace(' ', '') : '')
 }
 
 var enrich = function (trace) {

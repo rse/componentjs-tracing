@@ -113,15 +113,16 @@ app.ui.comp.statistics.model = cs.clazz({
                 func: function (trace) {
                     var data = cs(self).value('data:hashed-traces')
                     var ignoreParams = cs(self).value('state:ignore-params')
-                    if (!data[trace.hash(ignoreParams)]) {
-                        data[trace.hash(ignoreParams)] = trace
+                    var hash = trace.hash(ignoreParams)
+                    if (!data[hash]) {
+                        data[hash] = trace
                         trace.occurence = 1
-                        cs(self, 'view/grid').call('push', data[trace.hash(ignoreParams)])
+                        cs(self, 'view/grid').call('push', data[hash])
                         cs(self).touch('data:hashed-traces')
                     }
                     else {
-                        data[trace.hash(ignoreParams)].occurence += 1
-                        cs(self, 'view/grid').call('update', data[trace.hash(ignoreParams)])
+                        data[hash].occurence += 1
+                        cs(self, 'view/grid').call('update', data[hash])
                     }
                 }
             })
