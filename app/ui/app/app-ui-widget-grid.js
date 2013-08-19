@@ -31,11 +31,27 @@ app.ui.widget.grid.ctrl = cs.clazz({
             cs(self).register({
                 name: 'unshift', spool: 'created',
                 func: function (trace) {
-                    var traces = cs(self, 'gridModel').value('data:rows')
-                    traces.unshift(trace)
-                    cs(self, 'gridModel').value('data:rows', traces)
-                    if (cs(self, 'gridModel').call('checkFilter', trace))
-                        cs(self, 'gridModel/view').call('unshift', trace)
+                    if (!cs(self, 'gridModel').call('checkFilter', trace))
+                        return
+                    cs(self, 'gridModel').call('unshift', trace)
+                    cs(self, 'gridModel/view').call('unshift', trace)
+                }
+            })
+
+            cs(self).register({
+                name: 'push', spool: 'created',
+                func: function (trace) {
+                    if (!cs(self, 'gridModel').call('checkFilter', trace))
+                        return
+                    cs(self, 'gridModel').call('push', trace)
+                    cs(self, 'gridModel/view').call('push', trace)
+                }
+            })
+
+            cs(self).register({
+                name: 'update', spool: 'created',
+                func: function (trace) {
+                    cs(self, 'gridModel/view').call('update', trace)
                 }
             })
 
@@ -52,10 +68,11 @@ app.ui.widget.grid.ctrl = cs.clazz({
                 name: 'traces' , spool: 'created',
                 func: function (traces) {
                     if (traces) {
+                        cs(self, 'gridModel').value('state:visible-rows', traces.length)
                         cs(self, 'gridModel').value('data:rows', traces, true)
-                    } else {
-                        return cs(self, 'gridModel').value('data:rows')
                     }
+                    else
+                        return cs(self, 'gridModel').value('data:rows')
                 }
             })
 
@@ -69,7 +86,15 @@ app.ui.widget.grid.ctrl = cs.clazz({
             cs(self).register({
                 name: 'clear', spool: 'created',
                 func: function () {
+                    cs(self, 'gridModel').value('state:visible-rows', 0)
                     cs(self, 'gridModel').value('data:rows', [])
+                }
+            })
+
+            cs(self, 'gridModel').observe({
+                name: 'data:filtered', spool: '..:created',
+                func: function (ev, items) {
+                    cs(self, 'gridModel').value('state:visible-rows', items.length)
                 }
             })
 
@@ -88,6 +113,21 @@ app.ui.widget.grid.ctrl = cs.clazz({
                 }
             })
         },
+        show: function () {
+            var self = this
+
+            cs(self, 'gridModel').observe({
+                name: 'state:visible-rows', spool: '..:shown',
+                touch: true,
+                func: function (ev, nVal) {
+                    cs(self).publish('event:status-message', nVal + ' items')
+                }
+            })
+        },
+        hide: function () {
+            cs(this).unspool('shown')
+            cs(this).publish('event:status-message', '')
+        },
         destroy: function () {
             cs(this).unspool('created')
         }
@@ -100,20 +140,16 @@ app.ui.widget.grid.model = cs.clazz({
         create: function () {
             var self = this
 
-            var validTracesSet = '[{ id?: number, time: number, source: string, sourceType: string,' +
-                ' origin: string, originType: string, operation: string,' +
-                ' parameters: any, result?: string, checks?: any, evaluateExpr: any, evaluateTerm: any,' +
-                ' evaluateFunc: any, stringifyExpr: any, filter: any }*]'
-
             /*  presentation model for items  */
             cs(self).model({
-                'data:columns'      : { value: [],   valid: '[{ label: string, dataIndex: string, width?: number, align?:string, renderer?:any }*]' },
-                'state:selection'   : { value: -1,   valid: 'number' },
-                'state:filter'      : { value: '',   valid: 'string' },
-                'data:selected-obj' : { value: null, valid: 'object' },
-                'data:savable'      : { value: '',   valid: 'string' },
-                'data:filtered'     : { value: [],   valid: validTracesSet },
-                'data:rows'         : { value: [],   valid: validTracesSet }
+                'data:columns'       : { value: [],   valid: '[{ label: string, dataIndex: string, width?: number, align?:string, renderer?:any }*]' },
+                'state:selection'    : { value: -1,   valid: 'number'    },
+                'state:filter'       : { value: '',   valid: 'string'    },
+                'data:selected-obj'  : { value: null, valid: 'object'    },
+                'data:savable'       : { value: '',   valid: 'string'    },
+                'data:filtered'      : { value: [],   valid: '[object*]' },
+                'data:rows'          : { value: [],   valid: '[object*]' },
+                'state:visible-rows' : { value: 0,    valid: 'number'    }
             })
 
             cs(self).observe({
@@ -121,6 +157,22 @@ app.ui.widget.grid.model = cs.clazz({
                 touch: true,
                 func: function (ev, nVal) {
                     cs(self).value('data:filtered', nVal, true)
+                }
+            })
+
+            cs(self).register({
+                name: 'unshift', spool: 'created',
+                func: function (trace) {
+                    cs(self).value('data:filtered').unshift(trace)
+                    cs(self).value('state:visible-rows', cs(self).value('state:visible-rows') + 1)
+                }
+            })
+
+            cs(self).register({
+                name: 'push', spool: 'created',
+                func: function (trace) {
+                    cs(self).value('data:filtered').push(trace)
+                    cs(self).value('state:visible-rows', cs(self).value('state:visible-rows') + 1)
                 }
             })
 
@@ -147,13 +199,13 @@ app.ui.widget.grid.model = cs.clazz({
                 func: function (ev, nVal) {
                     var unfiltered = cs(self).value('data:rows')
                     if (nVal === '')
-                        cs(self).value('data:filtered', unfiltered)
+                        cs(self).value('data:filtered', unfiltered, true)
                     else {
                         var result = []
-                        for (var i = 0; i < unfiltered.length; i++)
-                            if (cs(self).call('checkFilter', unfiltered[i]))
-                                result.push(unfiltered[i])
-                        cs(self).value('data:filtered', result)
+                        result = _.filter(unfiltered, function (trace) {
+                            return cs(self).call('checkFilter', trace)
+                        })
+                        cs(self).value('data:filtered', result, true)
                     }
                 }
             })
@@ -164,36 +216,35 @@ app.ui.widget.grid.model = cs.clazz({
                 operation: 'get',
                 touch: true,
                 func: function (ev) {
-                    var result = ''
+                    var result = []
                     var rows = cs(self).value('data:filtered')
 
                     for (var i = 0; i < rows.length; i++) {
                         var row = rows[i]
 
                         /*  stringify parameters  */
-                        var params = "";
-                        var p = row.parameters;
+                        var params = ''
+                        var p = row.parameters
                         for (var name in p) {
-                            if (params !== "")
-                                params += ", ";
-                            params += name + ": " + JSON.stringify(p[name]);
+                            if (params !== '')
+                                params += ', '
+                            params += name + ': ' + JSON.stringify(p[name])
                         }
-                        if (params !== "")
-                            params = "{ " + params + " }";
+                        if (params !== '')
+                            params = '{ ' + params + ' }'
                         else
-                            params = "{}";
+                            params = '{}';
 
-                        result += '< ' +
+                        result.push('< ' +
                             row.time + ', ' +
                             row.source + ', ' +
                             row.sourceType + ', ' +
                             row.origin + ', ' +
                             row.originType + ', ' +
                             row.operation + ', ' +
-                            params + ' > \n'
+                            params + ' >')
                     }
-                    result = result.substr(0, result.length - 1)
-                    ev.result(result)
+                    ev.result(result.join(' \n'))
                 }
             })
         },
@@ -209,9 +260,8 @@ app.ui.widget.grid.view = cs.clazz({
         selectable: true
     },
     cons: function (selectable) {
-        if (selectable === false) {
+        if (selectable === false)
             this.selectable = selectable
-        }
     },
     protos: {
         render: function () {
@@ -253,21 +303,58 @@ app.ui.widget.grid.view = cs.clazz({
             }
 
             cs(self).register({
+                name: 'update', spool: 'rendered',
+                func: function (nTrace) {
+                    var unfiltered = cs(self).value('data:rows')
+                    var oldIdx = _.indexOf(unfiltered, nTrace)
+                    var line = $('#statistics-content .tbody > .row').eq(oldIdx)
+                    var row = $.markup('grid/row', { i: nTrace.id })
+                    fillRow(row, nTrace)
+                    _.each(unfiltered, function (trace, idx) {
+                        if (idx === oldIdx) {
+                            line.replaceWith(row)
+                            return false
+                        }
+                        if (trace.occurence <= nTrace.occurence) {
+                            var beforeThis = $('#statistics-content .tbody > .row').eq(idx)
+                            line.remove()
+                            unfiltered.splice(oldIdx, 1)
+                            row.insertBefore(beforeThis)
+                            unfiltered.splice(idx, 0, nTrace)
+                            return false
+                        }
+                    })
+                }
+            })
+
+            cs(self).register({
                 name: 'unshift', spool: 'rendered',
                 func: function (trace) {
-                    trace.style = ''
                     var i = $('.tbody > .row:first', grid).data('i')
                     if (typeof i === 'undefined')
                         i = -1
-                    var row = $.markup('grid/row', { i: ++i })
-                    fillRow(row, trace);
-                    delete trace.style
+                    var row = $.markup('grid/row', { i: trace.id })
+                    fillRow(row, trace)
                     $('.tbody', grid).prepend(row)
                     if (self.selectable) {
                         row.addClass('selectable')
                         row.click(function () {
-                            var len = cs(self).value('data:rows').length
-                            cs(self).value('state:selection', len - $(this).data('i') - 1)
+                            cs(self).value('state:selection', $(this).data('i'))
+                        })
+                    }
+                }
+            })
+
+            cs(self).register({
+                name: 'push', spool: 'rendered',
+                func: function (trace) {
+                    var row = $.markup('grid/row', { i: trace.id })
+                    fillRow(row, trace)
+                    $('.tbody', grid).append(row)
+                    if (self.selectable) {
+                        row.addClass('selectable')
+                        row.click(function () {
+                            cs(self).value('state:selection', $(this).data('i'))
                         })
                     }
                 }
@@ -279,7 +366,7 @@ app.ui.widget.grid.view = cs.clazz({
                 func: function (ev, nVal) {
                     $('.tbody tr', grid).remove()
                     for (var i = 0; i < nVal.length; i++) {
-                        var row = $('.tbody', grid).markup('grid/row', { i: nVal.length - 1 - i })
+                        var row = $('.tbody', grid).markup('grid/row', { i: nVal[i].id })
                         fillRow(row, nVal[i])
                     }
                     cs(self).value('state:selection', -1)
@@ -287,8 +374,7 @@ app.ui.widget.grid.view = cs.clazz({
                         var rows = $('.table > .tbody > .row', grid[2])
                         rows.addClass('selectable')
                         rows.click(function () {
-                            var len = cs(self).value('data:rows').length
-                            cs(self).value('state:selection', len - $(this).data('i') - 1)
+                            cs(self).value('state:selection', $(this).data('i'))
                         })
                     }
                 }
@@ -300,9 +386,11 @@ app.ui.widget.grid.view = cs.clazz({
                 touch: true,
                 func: function (ev, nVal) {
                     if (nVal !== -1) {
-                        cs(self).value('data:selected-obj', cs(self).value('data:rows')[nVal])
+                        var rows = cs(self).value('data:rows')
+                        var objIdx = _.findIndex(rows, function (row) { return row.id === nVal })
+                        cs(self).value('data:selected-obj', rows[objIdx])
                         $('.selected', grid).removeClass('selected')
-                        $('.table > .tbody > .row', grid[2]).eq(nVal).addClass('selected')
+                        $('.table > .tbody > .row', grid[2]).eq(objIdx).addClass('selected')
                     }
                     else
                         cs(self).value('data:selected-obj', null)
