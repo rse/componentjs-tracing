@@ -43,9 +43,10 @@ app.ui.comp.componentTree = cs.clazz({
             }
 
             var nameRegex = /\/([^\/]*)$/
-            cs(self).register({
-                name: 'componentEvent', spool: 'rendered',
-                func: function (trace) {
+            cs(self).subscribe({
+                name: 'event:new-trace', spool: 'rendered',
+                spreading : true, capturing : false, bubbling : false,
+                func: function (ev, trace) {
                     var tree = cs(self, 'model').value('data:tree')
                     var node, list
                     var handleListPropertyAdd = function (path, name, property) {

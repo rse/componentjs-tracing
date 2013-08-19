@@ -33,39 +33,39 @@ app.ui.comp.tracing = cs.clazz({
         prepare: function () {
             var toolbarItems = [{
                 label: 'Record',
-                icon:  "microphone",
+                icon:  'microphone',
                 type: 'button',
                 id: 'recordBtn'
             }, {
                 label: 'Load',
-                icon:  "upload-alt",
+                icon:  'upload-alt',
                 type: 'button',
                 id: 'loadBtn'
             }, {
                 label: 'Save',
-                icon:  "download-alt",
+                icon:  'download-alt',
                 id: 'saveBtn',
                 type: 'button'
             }, {
                 label: 'Clear',
-                icon:  "remove-sign",
+                icon:  'remove-sign',
                 type: 'button',
                 id: 'clearBtn'
             }, {
                 label: 'Check Once',
-                icon:  "ok-sign",
+                icon:  'ok-sign',
                 type: 'button',
                 id: 'journalBtn'
             }, {
                 label: 'Check Continuously',
-                icon: "repeat",
+                icon: 'repeat',
                 type: 'button',
                 id: 'continuousBtn'
             }, {
                 type: 'fill'
             }, {
                 label: 'Filter:',
-                icon:  "filter",
+                icon:  'filter',
                 type: 'text'
             }, {
                 type: 'input',
@@ -102,7 +102,7 @@ app.ui.comp.tracing = cs.clazz({
         },
         render: function () {
             var self = this
-            var content = $.markup("tracing-content")
+            var content = $.markup('tracing-content')
 
             cs(self).socket({
                 scope: 'toolbarModel/view',
@@ -118,12 +118,13 @@ app.ui.comp.tracing = cs.clazz({
 
             cs(self).subscribe({
                 name: 'event:new-trace', spool: 'rendered',
-                func: function (ev, data) {
-                    if (!cs(self).value('state:record'))
+                spreading : true, capturing : false, bubbling : false,
+                func: function (ev, trace) {
+                    if (trace.hidden || !cs(self).value('state:record'))
                         return;
-                    cs(self, 'grid').call('unshift', data)
+                    cs(self, 'grid').call('unshift', trace)
                     if (cs(self).value('state:continuously'))
-                        cs(self).publish('checkTrace', data)
+                        cs(self).publish('checkTrace', trace)
                 }
             })
 
@@ -180,7 +181,7 @@ app.ui.comp.tracing = cs.clazz({
             cs(self).observe({
                 name: 'event:clear', spool: 'rendered',
                 func: function () {
-                    cs(this, 'grid').call('clear')
+                    cs(self, 'grid').call('clear')
                 }
             })
 

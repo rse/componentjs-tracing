@@ -21,7 +21,7 @@ app.ui.comp.panel = cs.clazz({
 
             cs(self).create(
                 'panel/panel/' +
-                '{tracing,checking,constraints,temporalConstraints,componentTree,statusbar}',
+                '{tracing,checking,constraints,temporalConstraints,componentTree,statistics,statusbar}',
                 app.ui.widget.panel.model,
                 app.ui.widget.panel.view,
                 app.ui.comp.tracing,
@@ -29,6 +29,7 @@ app.ui.comp.panel = cs.clazz({
                 new app.ui.comp.constraints('cjscp'),
                 new app.ui.comp.constraints('cjsct'),
                 app.ui.comp.componentTree,
+                app.ui.comp.statistics,
                 app.ui.widget.statusbar
             )
             cs(self).create('headline', app.ui.widget.headline.view)
@@ -92,6 +93,13 @@ app.ui.comp.panel = cs.clazz({
                 }
             })
 
+            cs(self).subscribe({
+                name: 'event:status-message', spool: 'created',
+                func: function (ev, status) {
+                    cs(self, 'panel/panel/statusbar').publish('status', status)
+                }
+            })
+
             /*  handle the websocket state and push it to the statusbar  */
             cs(self, 'panel/panel/statusbar').publish('message', 'Connecting ...')
             cs(self, 'panel/panel/statusbar').publish('color', 'yellow')
@@ -121,9 +129,7 @@ app.ui.comp.panel = cs.clazz({
 
             socket.on('newTrace', function (trace) {
                 trace = app.lib.richTrace.enrich(trace)
-                cs(self, 'panel/panel/componentTree').call('componentEvent', trace)
-                if (!trace.hidden)
-                    cs(self, 'panel/panel/tracing').publish('event:new-trace', trace)
+                cs(self, 'panel/panel').publish({ name : 'event:new-trace', args : [ trace ], capturing : false, bubbling : false, spreading : true })
             })
         },
         prepare: function () {
@@ -132,7 +138,8 @@ app.ui.comp.panel = cs.clazz({
                 { id: 'checking',            name: 'Checking',             icon: 'thumbs-down'                             },
                 { id: 'constraints',         name: 'Peephole Constraints', icon: 'screenshot'                              },
                 { id: 'temporalConstraints', name: 'Temporal Constraints', icon: 'time'                                    },
-                { id: 'componentTree',       name: 'Component Tree',       icon: 'sitemap',     classes: 'icon-rotate-180' }
+                { id: 'componentTree',       name: 'Component Tree',       icon: 'sitemap',     classes: 'icon-rotate-180' },
+                { id: 'statistics',          name: 'Statistics',           icon: 'bar-chart'                               }
             ])
         },
         render: function () {
