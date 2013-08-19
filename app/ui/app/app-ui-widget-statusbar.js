@@ -28,6 +28,13 @@ app.ui.widget.statusbar = cs.clazz({
             })
 
             cs(self).subscribe({
+                name: 'status', spool: 'created',
+                func: function (ev, nVal) {
+                    cs(self, 'model').value('state:status', nVal)
+                }
+            })
+
+            cs(self).subscribe({
                 name: 'color', spool: 'created',
                 func: function (ev, nVal) {
                     cs(self, 'model').value('state:color', nVal)
@@ -46,7 +53,8 @@ app.ui.widget.statusbar.model = cs.clazz({
         create: function () {
             cs(this).model({
                 'state:message': { value: 'Not connected', valid: 'string' },
-                'state:color':   { value: 'black',         valid: 'string' }
+                'state:status' : { value: '',              valid: 'string' },
+                'state:color'  : { value: 'black',         valid: 'string' }
             })
         }
     }
@@ -66,7 +74,15 @@ app.ui.widget.statusbar.view = cs.clazz({
                 name: 'state:message', spool: 'rendered',
                 touch: true,
                 func: function (ev, nVal) {
-                    $('.statusbar-message', content).text(nVal)
+                    $('.statusbar-message', content).first().text(nVal)
+                }
+            })
+
+            cs(this).observe({
+                name: 'state:status', spool: 'rendered',
+                touch: true,
+                func: function (ev, nVal) {
+                    $('.statusbar-message', content).last().text(nVal)
                 }
             })
 
