@@ -371,9 +371,8 @@
                 target = new RegExp(source.source);
             else if (Object.prototype.toString.call(source) === "[object Array]") {
                 /*  special case: array object  */
-                var len = source.length;
-                target = new Array(len);
-                for (var i = 0; i < len; i++)
+                target = [];
+                for (var i = 0; i < source.length; i++)
                     target.push(myself(source[i], continue_recursion)); /* RECURSION */
             }
             else {
@@ -2569,6 +2568,18 @@
             var info = { type: type, comp: comp, method: method, ctx: obj, func: obj[method] };
             _cs.hook("ComponentJS:state-method-call", "none", info);
             result = info.func.call(info.ctx);
+        }
+        if (type === "leave") {
+            for (var i = 0; i < _cs.states.length; i++) {
+                if (_cs.states[i].leave === method) {
+                    var state = _cs.states[i].state;
+                    if (comp.spooled(state)) {
+                        $cs.debug(1, "unspool: " + comp.path("/") + ": automatically unspooled " + comp.__spool[state].length + " operations on " + method);
+                        comp.unspool(state);
+                        break;
+                    }
+                }
+            }
         }
         return result;
     };
