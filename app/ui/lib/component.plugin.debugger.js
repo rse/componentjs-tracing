@@ -413,13 +413,13 @@ ComponentJS.plugin("debugger", function (_cs, $cs, GLOBAL) {
             "<span class=\"method\">$2</span>" +
             "<span class=\"arrow\">$3</span>"
         );
-        _cs.dbg_logbook +=
+        _cs.dbg_logbook =
             "<table class=\"line\">" +
                 "<tr>" +
                     "<td class=\"num\">" + _cs.dbg_logline + ".</td>" +
                     "<td class=\"msg\">" + msg + "</td>" +
                 "</tr>" +
-            "</table>";
+            "</table>" + _cs.dbg_logbook;
         _cs.dbg_state_invalidate("console");
         _cs.dbg_update();
     };
@@ -906,9 +906,7 @@ ComponentJS.plugin("debugger", function (_cs, $cs, GLOBAL) {
         /*  update console information  */
         if (_cs.dbg_state_invalid.console) {
             _cs.jq(".dbg .console .text", _cs.dbg.document).html(_cs.dbg_logbook);
-            _cs.jq(".dbg .console", _cs.dbg.document).scrollTop(
-                _cs.jq(".dbg .console .text", _cs.dbg.document).height()
-            );
+            _cs.jq(".dbg .console", _cs.dbg.document).scrollTop(0);
             _cs.dbg_state_invalid.console = true;
         }
 
