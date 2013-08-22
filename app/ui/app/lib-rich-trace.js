@@ -120,6 +120,29 @@ var hash = function (ctx, ignoreParams) {
     return (ctx.operation + '#' + ctx.origin + '#' + ctx.source + '#' + (!ignoreParams ? JSON.stringify(ctx.parameters).replace(' ', '') : ''))
 }
 
+var toString = function (ctx) {
+    var stringify = function (obj) {
+        var seen = []
+        return JSON.stringify(obj, function(key, val) {
+           if (typeof val === 'object') {
+                if (seen.indexOf(val) >= 0)
+                    return
+                seen.push(val)
+            }
+            return val
+        })
+    }
+
+    return '< ' +
+        ctx.time + ', ' +
+        ctx.source + ', ' +
+        ctx.sourceType + ', ' +
+        ctx.origin + ', ' +
+        ctx.originType + ', ' +
+        ctx.operation + ', ' +
+        stringify(ctx.parameters) + ' >'
+}
+
 var enrich = function (trace) {
     trace.evaluateExpr = function (expression, binding) { return evaluateExprInternal(trace, expression, binding) }
     trace.evaluateTerm = function (term, binding) { return evaluateTermInternal(trace, term, binding) }
@@ -128,6 +151,7 @@ var enrich = function (trace) {
     trace.filter = function (filter) { return filterInternal(trace, filter) }
     trace.compare = function (other) { return compareInternal(trace, other) }
     trace.hash = function (ignoreParams) { return hash(trace, ignoreParams) }
+    trace.toString = function () { return toString(trace) }
 
     return trace
 }

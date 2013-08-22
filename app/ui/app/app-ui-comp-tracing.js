@@ -7,87 +7,79 @@
 **  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
+/* global Handlebars: true, btoa: true */
+
 app.ui.comp.tracing = cs.clazz({
     mixin: [ cs.marker.controller ],
     protos: {
         create: function () {
-            cs(this).create('toolbarModel/view',
-                app.ui.widget.toolbar.model,
-                app.ui.widget.toolbar.view
+            cs(this).property('ComponentJS:state-auto-increase', false)
+            cs(this).create('model/view/{toolbar,grid}',
+                app.ui.comp.tracing.model,
+                app.ui.comp.tracing.view,
+                app.ui.widget.toolbar,
+                new app.ui.widget.grid(false)
             )
-            cs(this).create('grid', new app.ui.widget.grid.ctrl(false))
-
-            cs(this).model({
-                'event:record'        : { value: false, valid: 'boolean', autoreset: true },
-                'event:load'          : { value: false, valid: 'boolean', autoreset: true },
-                'event:save'          : { value: false, valid: 'boolean', autoreset: true },
-                'event:clear'         : { value: false, valid: 'boolean', autoreset: true },
-                'event:filterKeyUp'   : { value: -1,    valid: 'number',  autoreset: true },
-                'event:check-journal' : { value: false, valid: 'boolean', autoreset: true },
-                'state:record'        : { value: true,  valid: 'boolean'                  },
-                'event:continuous'    : { value: false, valid: 'boolean', autoreset: true },
-                'state:continuously'  : { value: false, valid: 'boolean', store: true     },
-                'data:filter'         : { value: '',    valid: 'string'                   }
-            })
         },
         prepare: function () {
+            var self = this
             var toolbarItems = [{
                 label: 'Record',
                 icon:  'microphone',
                 type: 'button',
-                id: 'recordBtn'
+                id: 'recordBtn',
+                click: 'event:record',
+                state: 'state:record'
             }, {
                 label: 'Load',
                 icon:  'upload-alt',
                 type: 'button',
-                id: 'loadBtn'
+                id: 'loadBtn',
+                click: 'event:load'
             }, {
                 label: 'Save',
                 icon:  'download-alt',
                 id: 'saveBtn',
-                type: 'button'
+                type: 'button',
+                click: 'event:save'
             }, {
                 label: 'Clear',
                 icon:  'remove-sign',
                 type: 'button',
-                id: 'clearBtn'
+                id: 'clearBtn',
+                click: 'event:clear'
             }, {
                 label: 'Check Once',
                 icon:  'ok-sign',
                 type: 'button',
-                id: 'journalBtn'
+                id: 'journalBtn',
+                click: 'event:check-journal'
             }, {
                 label: 'Check Continuously',
                 icon: 'repeat',
                 type: 'button',
-                id: 'continuousBtn'
-            }, {
-                type: 'fill'
+                id: 'continuousBtn',
+                click: 'event:continuous',
+                state: 'state:continuously'
             }, {
                 label: 'Filter:',
                 icon:  'filter',
                 type: 'text'
             }, {
                 type: 'input',
-                id: 'filterInp'
+                id: 'filterInp',
+                keyup: 'event:filterKeyUp',
+                data: 'state:filter'
             }]
 
-            cs(this).property({ name: 'clicked', scope: 'toolbarModel/view/loadBtn',       value: 'event:load'          })
-            cs(this).property({ name: 'clicked', scope: 'toolbarModel/view/recordBtn',     value: 'event:record'        })
-            cs(this).property({ name: 'clicked', scope: 'toolbarModel/view/saveBtn',       value: 'event:save'          })
-            cs(this).property({ name: 'clicked', scope: 'toolbarModel/view/clearBtn',      value: 'event:clear'         })
-            cs(this).property({ name: 'clicked', scope: 'toolbarModel/view/journalBtn',    value: 'event:check-journal' })
-            cs(this).property({ name: 'clicked', scope: 'toolbarModel/view/continuousBtn', value: 'event:continuous'    })
-            cs(this).property({ name: 'keyup',   scope: 'toolbarModel/view/filterInp',     value: 'event:filterKeyUp'   })
-            cs(this).property({ name: 'data',    scope: 'toolbarModel/view/filterInp',     value: 'data:filter'         })
-
-            cs(this, 'toolbarModel').value('data:items', toolbarItems)
+            cs(self, 'model/view/toolbar').call('initialize', toolbarItems)
 
             var linkRenderer = function (op) {
-                /* global Handlebars: true */
-                return new Handlebars.SafeString('<a href="http://componentjs.com/api/api.screen.html#' + op + '" target="_BLANK">' + op + '</a>')
+                return new Handlebars.SafeString(
+                    '<a href="http://componentjs.com/api/api.screen.html#' + op +
+                    '" target="_BLANK">' + op + '</a>'
+                )
             }
-
             var columns = [
                 { label: 'Time',        dataIndex: 'time',       width: 50, align: 'center'                         },
                 { label: 'Source',      dataIndex: 'source'                                                         },
@@ -98,39 +90,26 @@ app.ui.comp.tracing = cs.clazz({
                 { label: 'Parameters',  dataIndex: 'parameters'                                                     }
             ]
 
-            cs(this, 'grid').call('columns', columns)
-        },
-        render: function () {
-            var self = this
-            var content = $.markup('tracing-content')
-
-            cs(self).socket({
-                scope: 'toolbarModel/view',
-                ctx: $('.toolbar', content)
-            })
-
-            cs(self).socket({
-                scope: 'grid',
-                ctx: $('.grid', content)
-            })
-
-            cs(self).plug(content)
+            cs(self, 'model/view/grid').call('initialize', columns)
 
             cs(self).subscribe({
-                name: 'event:new-trace', spool: 'rendered',
+                name: 'event:new-trace', spool: 'prepared',
                 spreading : true, capturing : false, bubbling : false,
                 func: function (ev, trace) {
-                    if (trace.hidden || !cs(self).value('state:record'))
+                    if (trace.hidden || !cs(self, 'model').value('state:record'))
                         return;
-                    cs(self, 'grid').call('unshift', trace)
-                    if (cs(self).value('state:continuously'))
+                    cs(self, 'model').value('data:traces').push(trace)
+                    cs(self, 'model/view/grid').call('unshift', trace)
+                    if (cs(self, 'model').value('state:continuously'))
                         cs(self).publish('checkTrace', trace)
                 }
             })
+        },
+        show: function () {
+            var self = this
 
             $('#tracing_upload').change(function (evt) {
                 var files = evt.target.files;
-
                 for (var i = 0, f; (f = files[i]); i++) {
                     /* global FileReader: true */
                     var reader = new FileReader()
@@ -139,9 +118,10 @@ app.ui.comp.tracing = cs.clazz({
                             var file = e.target.result.trim()
                             var content = file.split('\n')
                             var traces = cs('/sv').call('parseLogfile', content)
-                            cs(self, 'grid').call('traces', traces)
-                            if (cs(self).value('state:continuously'))
-                                cs(self).publish('checkJournal')
+                            cs(self, 'model').value('data:traces', traces)
+                            cs(self, 'model/view/grid').call('traces', traces.concat().reverse())
+                            if (cs(self, 'model').value('state:continuously'))
+                                cs(self).publish('checkJournal', traces)
                         }
                     })(f)
 
@@ -150,91 +130,132 @@ app.ui.comp.tracing = cs.clazz({
                 }
             })
 
-            cs(self).observe({
-                name: 'event:record', spool: 'rendered',
+            cs(self, 'model').observe({
+                name: 'event:record', spool: '..:visible',
                 func: function () {
-                    cs(self).value('state:record', !cs(self).value('state:record'))
+                    cs(self, 'model').value('state:record', !cs(self, 'model').value('state:record'))
                 }
             })
 
-            cs(self).observe({
-                name: 'event:continuous', spool: 'rendered',
+            cs(self, 'model').observe({
+                name: 'event:continuous', spool: '..:visible',
                 func: function () {
-                    cs(self).value('state:continuously', !cs(self).value('state:continuously'))
+                    cs(self, 'model').value('state:continuously', !cs(self, 'model').value('state:continuously'))
                 }
             })
 
-            cs(self).observe({
-                name: 'event:load', spool: 'rendered',
+            cs(self, 'model').observe({
+                name: 'event:load', spool: '..:visible',
                 func: function () {
                     $('#tracing_upload').trigger('click')
                 }
             })
 
-            cs(self).observe({
-                name: 'event:save', spool: 'rendered',
+            cs(self, 'model').observe({
+                name: 'event:save', spool: '..:visible',
                 func: function () {
-                    cs(self, 'grid').call('save')
+                    var traces = cs(self, 'model').value('data:traces')
+                    var result = []
+                    _.each(traces, function (trace) {
+                        result.push(trace.toString())
+                    })
+                    var str = result.join(' \n')
+                    window.location = 'data:application/octet-stream;base64,'+
+                        btoa(str)
                 }
             })
 
-            cs(self).observe({
-                name: 'event:clear', spool: 'rendered',
+            cs(self, 'model').observe({
+                name: 'event:clear', spool: '..:visible',
                 func: function () {
-                    cs(self, 'grid').call('clear')
+                    cs(self, 'model').value('data:traces', [])
+                    cs(self, 'model/view/grid').call('clear')
                 }
             })
 
-            cs(self).observe({
-                name: 'event:filterKeyUp', spool: 'rendered',
-                func: function (ev, nVal) {
-                    if (nVal === 27 /* ESCAPE */) {
-                        cs(self).value('data:filter', '')
-                        cs(self, 'grid').call('filter', '')
-                    }
-                    else if (nVal === 13 /* RETURN */)
-                        cs(self, 'grid').call('filter', cs(self).value('data:filter'))
+            cs(self, 'model').observe({
+                name: 'data:filter', spool: '..:visible',
+                func: function (ev, filter) {
+                    cs(self, 'model/view/grid').call('filter', filter)
                 }
             })
 
             cs(self).register({
-                name: 'traces', spool: 'rendered',
+                name: 'traces', spool: 'visible',
                 func: function () {
-                    return cs(self, 'grid').call('traces')
+                    return cs(self, 'model/view/grid').call('traces')
                 }
             })
 
-            cs(self).observe({
-                name: 'event:check-journal', spool: 'rendered',
+            cs(self, 'model').observe({
+                name: 'event:check-journal', spool: '..:visible',
                 func: function () {
-                    cs(self).publish('checkJournal')
+                    cs(self).publish('checkJournal', cs(self, 'model').value('data:traces'))
                 }
             })
+        }
+    }
+})
+
+app.ui.comp.tracing.model = cs.clazz({
+    mixin: [ cs.marker.model ],
+    protos: {
+        create: function () {
+            cs(this).property('ComponentJS:state-auto-increase', true)
+            cs(this).model({
+                'event:record'        : { value: false, valid: 'boolean', autoreset: true },
+                'event:load'          : { value: false, valid: 'boolean', autoreset: true },
+                'event:save'          : { value: false, valid: 'boolean', autoreset: true },
+                'event:clear'         : { value: false, valid: 'boolean', autoreset: true },
+                'event:filterKeyUp'   : { value: -1,    valid: 'number',  autoreset: true },
+                'event:check-journal' : { value: false, valid: 'boolean', autoreset: true },
+                'state:record'        : { value: true,  valid: 'boolean', store: true     },
+                'event:continuous'    : { value: false, valid: 'boolean', autoreset: true },
+                'state:continuously'  : { value: false, valid: 'boolean', store: true     },
+                'data:filter'         : { value: '',    valid: 'string', store: true      },
+                'state:filter'        : { value: '',    valid: 'string', store: true      },
+                'data:traces'         : { value: [],    valid: '[object*]'                }
+            })
         },
-        show: function () {
+        render: function () {
             var self = this
-
             cs(self).observe({
-                name: 'state:record', spool: 'shown',
-                touch: true,
+                name: 'event:filterKeyUp', spool: 'materialized',
                 func: function (ev, nVal) {
-                    cs(self, 'toolbarModel/view/recordBtn').value('state:pressed', nVal)
+                    if (nVal === 27 /* ESCAPE */)
+                        cs(self).value('state:filter', '')
+                    if (nVal === 13 /* RETURN */ || nVal === 27 /* ESCAPE */)
+                        cs(self).value('data:filter', cs(self).value('state:filter'))
                 }
             })
+        }
+    }
+})
 
-            cs(self).observe({
-                name: 'state:continuously', spool: 'shown',
-                touch: true,
-                func: function (ev, nVal) {
-                    cs(self, 'toolbarModel/view/continuousBtn').value('state:pressed', nVal)
-                }
+app.ui.comp.tracing.view = cs.clazz({
+    mixin: [ cs.marker.view ],
+    protos: {
+        create: function () {
+            cs(this).property('ComponentJS:state-auto-increase', true)
+        },
+        render: function () {
+            var self = this
+            var content = $.markup('tracing-content')
+
+            cs(self).socket({
+                scope: 'toolbar',
+                ctx: $('.toolbar', content)
             })
-        },
-        hide: function () {
-            cs(this).unspool('shown')
-        },
-        release: function () {
-            cs(this).unspool('rendered')
+
+            cs(self).socket({
+                scope: 'grid',
+                ctx: $('.grid', content)
+            })
+
+            cs(self).plug({
+                object: content,
+                spool: 'materialized'
+            })
         }
     }
 })

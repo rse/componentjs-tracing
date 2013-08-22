@@ -11,6 +11,10 @@
 
 <markup id="component-tree-tooltip">
     <b>Name:</b> {{name}}
+    {{#if state}}
+    <br/>
+    <b>State:</b> {{state}}
+    {{/if}}
     {{#if path}}
     <br/>
     <b>Path:</b> {{path}}

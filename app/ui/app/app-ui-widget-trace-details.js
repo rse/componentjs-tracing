@@ -7,7 +7,28 @@
 **  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-cs.ns('app.ui.widget.trace.details')
+cs.ns('app.ui.widget.trace')
+
+app.ui.widget.trace.details = cs.clazz({
+    mixin: [ cs.marker.controller ],
+    protos: {
+        create: function () {
+            var self = this
+            cs(self).property('ComponentJS:state-auto-increase', true)
+            cs(self).create('model/view',
+                app.ui.widget.trace.details.model,
+                app.ui.widget.trace.details.view
+            )
+
+            cs(self).register({
+                name: 'setTrace', spool: 'created',
+                func: function (trace) {
+                    cs(self, 'model').value('data:trace', trace)
+                }
+            })
+        }
+    }
+})
 
 app.ui.widget.trace.details.model = cs.clazz({
     mixin: [ cs.marker.model ],

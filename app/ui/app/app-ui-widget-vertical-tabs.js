@@ -12,38 +12,37 @@ cs.ns('app.ui.widget.vertical.tabs')
 app.ui.widget.vertical.tabs.controller = cs.clazz({
     mixin: [ cs.marker.controller ],
     dynamics: {
-        customs: 1,
         timer: null
     },
     protos: {
         create: function () {
-            cs(this).create('model/view',
+            var self = this
+            cs(self).create('model/view',
                 app.ui.widget.vertical.tabs.model,
                 app.ui.widget.vertical.tabs.view
             )
-        },
-        prepare: function () {
-            var self = this
 
-            var tabs = cs(self, 'model').value('data:tabs')
-            if (tabs.length === 0) {
-                cs(self, 'model').value('data:tabs', [
-                    { id: 'standard', name: 'Standard', enabled: true }
-                ])
-            }
-            else {
-                for (var i = 0; i < tabs.length; i++) {
-                    delete tabs[i].socket
+            cs(self).register({
+                name: 'initialize', spool: 'created',
+                func: function (cfg) {
+                    cs(self, 'model').value('data:tabs', cfg.tabs)
+                    cs(self, 'model').value('state:domain', cfg.domain)
                 }
-                cs(self, 'model').value('data:tabs', tabs, true)
-            }
+            })
 
-            $.get(cs(self).value('data:standard'), function (data) {
-                cs(self, 'model/view/standard').value('data:constraintset', data)
+            cs(self).register({
+                name: 'addConstraintset', spool: 'created',
+                func: function (newTab) {
+                    var current = cs(self, 'model').value('data:tabs')
+                    current.push(newTab)
+
+                    cs(self, 'model').value('state:active-tab', current.length - 1)
+                    cs(self, 'model').value('data:tabs', current, true)
+                }
             })
 
             cs(self).subscribe({
-                name: 'editorChanged', spool: 'prepared',
+                name: 'editorChanged', spool: 'created',
                 func: function (/* ev */) {
                     if (self.timer !== null) {
                         /* global clearTimeout: true */
@@ -51,26 +50,27 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                     }
                     /* global setTimeout: true */
                     self.timer = setTimeout(function () {
+                        console.log('editorChanged')
                         cs(self).call('parseConstraintsets')
                     }, 1000)
                 }
             })
 
             cs(self).register({
-                name: 'parseConstraintsets', spool: 'prepared',
+                name: 'parseConstraintsets', spool: 'created',
                 func: function () {
                     var tabs = cs(self, 'model').value('data:tabs')
                     var constraintsets = []
-                    var highlighting = cs(self).value('state:highlighting')
+                    var domain = cs(self, 'model').value('state:domain')
                     var syntacticallyCorrect = true
 
                     _.map(tabs, function (tabData) {
                         var tab = cs(self, 'model/view/' + tabData.id)
-                        var content = tab.value('data:savable')
+                        var content = tab.call('getSavable')
                         var result
-                        if (highlighting === 'cjscp')
+                        if (domain === 'cjscp')
                             result = cs('/sv').call('parseConstraintset', content)
-                        else if (highlighting === 'cjsct')
+                        else if (domain === 'cjsct')
                             result = cs('/sv').call('parseTemporalConstraintset', content)
 
                         if (result.success) {
@@ -78,9 +78,9 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
 
                             /*  check for semantic correctness in temporal constraints  */
                             var errors
-                            if (highlighting === 'cjscp')
+                            if (domain === 'cjscp')
                                 errors = cs('/sv').call('validatePeepholeConstraints', result.constraints)
-                            else if (highlighting === 'cjsct')
+                            else if (domain === 'cjsct')
                                 errors = cs('/sv').call('validateTemporalConstraints', result.constraints)
 
                             if (errors.length !== 0)
@@ -102,45 +102,38 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                 }
             })
         },
-        render: function () {
+        prepare: function () {
             var self = this
 
-            cs(self).register({
-                name: 'saveCurrent', spool: 'rendered',
-                func: function () {
-                    var content = cs(self, 'model').value('data:savable')
-                    /* global btoa: true */
-                    window.location = 'data:application/octet-stream;base64,' + btoa(content)
+/*            var tabs = cs(self, 'model').value('data:tabs')
+            if (tabs.length === 0)
+                tabs = [{ id: 'standard', name: 'Standard', enabled: true }]
+            else {
+                for (var i = 0; i < tabs.length; i++)
+                    delete tabs[i].socket
+            }
+            cs(self, 'model').value('data:tabs', tabs)*/
+
+            cs(self, 'model').observe({
+                name: 'data:tabs', spool: '..:prepared',
+                touch: true,
+                func: function (ev, tabs) {
+                    // TODO - destroy children that have been removed
+                    _.each(tabs, function (tab) {
+                        if (cs(self, 'model/view/' + tab.id).exists())
+                            return
+                        var newTab = cs(self, 'model/view').create(tab.id, app.ui.widget.constraintset)
+                        /*  load content from configured data source  */
+                        if (tab.data)
+                            $.get(tab.data, function (data) {
+                                newTab.call('setContent', data)
+                            })
+                    })
                 }
             })
 
             cs(self).register({
-                name: 'addConstraintset', spool: 'rendered',
-                func: function (/* content */) {
-                    var current = cs(self, 'model').value('data:tabs')
-                    current.push({ id: 'custom_' + self.customs, name: 'Custom ' + self.customs, enabled: false })
-
-                    cs(self, 'model').value('state:active-tab', current.length - 1)
-                    cs(self, 'model').value('data:tabs', current, true)
-
-                    self.customs++
-                }
-            })
-
-            cs(self).subscribe({
-                name: 'addConstraintset', spool: 'rendered',
-                func: function (ev, tab) {
-                    var newCustom = cs(this, 'model/view').create(tab.id, app.ui.widget.constraintset)
-                    newCustom.value('state:highlighting', self.highlighting)
-                    newCustom.state('visible')
-
-                    if (tab.id.indexOf('custom') !== -1)
-                        self.customs++
-                }
-            })
-
-            cs(self).register({
-                name: 'removeConstraintset', spool: 'rendered',
+                name: 'removeConstraintset', spool: 'prepared',
                 func: function () {
                     var tabs = cs(self, 'model').value('data:tabs')
                     var idx = cs(self, 'model').value('state:active-tab')
@@ -158,11 +151,17 @@ app.ui.widget.vertical.tabs.controller = cs.clazz({
                 }
             })
         },
-        cleanup: function () {
-            cs(this).unspool('prepared')
-        },
-        release: function () {
-            cs(this).unspool('rendered')
+        show: function () {
+            var self = this
+
+            cs(self).register({
+                name: 'saveCurrent', spool: 'visible',
+                func: function () {
+                    var content = cs(self, 'model').value('data:savable')
+                    /* global btoa: true */
+                    window.location = 'data:application/octet-stream;base64,' + btoa(content)
+                }
+            })
         }
     }
 })
@@ -175,20 +174,21 @@ app.ui.widget.vertical.tabs.model = cs.clazz({
 
             /*  presentation model for items  */
             cs(self).model({
-                'data:tabs':         { value: [],   valid: '[{ id: string, name: string, enabled: boolean, socket?: string, deleted?: boolean, content?: string }*]', store: true },
-                'state:active-tab':  { value: -1,   valid: 'number', store: true                                                                   },
-                'event:tab-checked': { value: null, valid: '(null | { tabIndex: number, state: boolean })', autoreset: true                        },
-                'data:savable':      { value: '',   valid: 'string'                                                                                }
+                'data:tabs'         : { value: [],   valid: '[{ id: string, name: string, enabled: boolean, socket?: string, deleted?: boolean, content?: string, data?: string }*]', store: true },
+                'state:active-tab'  : { value: -1,   valid: 'number', store: true                                                                   },
+                'event:tab-checked' : { value: null, valid: '(null | { tabIndex: number, state: boolean })', autoreset: true                        },
+                'data:savable'      : { value: '',   valid: 'string'                                                                                  },
+                'state:domain'      : { value: '',   valid: 'string' }
             })
 
             cs(self).observe({
                 name: 'data:savable', spool: 'created',
                 operation: 'get',
-                func: function () {
+                func: function (ev) {
                     /*  retrieve content of the tab that's currently active  */
                     var activeTab = cs(self).value('data:tabs')[cs(self).value('state:active-tab')]
-                    var content = cs(self, 'view/' + activeTab.id).value('data:savable')
-                    cs(self).value('data:savable', content)
+                    var content = cs(self, 'view/' + activeTab.id).call('getSavable')
+                    ev.result = content
                 }
             })
 
@@ -201,9 +201,6 @@ app.ui.widget.vertical.tabs.model = cs.clazz({
                     cs(self).publish('editorChanged')
                 }
             })
-        },
-        destroy: function () {
-            cs(this).unspool('created')
         }
     }
 })
@@ -220,7 +217,7 @@ app.ui.widget.vertical.tabs.view = cs.clazz({
 
             /*  render tabs  */
             cs(self).observe({
-                name: 'data:tabs', spool: 'rendered',
+                name: 'data:tabs', spool: 'materialized',
                 touch: true,
                 func: function (ev, tabs) {
                     var i
@@ -240,7 +237,7 @@ app.ui.widget.vertical.tabs.view = cs.clazz({
                     for (i = 0; i < tabs.length; i++) {
                         if (!tabs[i].socket) {
 
-                            cs(self).publish('addConstraintset', tabs[i])
+                            //cs(self).publish('addConstraintset', tabs[i])
                            $('.vertical-tabs', details).markup('vertical-tabs/vertical-tab', { i: i, name: tabs[i].name })
 
                             /*  react on tab click  */
@@ -268,7 +265,7 @@ app.ui.widget.vertical.tabs.view = cs.clazz({
 
             /*  react on active tab change  */
             cs(self).observe({
-                name: 'state:active-tab', spool: 'rendered',
+                name: 'state:active-tab', spool: 'materialized',
                 touch: true,
                 func: function (ev, active) {
                     var tabs = cs(self).value('data:tabs').length
@@ -284,9 +281,6 @@ app.ui.widget.vertical.tabs.view = cs.clazz({
                     ev.result(active)
                 }
             })
-        },
-        release: function () {
-            cs(this).unspool('rendered')
         }
     }
 })

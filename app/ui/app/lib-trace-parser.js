@@ -58,16 +58,38 @@ var parseObject = function (param, params) {
     while (params.first() !== '}') {
         if (params.first() === ',')
             params.skip()
+        if (params.first() === ']') {
+            params.skip()
+            params.skip()
+        }
         if (params.first(2) === '{') {
             var obj = {}
-            param[params.first()] = obj
+            if (!_.isArray(param))
+                param[params.first()] = obj
+            else
+                param.push(obj)
             params.skip()
             params.skip()
             params.skip()
             parseObject(obj, params)
         }
+        else if (params.first(2) === '[') {
+            var ary = []
+            if (!_.isArray(param))
+                param[params.first()] = ary
+            else
+                param.push(ary)
+            params.skip()
+            params.skip()
+            params.skip()
+            parseObject(ary, params)
+        }
         else {
-            param[params.first()] = JSON.parse(params.first(2))
+            var rest = JSON.parse(params.first(2))
+            if (!_.isArray(param))
+                param[params.first()] = rest
+            else
+                param.push(rest)
             params.skip()
             params.skip()
             params.skip()
@@ -77,27 +99,6 @@ var parseObject = function (param, params) {
 
 var parseLog = function (lines) {
     var traces = []
-    for (var i = 0; i < lines.length; i++) {
-        var line = lines[i]
-        var matches = line.match(pattern)
-        var params = tokenize(matches[7])
-        params.skip()
-        var param = {}
-        parseObject(param, params)
-        var newTrace = {
-            time: parseInt(matches[1], 10),
-            source: matches[2],
-            sourceType: matches[3],
-            origin: matches[4],
-            originType: matches[5],
-            operation: matches[6],
-            parameters: param
-        }
-        traces.push(newTrace)
-    }
-
-    traces.sort(function (a, b) { return b.time - a.time })
-
     return traces
 }
 

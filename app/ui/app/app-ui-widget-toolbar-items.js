@@ -11,44 +11,51 @@ cs.ns('app.ui.widget.toolbar.items')
 
 /*  button view  */
 app.ui.widget.toolbar.items.button = cs.clazz({
-    mixin: [ cs.marker.view, cs.marker.model ],
+    mixin: [ cs.marker.view ],
     dynamics: {
         label: null,
-        icon: null
-    },
-    cons: function (label, icon) {
-        this.label = label
-        this.icon  = icon
+        icon: null,
+        btn: null
     },
     protos: {
         create: function () {
             var self = this
-
-            cs(self).model({
-                'state:pressed': { value: false, valid: 'boolean' }
-            })
-
-            var btn = $.markup('toolbar-button', { label: self.label, icon: self.icon })
-
-            cs(self).observe({
-                name: 'state:pressed', spool: 'created',
-                touch: true,
-                func: function (ev, nVal) {
-                    if (nVal)
-                        $(btn).addClass('pressed')
-                    else
-                        $(btn).removeClass('pressed')
+            cs(self).register({
+                name: 'initialize', spool: 'created',
+                func: function (cfg) {
+                    self.label = cfg.label
+                    self.icon = cfg.icon
                 }
             })
-
-            $(btn).click(function () {
-                cs(self).value(cs(self).property('clicked'), true)
-            })
-
-            cs(self).plug(btn)
         },
-        destroy: function () {
-            cs(this).unspool('created')
+        prepare: function (){
+            var self = this
+            self.btn = $.markup('toolbar-button', { label: self.label, icon: self.icon })
+
+            cs(self).plug({
+                object: self.btn,
+                spool: 'prepared'
+            })
+        },
+        show: function () {
+            var self = this
+            var state = cs(self).property('state')
+
+            if (state)
+                cs(self).observe({
+                    name: state, spool: 'visible',
+                    touch: true,
+                    func: function (ev, nVal) {
+                        if (nVal)
+                            $(self.btn).addClass('pressed')
+                        else
+                            $(self.btn).removeClass('pressed')
+                    }
+                })
+
+            $(self.btn).click(function () {
+                cs(self).value(cs(self).property('click'), true)
+            })
         }
     }
 })
@@ -56,32 +63,35 @@ app.ui.widget.toolbar.items.button = cs.clazz({
 /*  input view  */
 app.ui.widget.toolbar.items.input = cs.clazz({
     mixin: [ cs.marker.view ],
+    dynamics: {
+        input: null
+    },
     protos: {
-        create: function () {
+        prepare: function () {
             var self = this
-
-            var btn = $.markup('toolbar-input')
-
-            $('input[type=text]', btn).change(function (event) {
+            self.input = $.markup('toolbar-input')
+            cs(self).plug({
+                object: self.input,
+                spool: 'prepared'
+            })
+        },
+        show: function () {
+            var self = this
+            $('input[type=text]', self.input).change(function (event) {
                 cs(self).value(cs(self).property('data'), event.target.value)
             })
 
-            $('input[type=text]', btn).keyup(function (event) {
+            $('input[type=text]', self.input).keyup(function (event) {
                 cs(self).value(cs(self).property('keyup'), event.keyCode)
             })
 
             cs(self).observe({
-                name: cs(self).property('data'), spool: 'created',
+                name: cs(self).property('data'), spool: 'visible',
                 touch: true,
                 func: function (ev, nVal) {
-                    $('input[type=text]', btn).val(nVal)
+                    $('input[type=text]', self.input).val(nVal)
                 }
             })
-
-            cs(self).plug(btn)
-        },
-        destroy: function () {
-            cs(this).unspool('created')
         }
     }
 })
@@ -91,19 +101,27 @@ app.ui.widget.toolbar.items.text = cs.clazz({
     mixin: [ cs.marker.view ],
     dynamics: {
         label: null,
-        icon:  null
-    },
-    cons: function (label, icon) {
-        this.label = label
-        this.icon  = icon
+        icon:  null,
+        text: null
     },
     protos: {
         create: function () {
             var self = this
-
-            var btn = $.markup('toolbar-text', { label: self.label, icon: self.icon })
-
-            cs(self).plug(btn)
+            cs(self).register({
+                name: 'initialize', spool: 'created',
+                func: function (cfg) {
+                    self.label = cfg.label
+                    self.icon = cfg.icon
+                }
+            })
+        },
+        prepare: function () {
+            var self = this
+            self.text = $.markup('toolbar-text', { label: self.label, icon: self.icon })
+            cs(self).plug({
+                object: self.text,
+                spool: 'prepared'
+            })
         }
     }
 })
@@ -113,34 +131,43 @@ app.ui.widget.toolbar.items.checkbox = cs.clazz({
     mixin: [ cs.marker.view ],
     dynamics: {
         label: null,
-        icon: null
-    },
-    cons: function (label, icon) {
-        this.label =  label
-        this.icon = icon
+        icon: null,
+        btn: null
     },
     protos: {
         create: function () {
             var self = this
+            cs(self).register({
+                name: 'initialize', spool: 'created',
+                func: function (cfg) {
+                    self.label = cfg.label
+                    self.icon = cfg.icon
+                }
+            })
+        },
+        prepare: function () {
+            var self = this
 
-            var btn = $.markup('toolbar-checkbox', { id: Date.now(), label: self.label, icon: self.icon })
+            self.btn = $.markup('toolbar-checkbox', { id: Date.now(), label: self.label, icon: self.icon })
 
-            $('input[type=checkbox]', btn).click(function () {
-                cs(self).value(cs(self).property('data'), $('input[type=checkbox]', btn).is(':checked'))
+            cs(self).plug({
+                object: self.btn,
+                spool: 'prepared'
+            })
+        },
+        show: function () {
+            var self = this
+            $('input[type=checkbox]', self.btn).click(function () {
+                cs(self).value(cs(self).property('data'), $('input[type=checkbox]', self.btn).is(':checked'))
             })
 
             cs(self).observe({
-                name: cs(self).property('data'), spool: 'created',
+                name: cs(self).property('data'), spool: 'visible',
                 touch: true,
                 func: function (ev, nVal) {
-                    $('input[type=checkbox]', btn).attr('checked', nVal)
+                    $('input[type=checkbox]', self.btn).attr('checked', nVal)
                 }
             })
-
-            cs(self).plug(btn)
-        },
-        destroy: function () {
-            cs(this).unspool('created')
         }
     }
 })

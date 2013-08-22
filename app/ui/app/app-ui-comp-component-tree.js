@@ -13,14 +13,14 @@ app.ui.comp.componentTree = cs.clazz({
     mixin: [ cs.marker.controller ],
     protos: {
         create: function () {
-            cs(this).property('ComponentJS:state-auto-increase', true)
+            cs(this).property('ComponentJS:state-auto-increase', false)
 
             cs(this).create('{model/view}',
                 app.ui.comp.componentTree.model,
                 app.ui.comp.componentTree.view
             )
         },
-        render: function () {
+        prepare: function () {
             var self = this
 
             var findInTree = function (tree, path) {
@@ -44,7 +44,7 @@ app.ui.comp.componentTree = cs.clazz({
 
             var nameRegex = /\/([^\/]*)$/
             cs(self).subscribe({
-                name: 'event:new-trace', spool: 'rendered',
+                name: 'event:new-trace', spool: 'materialized',
                 spreading : true, capturing : false, bubbling : false,
                 func: function (ev, trace) {
                     var tree = cs(self, 'model').value('data:tree')
@@ -101,7 +101,7 @@ app.ui.comp.componentTree = cs.clazz({
             })
 
             cs(self).register({
-                name: 'remove', spool: 'rendered',
+                name: 'remove', spool: 'materialized',
                 func: function (path) {
                     var tree = cs(self, 'model').value('data:tree')
                     if (findInTree(tree, path).length === 0)
@@ -112,7 +112,7 @@ app.ui.comp.componentTree = cs.clazz({
             })
 
             cs(self).register({
-                name: 'add', spool: 'rendered',
+                name: 'add', spool: 'materialized',
                 func: function (path, newNode) {
                     var tree = cs(self, 'model').value('data:tree')
                     var node = findInTree(tree, path)[0]
@@ -126,9 +126,6 @@ app.ui.comp.componentTree = cs.clazz({
                     cs(self, 'model').value('data:tree', tree, true)
                 }
             })
-        },
-        release: function () {
-            cs(this).unspool('rendered')
         }
     }
 })
@@ -137,6 +134,7 @@ app.ui.comp.componentTree.model = cs.clazz({
     mixin: [ cs.marker.model ],
     protos: {
         create: function () {
+            cs(this).property('ComponentJS:state-auto-increase', true)
             cs(this).model({
                 'data:tree':             { value: null,                             valid: 'object'              },
                 'state:cmd':             { value: 'cs(\'/ui\').state(\'created\')', valid: 'string', store: true },
@@ -167,6 +165,7 @@ app.ui.comp.componentTree.view = cs.clazz({
     protos: {
         render: function () {
             var self = this
+            cs(this).property('ComponentJS:state-auto-increase', true)
             var content = $.markup('componentTree-content')
             $('i', content).addClass('icon-angle-right')
 

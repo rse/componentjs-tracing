@@ -7,88 +7,80 @@
 **  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-/* global clearTimeout: true, setTimeout: true, setInterval: true, prompt: true, escape: true */
-
 app.ui.comp.statistics = cs.clazz({
     mixin: [ cs.marker.controller ],
     protos: {
         create: function () {
             var self = this
 
-            cs(self).property('ComponentJS:state-auto-increase', true)
+            cs(self).property('ComponentJS:state-auto-increase', false)
 
-            cs(self).create('model/view/{grid,toolbarModel/view}',
+            cs(self).create('model/view/{grid,toolbar}',
                 app.ui.comp.statistics.model,
                 app.ui.comp.statistics.view,
-                new app.ui.widget.grid.ctrl(false),
-                app.ui.widget.toolbar.model,
-                app.ui.widget.toolbar.view
+                new app.ui.widget.grid(false),
+                app.ui.widget.toolbar
             )
 
             cs(self).subscribe({
                 name: 'event:new-trace', spool: 'created',
                 spreading : true, capturing : false, bubbling : false,
                 func: function (ev, trace) {
-                    if (!cs(self, 'model').value('state:record'))
+                    if (trace.hidden || !cs(self, 'model').value('state:record'))
                         return
                     cs(self, 'model').call('newTrace', trace)
                 }
             })
+
+            cs(self).subscribe({
+                name: 'event:push', spool: 'rendered',
+                func: function (ev, trace) {
+                    cs(self, 'model/view/grid').call('push', trace)
+                }
+            })
+
+            cs(self).subscribe({
+                name: 'event:update', spool: 'rendered',
+                func: function (ev, trace) {
+                    cs(self, 'model/view/grid').call('update', trace)
+                }
+            })
         },
         render: function () {
+            var self = this
             var toolbarItems = [{
                 label: 'Record',
                 icon:  'microphone',
                 type: 'button',
-                id: 'recordBtn'
+                id: 'recordBtn',
+                click: 'event:record',
+                state: 'state:record'
             }, {
                 label: 'Clear',
                 icon:  'remove-sign',
                 type: 'button',
-                id: 'clearBtn'
+                id: 'clearBtn',
+                click: 'event:clear'
             }, {
                 label: 'Ignore parameters',
                 icon: 'repeat',
                 type: 'button',
-                id: 'ignoreParams'
+                id: 'ignoreParams',
+                click: 'event:ignore-params',
+                state: 'state:ignore-params'
             }]
 
-            cs(this).property({ name: 'clicked', scope: 'model/view/toolbarModel/view/clearBtn', value: 'event:clear' })
-            cs(this).property({ name: 'clicked', scope: 'model/view/toolbarModel/view/recordBtn', value: 'event:record' })
-            cs(this).property({ name: 'clicked', scope: 'model/view/toolbarModel/view/ignoreParams', value: 'event:ignore-params' })
-            cs(this, 'model/view/toolbarModel').value('data:items', toolbarItems)
+            cs(self, 'model/view/toolbar').call('initialize', toolbarItems)
         },
         show: function () {
             var self = this
 
             cs(self, 'model').observe({
-                name: 'event:clear', spool: '..:shown',
+                name: 'event:clear', spool: '..:visible',
                 func: function () {
                     cs(self, 'model/view/grid').call('clear')
                 }
             })
-
-            cs(self, 'model').observe({
-                name: 'state:record', spool: '..:shown',
-                touch: true,
-                func: function (ev, nVal) {
-                    cs(self, 'model/view/toolbarModel/view/recordBtn').value('state:pressed', nVal)
-                }
-            })
-
-            cs(self, 'model').observe({
-                name: 'state:ignore-params', spool: '..:shown',
-                touch: true,
-                func: function (ev, nVal) {
-                    cs(self, 'model/view/toolbarModel/view/ignoreParams').value('state:pressed', nVal)
-                }
-            })
-        },
-        hide: function () {
-            cs(this).unspool('shown')
-        },
-        destroy: function () {
-            cs(this).unspool('created')
         }
     }
 })
@@ -98,7 +90,7 @@ app.ui.comp.statistics.model = cs.clazz({
     protos: {
         create: function () {
             var self = this
-
+            cs(self).property('ComponentJS:state-auto-increase', true)
             cs(self).model({
                 'data:hashed-traces'  : { value: {},    valid: 'object'                   },
                 'event:clear'         : { value: false, valid: 'boolean', autoreset: true },
@@ -117,12 +109,11 @@ app.ui.comp.statistics.model = cs.clazz({
                     if (!data[hash]) {
                         data[hash] = trace
                         trace.occurence = 1
-                        cs(self, 'view/grid').call('push', data[hash])
-                        cs(self).touch('data:hashed-traces')
+                        cs(self).publish('event:push', data[hash])
                     }
                     else {
                         data[hash].occurence += 1
-                        cs(self, 'view/grid').call('update', data[hash])
+                        cs(self).publish('event:update', data[hash])
                     }
                 }
             })
@@ -131,24 +122,18 @@ app.ui.comp.statistics.model = cs.clazz({
             var self = this
 
             cs(self).observe({
-                name: 'event:record', spool: 'rendered',
+                name: 'event:record', spool: 'materialized',
                 func: function () {
                     cs(self).value('state:record', !cs(self).value('state:record'))
                 }
             })
 
             cs(self).observe({
-                name: 'event:ignore-params', spool: 'rendered',
+                name: 'event:ignore-params', spool: 'materialized',
                 func: function () {
                     cs(self).value('state:ignore-params', !cs(self).value('state:ignore-params'))
                 }
             })
-        },
-        release: function () {
-            cs(this).unspool('rendered')
-        },
-        destroy: function () {
-            cs(this).unspool('created')
         }
     }
 })
@@ -164,6 +149,9 @@ app.ui.comp.statistics.view = cs.clazz({
         tree: null
     },
     protos: {
+        create: function () {
+            cs(this).property('ComponentJS:state-auto-increase', true)
+        },
         prepare: function () {
             var columns = [
                 { label: 'Occurrence',  dataIndex: 'occurence',  width: 70, align: 'center' },
@@ -175,14 +163,14 @@ app.ui.comp.statistics.view = cs.clazz({
                 { label: 'Parameters',  dataIndex: 'parameters'                             }
             ]
 
-            cs(this, 'grid').call('columns', columns)
+            cs(this, 'grid').call('initialize', columns)
         },
         render: function () {
             var self = this
             var content = $.markup('statistics-content')
 
             cs(self).socket({
-                scope: 'toolbarModel/view',
+                scope: 'toolbar',
                 ctx: $('.toolbar', content)
             })
 
@@ -193,11 +181,8 @@ app.ui.comp.statistics.view = cs.clazz({
 
             cs(self).plug({
                 object: content,
-                spool: 'rendered'
+                spool: 'materialized'
             })
-        },
-        release: function () {
-            cs(this).unspool('rendered')
         }
     }
 })

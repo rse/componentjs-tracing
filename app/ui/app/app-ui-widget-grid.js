@@ -6,256 +6,10 @@
 **  License, v. 2.0. If a copy of the MPL was not distributed with this
 **  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
+/* globals btoa: false */
 
-cs.ns('app.ui.widget.grid')
-
-app.ui.widget.grid.ctrl = cs.clazz({
+app.ui.widget.grid = cs.clazz({
     mixin: [ cs.marker.controller ],
-    dynamics: {
-        selectable: true
-    },
-    cons: function (selectable) {
-        if (selectable === false) {
-            this.selectable = selectable
-        }
-    },
-    protos: {
-        create: function () {
-            var self = this
-
-            cs(self).create('gridModel/view',
-                app.ui.widget.grid.model,
-                new app.ui.widget.grid.view(self.selectable)
-            )
-
-            cs(self).register({
-                name: 'unshift', spool: 'created',
-                func: function (trace) {
-                    if (!cs(self, 'gridModel').call('checkFilter', trace))
-                        return
-                    cs(self, 'gridModel').call('unshift', trace)
-                    cs(self, 'gridModel/view').call('unshift', trace)
-                }
-            })
-
-            cs(self).register({
-                name: 'push', spool: 'created',
-                func: function (trace) {
-                    if (!cs(self, 'gridModel').call('checkFilter', trace))
-                        return
-                    cs(self, 'gridModel').call('push', trace)
-                    cs(self, 'gridModel/view').call('push', trace)
-                }
-            })
-
-            cs(self).register({
-                name: 'update', spool: 'created',
-                func: function (trace) {
-                    cs(self, 'gridModel/view').call('update', trace)
-                }
-            })
-
-            cs(self).register({
-                name: 'save', spool: 'created',
-                func: function () {
-                    /* global btoa */
-                    window.location = 'data:application/octet-stream;base64,'+
-                        btoa(cs(self, 'gridModel').value('data:savable'))
-                }
-            })
-
-            cs(self).register({
-                name: 'traces' , spool: 'created',
-                func: function (traces) {
-                    if (traces) {
-                        cs(self, 'gridModel').value('state:visible-rows', traces.length)
-                        cs(self, 'gridModel').value('data:rows', traces, true)
-                    }
-                    else
-                        return cs(self, 'gridModel').value('data:rows')
-                }
-            })
-
-            cs(self).register({
-                name: 'columns', spool: 'created',
-                func: function (columns) {
-                    cs(self, 'gridModel').value('data:columns', columns)
-                }
-            })
-
-            cs(self).register({
-                name: 'clear', spool: 'created',
-                func: function () {
-                    cs(self, 'gridModel').value('state:visible-rows', 0)
-                    cs(self, 'gridModel').value('data:rows', [])
-                }
-            })
-
-            cs(self, 'gridModel').observe({
-                name: 'data:filtered', spool: '..:created',
-                func: function (ev, items) {
-                    cs(self, 'gridModel').value('state:visible-rows', items.length)
-                }
-            })
-
-            cs(self).register({
-                name: 'filter', spool: 'created',
-                func: function (filter) {
-                    cs(self, 'gridModel').value('state:filter', filter)
-                }
-            })
-
-            cs(self, 'gridModel').observe({
-                name: 'data:selected-obj', spool: '..:rendered',
-                touch: true,
-                func: function (ev, nVal) {
-                    cs(self).publish('objectSelected', nVal)
-                }
-            })
-        },
-        show: function () {
-            var self = this
-
-            cs(self, 'gridModel').observe({
-                name: 'state:visible-rows', spool: '..:shown',
-                touch: true,
-                func: function (ev, nVal) {
-                    cs(self).publish('event:status-message', nVal + ' items')
-                }
-            })
-        },
-        hide: function () {
-            cs(this).unspool('shown')
-            cs(this).publish('event:status-message', '')
-        },
-        destroy: function () {
-            cs(this).unspool('created')
-        }
-    }
-})
-
-app.ui.widget.grid.model = cs.clazz({
-    mixin: [ cs.marker.model ],
-    protos: {
-        create: function () {
-            var self = this
-
-            /*  presentation model for items  */
-            cs(self).model({
-                'data:columns'       : { value: [],   valid: '[{ label: string, dataIndex: string, width?: number, align?:string, renderer?:any }*]' },
-                'state:selection'    : { value: -1,   valid: 'number'    },
-                'state:filter'       : { value: '',   valid: 'string'    },
-                'data:selected-obj'  : { value: null, valid: 'object'    },
-                'data:savable'       : { value: '',   valid: 'string'    },
-                'data:filtered'      : { value: [],   valid: '[object*]' },
-                'data:rows'          : { value: [],   valid: '[object*]' },
-                'state:visible-rows' : { value: 0,    valid: 'number'    }
-            })
-
-            cs(self).observe({
-                name: 'data:rows', spool: 'created',
-                touch: true,
-                func: function (ev, nVal) {
-                    cs(self).value('data:filtered', nVal, true)
-                }
-            })
-
-            cs(self).register({
-                name: 'unshift', spool: 'created',
-                func: function (trace) {
-                    cs(self).value('data:filtered').unshift(trace)
-                    cs(self).value('state:visible-rows', cs(self).value('state:visible-rows') + 1)
-                }
-            })
-
-            cs(self).register({
-                name: 'push', spool: 'created',
-                func: function (trace) {
-                    cs(self).value('data:filtered').push(trace)
-                    cs(self).value('state:visible-rows', cs(self).value('state:visible-rows') + 1)
-                }
-            })
-
-            cs(self).register({
-                name: 'checkFilter', spool: 'created',
-                func: function (trace) {
-                    var filter = cs(self).value('state:filter')
-                    var tmp = filter.split(':')
-                    /*  expand abbreviations for sourceType and originType  */
-                    if (tmp[0] === 'OT')
-                        tmp[0] = 'originType'
-                    if (tmp[0] === 'ST')
-                        tmp[0] = 'sourceType'
-                    if (tmp.length === 2 && trace[tmp[0]])
-                        return trace[tmp[0]].toLowerCase().indexOf(tmp[1].toLowerCase()) !== -1
-                    else
-                        return trace.filter(filter)
-                }
-            })
-
-            cs(self).observe({
-                name: 'state:filter', spool: 'created',
-                operation: 'changed', touch: true,
-                func: function (ev, nVal) {
-                    var unfiltered = cs(self).value('data:rows')
-                    if (nVal === '')
-                        cs(self).value('data:filtered', unfiltered, true)
-                    else {
-                        var result = []
-                        result = _.filter(unfiltered, function (trace) {
-                            return cs(self).call('checkFilter', trace)
-                        })
-                        cs(self).value('data:filtered', result, true)
-                    }
-                }
-            })
-
-            /*  calculate the savable content on demand  */
-            cs(self).observe({
-                name: 'data:savable', spool: 'created',
-                operation: 'get',
-                touch: true,
-                func: function (ev) {
-                    var result = []
-                    var rows = cs(self).value('data:filtered')
-
-                    for (var i = 0; i < rows.length; i++) {
-                        var row = rows[i]
-
-                        /*  stringify parameters  */
-                        var params = ''
-                        var p = row.parameters
-                        for (var name in p) {
-                            if (params !== '')
-                                params += ', '
-                            params += name + ': ' + JSON.stringify(p[name])
-                        }
-                        if (params !== '')
-                            params = '{ ' + params + ' }'
-                        else
-                            params = '{}';
-
-                        result.push('< ' +
-                            row.time + ', ' +
-                            row.source + ', ' +
-                            row.sourceType + ', ' +
-                            row.origin + ', ' +
-                            row.originType + ', ' +
-                            row.operation + ', ' +
-                            params + ' >')
-                    }
-                    ev.result(result.join(' \n'))
-                }
-            })
-        },
-        destroy: function () {
-            cs(this).unspool('created')
-        }
-    }
-})
-
-app.ui.widget.grid.view = cs.clazz({
-    mixin: [ cs.marker.view ],
     dynamics: {
         selectable: true
     },
@@ -264,24 +18,230 @@ app.ui.widget.grid.view = cs.clazz({
             this.selectable = selectable
     },
     protos: {
-        render: function () {
+        create: function () {
             var self = this
-            var grid = $.markup('grid')
+            cs(this).property('ComponentJS:state-auto-increase', true)
+            cs(self).create('model/view',
+                app.ui.widget.grid.model,
+                new app.ui.widget.grid.view(self.selectable)
+            )
 
-            cs(self).plug(grid)
+            cs(self).register({
+                name: 'initialize', spool: 'created',
+                func: function (columns) {
+                    cs(self, 'model').value('data:columns', columns)
+                }
+            })
 
-            cs(self).observe({
-                name: 'data:columns', spool: 'rendered',
+            cs(self).register({
+                name: 'unshift', spool: 'created',
+                func: function (trace) {
+                    cs(self, 'model').value('state:add-pos', 'top')
+                    cs(self, 'model').value('data:new-item', trace, true)
+                }
+            })
+
+            cs(self).register({
+                name: 'push', spool: 'created',
+                func: function (trace) {
+                    cs(self, 'model').value('state:add-pos', 'bottom')
+                    cs(self, 'model').value('data:new-item', trace, true)
+                }
+            })
+
+            cs(self).register({
+                name: 'update', spool: 'created',
+                func: function (trace) {
+                    cs(self, 'model').value('state:add-pos', 'update')
+                    cs(self, 'model').value('data:new-item', trace, true)
+                }
+            })
+
+            cs(self).register({
+                name: 'traces' , spool: 'created',
+                func: function (traces) {
+                    if (traces)
+                        cs(self, 'model').value('data:rows', traces, true)
+                    else
+                        return cs(self, 'model').value('data:rows')
+                }
+            })
+
+            cs(self).register({
+                name: 'clear', spool: 'created',
+                func: function () {
+                    cs(self, 'model').value('data:rows', [])
+                }
+            })
+
+            cs(self).register({
+                name: 'filter', spool: 'created',
+                func: function (filter) {
+                    cs(self, 'model').value('state:filter', filter)
+                }
+            })
+        },
+        show: function () {
+            var self = this
+
+            cs(self, 'model').observe({
+                name: 'data:selected-obj', spool: '..:visible',
                 touch: true,
                 func: function (ev, nVal) {
-                    for (var i = 0; i < nVal.length; i++) {
-                        var vars = { label: nVal[i].label }
-                        if (nVal[i].width)
-                            vars.style = 'width: ' + nVal[i].width + 'px;'
-                        $('.thead > .row', grid).markup('grid/column', vars)
+                    cs(self).publish('objectSelected', nVal)
+                }
+            })
+
+            cs(self, 'model').observe({
+                name: 'state:visible-rows', spool: '..:visible',
+                touch: true,
+                func: function (ev, nVal) {
+                    cs(self).publish('event:status-message', nVal + ' items')
+                }
+            })
+        }
+    }
+})
+
+app.ui.widget.grid.model = cs.clazz({
+    mixin: [ cs.marker.model ],
+    protos: {
+        checkFilter: function (trace) {
+            var filter = cs(this).value('state:filter')
+            var tmp = filter.split(':')
+            /*  expand abbreviations for sourceType and originType  */
+            if (tmp[0] === 'OT')
+                tmp[0] = 'originType'
+            if (tmp[0] === 'ST')
+                tmp[0] = 'sourceType'
+            if (tmp.length === 2 && trace[tmp[0]])
+                return trace[tmp[0]].toLowerCase().indexOf(tmp[1].toLowerCase()) !== -1
+            else
+                return trace.filter(filter)
+        },
+        create: function () {
+            var self = this
+
+            /*  presentation model for items  */
+            cs(self).model({
+                'data:columns'       : { value: [],   valid: '[{ label: string, dataIndex: string, width?: number, align?:string, renderer?:any }*]' },
+                'state:selection'    : { value: -1,   valid: 'number'    },
+                'state:filter'       : { value: '',   valid: 'string', store: true },
+                'state:add-pos'      : { value: 'top',valid: 'string'              },
+                'data:selected-obj'  : { value: null, valid: 'object'              },
+                'data:filtered'      : { value: [],   valid: '[object*]'           },
+                'data:rows'          : { value: [],   valid: '[object*]'           },
+                'data:new-item'      : { value: null, valid: 'object'              },
+                'state:visible-rows' : { value: 0,    valid: 'number'              }
+            })
+
+            cs(self).observe({
+                name: 'data:rows', spool: 'created',
+                operation: 'changed',
+                func: function () {
+                    cs(self).touch('state:filter')
+                }
+            })
+
+            cs(self).observe({
+                name: 'data:new-item', spool: 'created',
+                func: function (ev, item) {
+                    if (!item)
+                        return
+                    var action = cs(self).value('state:add-pos')
+                    var passed = self.checkFilter(item)
+                    if (action === 'top') {
+                        console.log('top@model:' + item.id)
+                        cs(self).value('data:rows').unshift(item)
+                        if (passed)
+                            cs(self).value('data:filtered').unshift(item)
+                    }
+                    else if (action === 'bottom') {
+                        console.log('bottom@model' + item.id)
+                        cs(self).value('data:rows').push(item)
+                        if (passed)
+                            cs(self).value('data:filtered').push(item)
+                    }
+                    else if (action === 'update') {
+                        console.log('update@model' + item.id)
+                        /*  fix position in unfiltered array  */
+                        var unfiltered = cs(self).value('data:rows')
+                        var oldIdx = _.indexOf(unfiltered, item)
+                        _.each(unfiltered, function (trace, idx) {
+                            if (idx === oldIdx)
+                                return false
+                            if (trace.occurence <= item.occurence) {
+                                unfiltered.splice(oldIdx, 1)
+                                unfiltered.splice(idx, 0, item)
+                                return false
+                            }
+                        })
+                    }
+                    if (!passed)
+                        ev.result(null)
+                }
+            })
+        },
+        show: function () {
+            var self = this
+
+            cs(self).observe({
+                name: 'state:filter', spool: 'visible',
+                operation: 'changed',
+                touch: true,
+                func: function (ev, filter) {
+                    var unfiltered = cs(self).value('data:rows')
+                    if (filter === '')
+                        cs(self).value('data:filtered', unfiltered)
+                    else {
+                        var result = []
+                        result = _.filter(unfiltered, function (trace) {
+                            return self.checkFilter(trace)
+                        })
+                        cs(self).value('data:filtered', result)
                     }
                 }
             })
+        }
+    }
+})
+
+app.ui.widget.grid.view = cs.clazz({
+    mixin: [ cs.marker.view ],
+    dynamics: {
+        selectable: true,
+        grid: null
+    },
+    cons: function (selectable) {
+        if (selectable === false)
+            this.selectable = selectable
+    },
+    protos: {
+        render: function () {
+            var self = this
+            self.grid = $.markup('grid')
+
+            cs(self).plug(self.grid)
+
+            /*  react on selection change  */
+            cs(self).observe({
+                name: 'state:selection', spool: 'materialized',
+                touch: true,
+                func: function (ev, nVal) {
+                    if (nVal !== -1) {
+                        var rows = cs(self).value('data:rows')
+                        var objIdx = _.findIndex(rows, function (row) { return row.id === nVal })
+                        cs(self).value('data:selected-obj', rows[objIdx])
+                        $('.selected', self.grid).removeClass('selected')
+                        $('.table > .tbody > .row', self.grid[2]).eq(objIdx).addClass('selected')
+                    }
+                    else
+                        cs(self).value('data:selected-obj', null)
+                }
+            })
+        },
+        show: function () {
+            var self = this
 
             var fillRow = function (row, trace) {
                 var columns = cs(self).value('data:columns')
@@ -300,105 +260,90 @@ app.ui.widget.grid.view = cs.clazz({
                         vars.style += 'text-align: ' + columns[x].align + ';'
                     $(row).markup('grid/row/data', vars)
                 }
+                if (self.selectable) {
+                    row.addClass('selectable')
+                    row.click(function () {
+                        cs(self).value('state:selection', $(this).data('i'))
+                    })
+                }
             }
 
-            cs(self).register({
-                name: 'update', spool: 'rendered',
-                func: function (nTrace) {
-                    var unfiltered = cs(self).value('data:rows')
-                    var oldIdx = _.indexOf(unfiltered, nTrace)
-                    var line = $('#statistics-content .tbody > .row').eq(oldIdx)
-                    var row = $.markup('grid/row', { i: nTrace.id })
-                    fillRow(row, nTrace)
-                    _.each(unfiltered, function (trace, idx) {
-                        if (idx === oldIdx) {
-                            line.replaceWith(row)
-                            return false
-                        }
-                        if (trace.occurence <= nTrace.occurence) {
-                            var beforeThis = $('#statistics-content .tbody > .row').eq(idx)
-                            line.remove()
-                            unfiltered.splice(oldIdx, 1)
-                            row.insertBefore(beforeThis)
-                            unfiltered.splice(idx, 0, nTrace)
-                            return false
-                        }
+            /*  render existing columns */
+            cs(self).observe({
+                name: 'data:columns', spool: 'visible',
+                touch: true,
+                func: function (ev, columns) {
+                    _.each(columns, function (col) {
+                        var vars = { label: col.label }
+                        if (col.width)
+                            vars.style = 'width: ' + col.width + 'px;'
+                        $('.thead > .row', self.grid).markup('grid/column', vars)
                     })
                 }
             })
 
-            cs(self).register({
-                name: 'unshift', spool: 'rendered',
-                func: function (trace) {
-                    var i = $('.tbody > .row:first', grid).data('i')
-                    if (typeof i === 'undefined')
-                        i = -1
-                    var row = $.markup('grid/row', { i: trace.id })
-                    fillRow(row, trace)
-                    $('.tbody', grid).prepend(row)
-                    if (self.selectable) {
-                        row.addClass('selectable')
-                        row.click(function () {
-                            cs(self).value('state:selection', $(this).data('i'))
-                        })
-                    }
-                }
-            })
-
-            cs(self).register({
-                name: 'push', spool: 'rendered',
-                func: function (trace) {
-                    var row = $.markup('grid/row', { i: trace.id })
-                    fillRow(row, trace)
-                    $('.tbody', grid).append(row)
-                    if (self.selectable) {
-                        row.addClass('selectable')
-                        row.click(function () {
-                            cs(self).value('state:selection', $(this).data('i'))
-                        })
-                    }
-                }
-            })
-
+            /*  render existing items  */
             cs(self).observe({
-                name: 'data:filtered', spool: 'rendered',
+                name: 'data:filtered', spool: 'visible',
                 touch: true,
-                func: function (ev, nVal) {
-                    $('.tbody tr', grid).remove()
-                    for (var i = 0; i < nVal.length; i++) {
-                        var row = $('.tbody', grid).markup('grid/row', { i: nVal[i].id })
-                        fillRow(row, nVal[i])
-                    }
+                func: function (ev, items) {
+                    $('.tbody tr', this.grid).remove()
+                    _.each(items, function (item) {
+                        var row = $('.tbody', self.grid).markup('grid/row', { i: item.id })
+                        fillRow(row, item)
+                    })
+                    /*  reset selection  */
                     cs(self).value('state:selection', -1)
-                    if (self.selectable) {
-                        var rows = $('.table > .tbody > .row', grid[2])
-                        rows.addClass('selectable')
-                        rows.click(function () {
-                            cs(self).value('state:selection', $(this).data('i'))
-                        })
-                    }
+                    /*  update item counter  */
+                    cs(self).value('state:visible-rows', items.length)
                 }
             })
 
-            /*  react on selection change  */
             cs(self).observe({
-                name: 'state:selection', spool: 'rendered',
-                touch: true,
-                func: function (ev, nVal) {
-                    if (nVal !== -1) {
-                        var rows = cs(self).value('data:rows')
-                        var objIdx = _.findIndex(rows, function (row) { return row.id === nVal })
-                        cs(self).value('data:selected-obj', rows[objIdx])
-                        $('.selected', grid).removeClass('selected')
-                        $('.table > .tbody > .row', grid[2]).eq(objIdx).addClass('selected')
+                name: 'data:new-item', spool: 'visible',
+                operation: 'changed',
+                func: function (ev, item) {
+                    if (!item)
+                        return
+                    var action = cs(self).value('state:add-pos')
+                    var row = $.markup('grid/row', { i: item.id })
+                    fillRow(row, item)
+                    if (action === 'top') {
+                        console.log('top@view:' + item.id)
+                        $('.tbody', self.grid).prepend(row)
+                        cs(self).value('state:visible-rows', cs(self).value('state:visible-rows') + 1)
                     }
-                    else
-                        cs(self).value('data:selected-obj', null)
+                    else if (action === 'bottom') {
+                        console.log('bottom@view:' + item.id)
+                        $('.tbody', self.grid).append(row)
+                        cs(self).value('state:visible-rows', cs(self).value('state:visible-rows') + 1)
+                    }
+                    else if (action === 'update') {
+                        console.log('update@view:' + item.id)
+                        $('#statistics-content .tbody > .row[data-i=' + item.id + ']').replaceWith(row)
+/*                        var unfiltered = cs(self).value('data:filtered')
+                        var oldIdx = _.indexOf(unfiltered, item)
+                        var line = $('#statistics-content .tbody > .row').eq(oldIdx)
+                        _.each(unfiltered, function (trace, idx) {
+                            if (idx === oldIdx) {
+                                line.replaceWith(row)
+                                return false
+                            }
+                            if (trace.occurence <= item.occurence) {
+                                $('#statistics-content .tbody > .row').eq(idx).before(row)
+                                unfiltered.splice(oldIdx, 1)
+                                line.remove()
+                                unfiltered.splice(idx, 0, item)
+                                return false
+                            }
+                        })*/
+                    }
                 }
             })
         },
-        release: function () {
-            cs(this).unspool('rendered')
+        hide: function () {
+            $('.tbody tr', this.grid).remove()
+            cs(this).value('state:visible-rows', 0)
         }
     }
 })

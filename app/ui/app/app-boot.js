@@ -12,19 +12,19 @@
 /* global app: true */
 
 /*  bootstrap component system  */
-ComponentJS.symbol("cs")
+ComponentJS.symbol('cs')
 cs.bootstrap()
 
 /*  configure component system debugging  */
 cs.debug(0)
-if (cs.plugin("debugger")) {
+if (cs.plugin('debugger')) {
     if (cs.debug_instrumented()) {
         cs.debug(9)
         cs.debug_window({
             enable:    true,
             natural:   true,
             autoclose: false,
-            name:      "ComponentJS Tracing",
+            name:      'ComponentJS Tracing',
             width:     800,
             height:    800
         })
@@ -32,23 +32,23 @@ if (cs.plugin("debugger")) {
 }
 
 /*  create application namespaces  */
-cs.ns("app.lib")
-cs.ns("app.ui.comp")
-cs.ns("app.ui.widget")
+cs.ns('app.lib')
+cs.ns('app.ui.comp')
+cs.ns('app.ui.widget')
 
 /*  once the DOM is ready...  */
 $(document).ready(function () {
     /*  we really need Google Chrome's feature set  */
     if (window.chrome === undefined) {
-        alert("You can only view this application using Google Chrome.")
+        alert('You can only view this application using Google Chrome.')
         return;
     }
 
     /*  load stylesheets  */
-    less.env = "production"
+    less.env = 'production'
     less.async = true
-    less.dumpLineNumbers = "mediaQuery"
-    $("head > link[rel='stylesheet/less']").each(function () {
+    less.dumpLineNumbers = 'mediaQuery'
+    $('head > link[rel="stylesheet/less"]').each(function () {
         less.sheets.push(this)
     })
     less.refresh(true)
@@ -56,10 +56,10 @@ $(document).ready(function () {
     /*  load markup templates  */
     $.markup.load(function () {
         /*  fire up application components  */
-        cs.create("/sv", app.sv)
-        cs("/sv").state("prepared", function () {
-            cs.create("/ui/panel", {}, app.ui.comp.panel)
-            cs("/ui/panel").state(typeof document !== "undefined" ? "visible" : "prepared")
+        cs.create('/sv', app.sv)
+        cs('/sv').state('visible', function () {
+            cs.create('/ui/panel', {}, app.ui.comp.panel)
+            cs('/ui/panel').state(typeof document !== 'undefined' ? 'visible' : 'prepared')
         })
     })
 })

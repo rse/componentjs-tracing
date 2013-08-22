@@ -12,8 +12,26 @@ app.sv = cs.clazz({
     protos: {
         create: function () {
             /*  converts a string containing multiple traces into an array of trace objects  */
-            cs(this).register('parseLogfile', function (content) {
-                return app.lib.traceParser.parseLog(content)
+            cs(this).register('parseLogfile', function (lines) {
+                var pattern = /^[^<]*< ([^,]*), ([^,]*), ([^,]*), ([^,]*), ([^,]*), ([^,]*), (.*) >/
+                var traces = []
+                for (var i = 0; i < lines.length; i++) {
+                    var line = lines[i]
+                    var matches = line.match(pattern)
+                    var param = JSON.parse(matches[7])
+                    var newTrace = {
+                        time: parseInt(matches[1], 10),
+                        source: matches[2],
+                        sourceType: matches[3],
+                        origin: matches[4],
+                        originType: matches[5],
+                        operation: matches[6],
+                        parameters: param
+                    }
+                    newTrace = app.lib.richTrace.enrich(newTrace)
+                    traces.push(newTrace)
+                }
+                return traces
             })
 
             /*  parses a given string using the PEG parser for the constraint grammar  */

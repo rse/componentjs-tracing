@@ -7,7 +7,35 @@
 **  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-cs.ns("app.ui.widget.toolbar")
+app.ui.widget.toolbar = cs.clazz({
+    mixin: [ cs.marker.controller ],
+    protos: {
+        create: function () {
+            var self = this
+            cs(self).property('ComponentJS:state-auto-increase', true)
+            cs(self).create('model/view',
+                app.ui.widget.toolbar.model,
+                app.ui.widget.toolbar.view
+            )
+            cs(self).register({
+                name: 'initialize', spool: 'created',
+                func: function (items) {
+                    _.each(items, function (item) {
+                        if (item.click)
+                            cs(self).property({ name: 'click', scope: 'model/view/' + item.id, value: item.click })
+                        if (item.keyup)
+                            cs(self).property({ name: 'keyup', scope: 'model/view/' + item.id, value: item.keyup })
+                        if (item.data)
+                            cs(self).property({ name: 'data', scope: 'model/view/' + item.id, value: item.data })
+                        if (item.state)
+                            cs(self).property({ name: 'state', scope: 'model/view/' + item.id, value: item.state })
+                    })
+                    cs(self, 'model').value('data:items', items)
+                }
+            })
+        }
+    }
+})
 
 app.ui.widget.toolbar.model = cs.clazz({
     mixin: [ cs.marker.model ],
@@ -15,8 +43,9 @@ app.ui.widget.toolbar.model = cs.clazz({
         create: function () {
             /*  presentation model for items  */
             cs(this).model({
-                "data:items": { value: [], valid: '[(any | { source: string, sourceType: string, ' +
-                    'origin: string, originType: string, operation: string, parameters: any})*]' } /* FIXME: wrong fields! */
+                'data:items': { value: [], valid: '[{ label?: string, icon?: string, type: string, id?: string,' +
+                    ' click?:string, data?:string, keyup?:string, state?:string }*]' },
+                'data:rendered': { value: [], valid: '[string*]' }
             })
         }
     }
@@ -30,7 +59,7 @@ app.ui.widget.toolbar.view = cs.clazz({
             var self = this
 
             /*  plug mask into parent  */
-            var content = $.markup("widget-toolbar")
+            var content = $.markup('widget-toolbar')
 
             cs(self).plug(content)
 
@@ -39,43 +68,46 @@ app.ui.widget.toolbar.view = cs.clazz({
             })
 
             cs(self).observe({
-                name: 'data:items', spool: 'rendered',
+                name: 'data:items', spool: 'materialized',
                 touch: true,
                 func: function (ev, nVal) {
                     for (var i = 0; i < nVal.length; i++) {
-                        var item = nVal[i];
+                        var item = nVal[i]
+                        var cmp
                         if (item.type === 'button') {
-                            var btn =  new app.ui.widget.toolbar.items.button(item.label, item.event, item.icon)
                             if (!item.id)
                                 item.id = 'button-' + i
-                            cs(self).create(item.id, btn)
-                            if (item.pressedIcon)
-                                cs(self, item.id).value('data:pressed-icon', item.pressedIcon)
+                            cmp = cs(self).create(item.id, app.ui.widget.toolbar.items.button)
+                            cmp.call('initialize', { label: item.label, icon: item.icon })
                         }
                         else if (item.type === 'input') {
-                            var input =  new app.ui.widget.toolbar.items.input(item.data, item.event)
                             if (!item.id)
                                 item.id = 'input-' + i
-                            cs(self).create(item.id, input)
+                            cmp = cs(self).create(item.id, app.ui.widget.toolbar.items.input)
                         }
                         else if (item.type === 'text') {
-                            var text =  new app.ui.widget.toolbar.items.text(item.label, item.icon)
-                            cs(self).create('text-' + i, text)
+                            if (!item.id)
+                                item.id = 'text-' + i
+                            cmp = cs(self).create(item.id, app.ui.widget.toolbar.items.text)
+                            cmp.call('initialize', { label: item.label, icon: item.icon })
                         }
                         else if (item.type === 'checkbox') {
-                            var checkbox =  new app.ui.widget.toolbar.items.checkbox(item.label, item.data, item.icon)
                             if (!item.id)
                                 item.id = 'checkbox-' + i
-                            cs(self).create(item.id, checkbox)
+                            cmp = cs(self).create(item.id, app.ui.widget.toolbar.items.checkbox)
+                            cmp.call('initialize', { label: item.label, icon: item.icon })
                         }
-                        else
-                            $('.items', content).markup('widget-toolbar/item', { content: item.label })
+                        if (item.pressedIcon)
+                            cmp.value('data:pressed-icon', item.pressedIcon)
                     }
                 }
             })
         },
         release: function () {
-            cs(this).unspool('rendered')
+            var self = this
+            _.each(cs(self).value('data:items'), function (cfg) {
+                cs(self, cfg.id).destroy()
+            })
         }
     }
 })

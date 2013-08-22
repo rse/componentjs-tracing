@@ -7,7 +7,37 @@
 **  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-cs.ns("app.ui.widget.rationales")
+app.ui.widget.rationales = cs.clazz({
+    mixin: [ cs.marker.controller ],
+    protos: {
+        create: function () {
+            var self = this
+            cs(self).property('ComponentJS:state-auto-increase', true)
+            cs(self).create('model/view',
+                app.ui.widget.rationales.model,
+                app.ui.widget.rationales.view
+            )
+
+            cs(self).register({
+                name: 'setRationales', spool: 'created',
+                func: function (rationales) {
+                    cs(self, 'model').value('data:rationales', rationales)
+                }
+            })
+
+            cs(self).register({
+                name: 'setTrace', spool: 'created',
+                func: function (trace) {
+                    cs(self, 'model').value('data:trace', trace)
+                }
+            })
+        },
+        destroy: function () {
+            cs(this).unspool('created')
+        }
+    }
+})
+
 
 app.ui.widget.rationales.model = cs.clazz({
     mixin: [ cs.marker.model ],

@@ -7,14 +7,14 @@
 **  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-cs.ns("app.ui.widget.headline")
+cs.ns('app.ui.widget.headline')
 
 /*  widget view  */
 app.ui.widget.headline.view = cs.clazz({
     mixin: [ cs.marker.view ],
     protos: {
         render: function () {
-            cs(this).plug($.markup("widget-headline"))
+            cs(this).plug($.markup('widget-headline'))
         }
     }
 })

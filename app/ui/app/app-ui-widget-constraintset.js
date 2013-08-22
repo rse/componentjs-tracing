@@ -11,7 +11,7 @@
 cs.ns('app.ui.widget.constraintset')
 
 app.ui.widget.constraintset = cs.clazz({
-    mixin: [ cs.marker.model, cs.marker.view ],
+    mixin: [ cs.marker.controller ],
     dynamics: {
         editor: null
     },
@@ -19,50 +19,99 @@ app.ui.widget.constraintset = cs.clazz({
         create: function () {
             var self = this
 
-            /*  presentation model for items  */
-            cs(self).model({
-                'data:constraintset' : { value: '', valid: 'string', store: true     },
-                'data:savable' :       { value: '', valid: 'string'                  }
-            })
+            cs(self).create('model/view',
+                app.ui.widget.constraintset.model,
+                app.ui.widget.constraintset.view
+            )
 
             /*  calculate the savable content on demand  */
-            cs(self).observe({
-                name: 'data:savable', spool: 'created',
-                operation: 'get',
-                func: function (ev) {
-                    if (!self.editor)
-                        cs(self).value('data:constraintset')
-                    else
-                        ev.result(self.editor.getSession().getValue())
+            cs(self).register({
+                name: 'getContent', spool: 'created',
+                func: function () {
+                    return cs(self, 'model').value('data:constraintset')
                 }
             })
-        },
-        render: function () {
-            var self = this
 
+            cs(self, 'model').observe({
+                name: 'data:constraintset', spool: '..:created',
+                func: function (ev, content) {
+                    if (self.timer !== null) {
+                        /* global clearTimeout: true */
+                        clearTimeout(self.timer)
+                    }
+                    /* global setTimeout: true */
+                    self.timer = setTimeout(function () {
+                        cs(self).publish('setChanged', content)
+                    }, 1000)
+                }
+            })
+
+            cs(self).register({
+                name: 'setContent', spool: 'created',
+                func: function (content) {
+                    cs(self, 'model').value('data:constraintset', content)
+                }
+            })
+
+            cs(self).register({
+                name: 'displaySyntacticError', spool: 'created',
+                func: function (errors) {
+                    cs(self, 'model').value('state:syntactic-errors', errors)
+                }
+            })
+
+            cs(self).register({
+                name: 'displaySemanticError', spool: 'created',
+                func: function (errors) {
+                    cs(self, 'model').value('state:semantic-errors', errors)
+                }
+            })
+        }
+    }
+})
+
+app.ui.widget.constraintset.model = cs.clazz({
+    mixin: [ cs.marker.model ],
+    protos: {
+        create: function () {
+            /*  presentation model for items  */
+            cs(this).model({
+                'data:constraintset'     : { value: '', valid: 'string', store: true },
+                'data:savable'           : { value: '', valid: 'string'              },
+                'state:domain'           : { value: '', valid: 'string'              },
+                'state:semantic-errors'  : { value: [], valid: 'any'                 },
+                'state:syntactic-errors' : { value: [], valid: 'any'                 }
+            })
+        }
+    }
+})
+
+app.ui.widget.constraintset.view = cs.clazz({
+    mixin: [ cs.marker.view ],
+    protos: {
+        show: function () {
+            var self = this
             var id = 'id_' + Date.now()
             var content = $.markup('constraint-set-content', { id: id })
 
             cs(self).plug({
                 object: content,
-                spool: 'rendered'
+                spool: 'visible'
             })
 
             var suspend = false
-
             self.editor = ace.edit(id)
             self.editor.getSession().setMode('ace/mode/cjsc')
             self.editor.on('change', function (ev, editor) {
                 if (suspend)
                     return;
-                cs(self).publish('editorChanged')
                 suspend = true
                 cs(self).value('data:constraintset', editor.getValue())
                 suspend = false
             })
 
             cs(self).observe({
-                name: 'data:constraintset', spool: 'rendered',
+                name: 'data:constraintset', spool: 'visible',
                 touch: true,
                 func: function (ev, nVal) {
                     if (suspend)
@@ -70,21 +119,14 @@ app.ui.widget.constraintset = cs.clazz({
                     suspend = true
                     self.editor.setValue(nVal)
                     self.editor.clearSelection()
-                    cs(self).publish('editorChanged')
                     suspend = false
                 }
             })
 
             cs(self).observe({
-                name: 'state:highlighting', spool: 'rendered',
-                func: function (ev, nVal) {
-                    self.editor.getSession().setMode('ace/mode/' + nVal)
-                }
-            })
-
-            cs(self).register({
-                name: 'displaySyntacticError', spool: 'rendered',
-                func: function (errors) {
+                name: 'state:syntactic-errors', spool: 'visible',
+                touch: true,
+                func: function (ev, errors) {
                     if (errors.length === 0)
                         self.editor.getSession().setAnnotations([])
                     else {
@@ -102,9 +144,10 @@ app.ui.widget.constraintset = cs.clazz({
                 }
             })
 
-            cs(self).register({
-                name: 'displaySemanticError', spool: 'rendered',
-                func: function (errors) {
+            cs(self).observe({
+                name: 'state:semantic-errors', spool: 'visible',
+                touch: true,
+                func: function (ev, errors) {
                     if (errors.length === 0)
                         self.editor.getSession().setAnnotations([])
                     else {
@@ -123,12 +166,6 @@ app.ui.widget.constraintset = cs.clazz({
                     self.editor.focus()
                 }
             })
-        },
-        release: function () {
-            cs(this).unspool('rendered')
-        },
-        destroy: function () {
-            cs(this).unspool('created')
         }
     }
 })

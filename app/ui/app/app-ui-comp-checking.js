@@ -10,23 +10,22 @@
 /* global Handlebars: true */
 
 app.ui.comp.checking = cs.clazz({
-    mixin: [ cs.marker.controller, cs.marker.view ],
+    mixin: [ cs.marker.controller ],
     protos: {
         create: function () {
+            cs(this).property('ComponentJS:state-auto-increase', false)
             cs(this).create(
-                '{toolbarModel/view,' +
+                'model/view/{toolbar,' +
                 'grid,' +
-                'detailsModel/view,' +
-                'rationalesModel/view}',
-                app.ui.widget.toolbar.model, app.ui.widget.toolbar.view,
-                app.ui.widget.grid.ctrl,
-                app.ui.widget.trace.details.model, app.ui.widget.trace.details.view,
-                app.ui.widget.rationales.model, app.ui.widget.rationales.view
+                'details,' +
+                'rationales}',
+                app.ui.comp.checking.model,
+                app.ui.comp.checking.view,
+                app.ui.widget.toolbar,
+                app.ui.widget.grid,
+                app.ui.widget.trace.details,
+                app.ui.widget.rationales
             )
-
-            cs(this).model({
-                'event:clear' : { value: false, valid: 'boolean', autoreset: true }
-            })
         },
         prepare: function () {
             var self = this
@@ -35,12 +34,11 @@ app.ui.comp.checking = cs.clazz({
                 label: 'Clear',
                 icon:  'remove-sign',
                 type:  'button',
-                id: 'clearBtn'
+                id: 'clearBtn',
+                click: 'event:clear'
             }]
 
-            cs(this).property({ name: 'clicked', scope: 'toolbarModel/view/clearBtn', value: 'event:clear' })
-
-            cs(self, 'toolbarModel').value('data:items', toolbarItems)
+            cs(self, 'model/view/toolbar').call('initialize', toolbarItems)
 
             var linkRenderer = function (op) {
                 return new Handlebars.SafeString(
@@ -56,19 +54,19 @@ app.ui.comp.checking = cs.clazz({
                 { label: 'OT',        dataIndex: 'originType', width: 20, align: 'center' },
                 { label: 'Operation', dataIndex: 'operation',  width: 60, align: 'center', renderer: linkRenderer }
             ]
-            cs(self, 'grid').call('columns', columns)
+            cs(self, 'model/view/grid').call('initialize', columns)
 
             cs(self).register({
                 name: 'displayTraces', spool: 'prepared',
                 func: function (traces) {
-                    cs(self, 'grid').call('traces', traces)
+                    cs(self, 'model/view/grid').call('traces', traces)
                 }
             })
 
             cs(self).register({
                 name: 'unshift', spool: 'prepared',
                 func: function (trace) {
-                    cs(self, 'grid').call('unshift', trace)
+                    cs(self, 'model/view/grid').call('unshift', trace)
                 }
             })
 
@@ -82,10 +80,51 @@ app.ui.comp.checking = cs.clazz({
         },
         render: function () {
             var self = this
+
+            cs(self, 'model').observe({
+                name: 'event:clear', spool: '..:materialized',
+                func: function () {
+                    cs(self, 'model/view/grid').call('clear')
+                    cs(self, 'model/view/rationales').call('setRationales', [])
+                }
+            })
+
+            cs(self).subscribe({
+                name: 'objectSelected', spool: 'materialized',
+                func: function (ev, nVal) {
+                    cs(self, 'model/view/details').call('setTrace', nVal)
+                    cs(self, 'model/view/rationales').call('setTrace', nVal)
+                    cs(self, 'model/view/rationales').call('setRationales', nVal !== null ? nVal.checks : [])
+                }
+            })
+        }
+    }
+})
+
+app.ui.comp.checking.model = cs.clazz({
+    mixin: [ cs.marker.model ],
+    protos: {
+        create: function () {
+            cs(this).property('ComponentJS:state-auto-increase', true)
+            cs(this).model({
+                'event:clear' : { value: false, valid: 'boolean', autoreset: true }
+            })
+        }
+    }
+})
+
+app.ui.comp.checking.view = cs.clazz({
+    mixin: [ cs.marker.view ],
+    protos: {
+        create: function () {
+            cs(this).property('ComponentJS:state-auto-increase', true)
+        },
+        render: function () {
+            var self = this
             var content = $.markup('checking-content')
 
             cs(self).socket({
-                scope: 'toolbarModel/view',
+                scope: 'toolbar',
                 ctx: $('.toolbar', content)
             })
 
@@ -95,39 +134,19 @@ app.ui.comp.checking = cs.clazz({
             })
 
             cs(self).socket({
-                scope: 'rationalesModel/view',
+                scope: 'rationales',
                 ctx: $('.rationales-container', content)
             })
 
             cs(self).socket({
-                scope: 'detailsModel/view',
+                scope: 'details',
                 ctx: $('.trace-details-container', content)
             })
 
-            cs(self).plug(content)
-
-            cs(self).observe({
-                name: 'event:clear', spool: 'rendered',
-                func: function () {
-                    cs(self, 'grid').call('clear')
-                    cs(self, 'rationalesModel').value('data:rationales', [])
-                }
+            cs(self).plug({
+                object: content,
+                spool: 'materialized'
             })
-
-            cs(self).subscribe({
-                name: 'objectSelected', spool: 'rendered',
-                func: function (ev, nVal) {
-                    cs(self, 'detailsModel').value('data:trace', nVal)
-                    cs(self, 'rationalesModel').value('data:trace', nVal)
-                    cs(self, 'rationalesModel').value('data:rationales', nVal !== null ? nVal.checks : [])
-                }
-            })
-        },
-        release: function () {
-            cs(this).unspool('rendered')
-        },
-        cleanup: function () {
-            cs(this).unspool('prepared')
         }
     }
 })

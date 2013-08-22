@@ -11,28 +11,27 @@ app.ui.comp.panel = cs.clazz({
     mixin: [ cs.marker.controller ],
     dynamics: {
         peepholeConstraintSet: [],
-        temporalConstraintSet: [],
+        temporalConstraints: [],
         temporalMonitors: []
     },
     protos: {
         create: function () {
             var self = this
             cs(self).property('ComponentJS:state-auto-increase', true)
-
             cs(self).create(
                 'panel/panel/' +
-                '{tracing,checking,constraints,temporalConstraints,componentTree,statistics,statusbar}',
+                '{tracing,checking,peepholeConstraints,temporalConstraints,componentTree,statistics,statusbar,headline}',
                 app.ui.widget.panel.model,
                 app.ui.widget.panel.view,
                 app.ui.comp.tracing,
                 app.ui.comp.checking,
-                new app.ui.comp.constraints('cjscp'),
-                new app.ui.comp.constraints('cjsct'),
+                app.ui.comp.constraints.peephole,
+                app.ui.comp.constraints.temporal,
                 app.ui.comp.componentTree,
                 app.ui.comp.statistics,
-                app.ui.widget.statusbar
+                app.ui.widget.statusbar,
+                app.ui.widget.headline.view
             )
-            cs(self).create('headline', app.ui.widget.headline.view)
 
             /*  this may cause constraints to be overwritten, since no
             **  disjunct naming among different constraint sets is enforced
@@ -58,11 +57,10 @@ app.ui.comp.panel = cs.clazz({
 
             cs(self).subscribe({
                 name: 'temporalConstraintSetChanged', spool: 'created',
-                func: function (ev, nVal) {
-                    nVal = computeHierarchy(nVal)
-                    self.temporalConstraintSet = nVal
+                func: function (ev, constraints) {
+                    self.temporalConstraints = constraints
                     self.temporalMonitors = []
-                    _.each(self.temporalConstraintSet, function (temporal) {
+                    _.each(self.temporalConstraints, function (temporal) {
                         self.temporalMonitors.push(new app.lib.happens_before_monitor(temporal))
                     })
                 }
@@ -70,9 +68,8 @@ app.ui.comp.panel = cs.clazz({
 
             cs(self).subscribe({
                 name: 'checkJournal', spool: 'created',
-                func: function () {
-                    var traces = cs(self, 'panel/panel/tracing').call('traces')
-                    _.each(traces.reverse(), function (trace) {
+                func: function (ev, traces) {
+                    _.each(traces, function (trace) {
                         cs(self).publish('checkTrace', trace)
                     })
                 }
@@ -134,12 +131,12 @@ app.ui.comp.panel = cs.clazz({
         },
         prepare: function () {
             cs(this, 'panel').value('data:tabs', [
-                { id: 'tracing',             name: 'Tracing',              icon: 'gears'                                   },
-                { id: 'checking',            name: 'Checking',             icon: 'thumbs-down'                             },
-                { id: 'constraints',         name: 'Peephole Constraints', icon: 'screenshot'                              },
-                { id: 'temporalConstraints', name: 'Temporal Constraints', icon: 'time'                                    },
-                { id: 'componentTree',       name: 'Component Tree',       icon: 'sitemap',     classes: 'icon-rotate-180' },
-                { id: 'statistics',          name: 'Statistics',           icon: 'bar-chart'                               }
+                { id: 'tracing',             name: 'Tracing',              icon: 'gears'                                  },
+                { id: 'checking',            name: 'Checking',             icon: 'thumbs-down'                            },
+                { id: 'peepholeConstraints', name: 'Peephole Constraints', icon: 'screenshot'                             },
+                { id: 'temporalConstraints', name: 'Temporal Constraints', icon: 'time'                                   },
+                { id: 'componentTree',       name: 'Component Tree',       icon: 'sitemap',    classes: 'icon-rotate-180' },
+                { id: 'statistics',          name: 'Statistics',           icon: 'bar-chart'                              }
             ])
         },
         render: function () {
@@ -150,12 +147,6 @@ app.ui.comp.panel = cs.clazz({
             var headline = $('.headline', ui)
             cs(this).socket({ scope: 'headline', spool: 'materialized', ctx: headline, type: 'jquery' })
             cs(this).spool('materialized', this, function () { $(headline).remove() })
-        },
-        release: function () {
-            cs(this).unspool('materialized')
-        },
-        destroy: function () {
-            cs(this).unspool('created')
         }
     }
 })

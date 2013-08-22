@@ -30,19 +30,17 @@ module.exports = {
             var clients = ctx.srv.io.sockets.clients("tracingRoom")
 
             if (opts.runfile !== '') {
-                /*  stringify parameters  */
-                var params = "";
-                var p = req.data.parameters;
-                for (var name in p) {
-                    if (params !== "")
-                        params += ", ";
-                    params += name + ": " + JSON.stringify(p[name]);
+                var stringify = function (obj) {
+                    var seen = []
+                    return JSON.stringify(obj, function(key, val) {
+                       if (typeof val === "object") {
+                            if (seen.indexOf(val) >= 0)
+                                return
+                            seen.push(val)
+                        }
+                        return val
+                    })
                 }
-                if (params !== "")
-                    params = "{ " + params + " }";
-                else
-                    params = "{}";
-
                 var result = '< ' +
                     req.data.time + ', ' +
                     req.data.source + ', ' +
@@ -50,7 +48,7 @@ module.exports = {
                     req.data.origin + ', ' +
                     req.data.originType + ', ' +
                     req.data.operation + ', ' +
-                    params + ' > \n'
+                    stringify(req.data.parameters) + ' > \n'
 
                 fs.appendFile(opts.runfile, result, function (err) {
                     if (err)

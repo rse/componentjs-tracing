@@ -14,7 +14,6 @@ app.ui.widget.statusbar = cs.clazz({
     protos: {
         create: function () {
             var self = this
-
             cs(self).create('model/view',
                 app.ui.widget.statusbar.model,
                 app.ui.widget.statusbar.view

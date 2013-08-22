@@ -47,19 +47,17 @@ ComponentJS.plugin("tracing-console", function (_cs, $cs, GLOBAL) {
             };
             var sourceType = typeofcomp(tracing.sourceType());
             var originType = typeofcomp(tracing.originType());
-
-            /*  stringify parameters  */
-            var params = "";
-            var p = tracing.parameters();
-            for (var name in p) {
-                if (params !== "")
-                    params += ", ";
-                params += name + ": " + _cs.json(p[name]);
+            var stringify = function (obj) {
+                var seen = []
+                return JSON.stringify(obj, function(key, val) {
+                   if (typeof val === "object") {
+                        if (seen.indexOf(val) >= 0)
+                            return
+                        seen.push(val)
+                    }
+                    return val
+                })
             }
-            if (params !== "")
-                params = "{ " + params + " }";
-            else
-                params = "{}";
 
             /*  print the trace to the console  */
             GLOBAL.console.log("TRACING: " +
@@ -70,7 +68,7 @@ ComponentJS.plugin("tracing-console", function (_cs, $cs, GLOBAL) {
                 origin + ", " +
                 originType + ", " +
                 tracing.operation() + ", " +
-                params + " >"
+                stringify(tracing.parameters()) + " >"
             );
         }
     });
