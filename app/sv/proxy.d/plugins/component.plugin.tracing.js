@@ -121,25 +121,49 @@ ComponentJS.plugin("tracing", function (_cs, $cs, GLOBAL) {
         _cs.internal = new _cs.comp("<internal>", null, []);
     });
 
-    _cs.latch("ComponentJS:state-change", function (req) {
-        if (req) {
-            var tracing = new Tracing();
-            /*  on-the-fly make an implicit tracing source  */
-            var source = resolve("tracing:source");
+    _cs.latch("ComponentJS:state-change-call", function (info) {
+        if (!info)
+            return
+        var tracing = new Tracing();
+        /*  on-the-fly make an implicit tracing source  */
+        var source = resolve("tracing:source");
 
-            /*  act on all non-internal sources  */
-            if (source && source !== _cs.internal)
-                tracing.source(source);
-            else
-                tracing.source(_cs.none);
-            tracing.sourceType('');
-            tracing.origin(req.comp);
-            tracing.originType(compType(req.comp));
-            tracing.operation('state');
-            tracing.parameters({ state: req.state });
-            tracing.hidden = true;
-            tracing.flush();
+        /*  act on all non-internal sources  */
+        if (source && source !== _cs.internal) {
+            tracing.source(source);
+            tracing.sourceType(compType(source));
         }
+        else {
+            tracing.source(_cs.none);
+            tracing.sourceType('');
+        }
+        tracing.origin(info.comp);
+        tracing.originType(compType(info.comp));
+        tracing.operation('state');
+        tracing.parameters({ state: info.state, direction: info.direction });
+        tracing.hidden = true;
+        tracing.flush();
+    })
+
+    _cs.latch("ComponentJS:state-change", function (req) {
+        if (!req)
+            return
+        var tracing = new Tracing();
+        /*  on-the-fly make an implicit tracing source  */
+        var source = resolve("tracing:source");
+
+        /*  act on all non-internal sources  */
+        if (source && source !== _cs.internal)
+            tracing.source(source);
+        else
+            tracing.source(_cs.none);
+        tracing.sourceType('');
+        tracing.origin(req.comp);
+        tracing.originType(compType(req.comp));
+        tracing.operation('state');
+        tracing.parameters({ state: req.state });
+        tracing.hidden = true;
+        tracing.flush();
     })
 
     _cs.latch("ComponentJS:comp-created", function (comp) {

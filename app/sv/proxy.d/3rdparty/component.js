@@ -2627,6 +2627,8 @@
         if (state_new === -1)
             throw _cs.exception("state", "invalid argument \"" + arg + "\"");
 
+        _cs.hook("ComponentJS:state-change-call", "none", { comp: comp, state: arg, direction: _direction });
+
         /*  perform upward/downward state transition(s)  */
         if (comp.__state < state_new) {
             /*  transition to higher state  */
