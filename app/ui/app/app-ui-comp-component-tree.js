@@ -15,9 +15,10 @@ app.ui.comp.componentTree = cs.clazz({
         create: function () {
             cs(this).property('ComponentJS:state-auto-increase', false)
 
-            cs(this).create('{model/view}',
+            cs(this).create('model/view/toolbar',
                 app.ui.comp.componentTree.model,
-                app.ui.comp.componentTree.view
+                app.ui.comp.componentTree.view,
+                app.ui.widget.toolbar
             )
         },
         prepare: function () {
@@ -47,6 +48,8 @@ app.ui.comp.componentTree = cs.clazz({
                 name: 'event:new-trace', spool: 'materialized',
                 spreading : true, capturing : false, bubbling : false,
                 func: function (ev, trace) {
+                    if (!cs(self, 'model').value('state:record'))
+                        return
                     var tree = cs(self, 'model').value('data:tree')
                     var node, list
                     var handleListPropertyAdd = function (path, name, property) {
@@ -126,6 +129,23 @@ app.ui.comp.componentTree = cs.clazz({
                     cs(self, 'model').value('data:tree', tree, true)
                 }
             })
+
+            var toolbarItems = [{
+                label: 'Record',
+                icon:  'microphone',
+                type: 'button',
+                id: 'recordBtn',
+                click: 'event:record',
+                state: 'state:record'
+            }, {
+                label: 'Clear',
+                icon:  'remove-sign',
+                type: 'button',
+                id: 'clearBtn',
+                click: 'event:clear'
+            }]
+
+            cs(this, 'model/view/toolbar').call('initialize', toolbarItems)
         }
     }
 })
@@ -136,18 +156,39 @@ app.ui.comp.componentTree.model = cs.clazz({
         create: function () {
             cs(this).property('ComponentJS:state-auto-increase', true)
             cs(this).model({
-                'data:tree':             { value: null,                             valid: 'object'              },
-                'state:cmd':             { value: 'cs(\'/ui\').state(\'created\')', valid: 'string', store: true },
-                'state:tooltip-sticky' : { value: false, valid: 'boolean'                                        }
+                'data:tree'            : { value: null,                             valid: 'object'                   },
+                'state:cmd'            : { value: 'cs(\'/ui\').state(\'created\')', valid: 'string',  store: true     },
+                'state:tooltip-sticky' : { value: false,                            valid: 'boolean'                  },
+                'event:clear'          : { value: false,                            valid: 'boolean', autoreset: true },
+                'event:record'         : { value: false,                            valid: 'boolean', autoreset: true },
+                'state:record'         : { value: false,                            valid: 'boolean', store: true     }
             })
         },
-        prepare: function () {
-            var root = {
+        root: function () {
+            return {
                 name: '/',
                 path: '/',
                 children: []
             }
-            cs(this).value('data:tree', root)
+        },
+        prepare: function () {
+            cs(this).value('data:tree', this.root())
+        },
+        show: function () {
+            var self = this
+            cs(self).observe({
+                name: 'event:record', spool: 'visible',
+                func: function () {
+                    cs(self).value('state:record', !cs(self).value('state:record'))
+                }
+            })
+
+            cs(self).observe({
+                name: 'event:clear', spool: 'visible',
+                func: function () {
+                    cs(self).value('data:tree', self.root())
+                }
+            })
         }
     }
 })
@@ -169,15 +210,20 @@ app.ui.comp.componentTree.view = cs.clazz({
             var content = $.markup('componentTree-content')
             $('i', content).addClass('icon-angle-right')
 
+            cs(self).socket({
+                scope: 'toolbar',
+                ctx: $('.toolbar', content)
+            })
+
             cs(self).plug({
                 object: content,
                 spool: 'rendered'
             })
 
-            self.tooltip = d3.select('#componentTree-content').append('div')
+            self.tooltip = d3.select('#tree').append('div')
                 .attr('class', 'tooltip')
                 .style('opacity', 0)
-            self.legend = d3.select('#componentTree-content').append('div')
+            self.legend = d3.select('#tree').append('div')
                 .attr('id', 'legend')
                 .style('opacity', 1)
 
@@ -192,7 +238,7 @@ app.ui.comp.componentTree.view = cs.clazz({
         show: function () {
             var self = this
 
-            var containerName = '#componentTree-content'
+            var containerName = '#tree'
             var options = $.extend({
                 nodeRadius: 5, fontSize: 12
             })
@@ -255,7 +301,7 @@ app.ui.comp.componentTree.view = cs.clazz({
 
             var size = { width: $(containerName).outerWidth(), height: $(containerName).outerHeight() }
 
-            $('#componentTree-content > #legend').html($.markup('component-tree-legend'))
+            $('#tree > #legend').html($.markup('component-tree-legend'))
             setup()
 
             var update = function (root) {
@@ -343,7 +389,7 @@ app.ui.comp.componentTree.view = cs.clazz({
                         if (d.path === '/')
                             self.tooltip.html(d.path)
                         else
-                            $('#componentTree-content > .tooltip').html($.markup('component-tree-tooltip',{
+                            $('#tree > .tooltip').html($.markup('component-tree-tooltip',{
                                 name: d.name,
                                 path: d.path,
                                 type: d.type,

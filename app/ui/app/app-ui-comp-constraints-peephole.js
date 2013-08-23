@@ -7,6 +7,7 @@
 **  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
+/* global confirm: true, btoa: true */
 app.ui.comp.constraints.peephole = cs.clazz({
     mixin: [ cs.marker.controller ],
     protos: {
@@ -21,48 +22,86 @@ app.ui.comp.constraints.peephole = cs.clazz({
                 app.ui.widget.vertical.tabs.controller
             )
 
-            cs(self, 'model/view/tabs').call('initialize', {
-                tabs: [{ id: 'standard', name: 'Standard', enabled: true, data: 'static/cjscp_standard_rules.txt' }],
-                domain: 'cjscp'
-            })
-
             cs(self).subscribe({
                 name: 'setChanged', spool: 'created',
-                func: function (ev, nVal) {
-                    cs(self).publish('peepholeConstraintSetChanged', nVal)
+                func: function (ev, content) {
+                    var result = cs('/sv').call('parsePeepholeConstraintset', content)
+                    if (result.success) {
+                        ev.target().call('displaySyntacticError', [])
+
+                        /*  check for semantic correctness in temporal constraints  */
+                        var errors = cs('/sv').call('validatePeepholeConstraints', result.constraints)
+
+                        if (errors.length !== 0)
+                            ev.target().call('displaySemanticError', errors)
+                        else {
+                            var constraints = []
+                            _.each(['standard'].concat(cs(self, 'model').value('data:tabs')), function (tab) {
+                                constraints = constraints.concat(cs('/sv').call('parsePeepholeConstraintset', cs(self, '//' + tab).call('getContent')).constraints)
+                            })
+                            cs(self).publish('peepholeConstraintSetChanged', constraints)
+                        }
+                    }
+                    else {
+                        result.error.expected = _.filter(result.error.expected, function (exp) { return exp !== '[ \\t\\r\\n]' })
+                        result.error.type = 'error'
+                        result.error.message = 'Expected ' + result.error.expected.join(' or ') + ' but "' + result.error.found + '" found.'
+                        ev.target().call('displaySyntacticError', [ result.error ])
+                    }
                 }
             })
+
+            cs(self, 'model/view/tabs').call('initialize',
+                [{ id: 'standard', name: 'Standard', enabled: true }]
+            )
+            cs(self, '//tabs/model/view').create('standard', app.ui.widget.constraintset)
+            /*  only load the default constraintset, when there is non in the local storage  */
+            if (cs(self, '//standard').call('getContent') === '')
+                $.get('static/cjscp_standard_rules.txt', function (content) {
+                    cs(self, '//standard').call('setContent', content)
+                })
         },
         prepare: function () {
+            var self = this
             var toolbarItems = [{
                 label: 'Add',
                 icon: 'plus-sign',
                 type: 'button',
                 id: 'addBtn',
                 click: 'event:add'
-            }, {
+            },{
                 label: 'Remove',
                 icon: 'minus-sign',
                 type: 'button',
                 id: 'removeBtn',
                 click: 'event:remove'
-            }, {
+            },{
                 label: 'Load',
                 icon: 'upload-alt',
                 type: 'button',
                 id: 'loadBtn',
                 click: 'event:load'
-            }, {
+            },{
                 label: 'Save',
                 icon: 'download-alt',
                 type: 'button',
                 id: 'saveBtn',
                 click: 'event:save'
+            },{
+                label: 'Default',
+                icon: 'undo',
+                type: 'button',
+                id: 'defaultBtn',
+                click: 'event:default'
             }]
 
-            cs(this, 'model/view/toolbar').call('initialize', toolbarItems)
+            cs(self, 'model/view/toolbar').call('initialize', toolbarItems)
+            var tabs = cs(self, 'model').value('data:tabs')
+            _.each(tabs, function (tab) {
+                cs(self, '//tabs/model/view').create(tab, app.ui.widget.constraintset)
+            })
         },
-        render: function () {
+        show: function () {
             var self = this
             $('#constraint_upload').change(function (evt) {
                 var files = evt.target.files;
@@ -73,7 +112,11 @@ app.ui.comp.constraints.peephole = cs.clazz({
                     reader.onload = (function () {
                         return function (e) {
                             var content = e.target.result
-                            cs(self, 'model/tabs').call('addConstraintset', content)
+                            var custom = cs(self,'model').value('state:custom')
+                            cs(self, '//tabs/model/view').create('custom_' + custom, app.ui.widget.constraintset)
+                            cs(self, '//tabs').call('addTab', { id: 'custom_' + custom, name: 'Custom ' + custom, enabled: false })
+                            cs(self, '//custom_' + custom).call('setContent', content)
+                            cs(self,'model').value('state:custom', custom + 1)
                         }
                     })(f)
 
@@ -83,43 +126,58 @@ app.ui.comp.constraints.peephole = cs.clazz({
             })
 
             cs(self, 'model').observe({
-                name: 'event:add', spool: '..:materialized',
+                name: 'event:add', spool: '..:visible',
                 func: function () {
-                    cs(self, 'model/view/tabs').call('addConstraintset', '')
+                    var custom = cs(self,'model').value('state:custom')
+                    cs(self, '//tabs/model/view').create('custom_' + custom, app.ui.widget.constraintset)
+                    cs(self, '//tabs').call('addTab', { id: 'custom_' + custom, name: 'Custom ' + custom, enabled: false })
+                    cs(self,'model').value('data:tabs').push('custom_' + custom)
+                    cs(self,'model').value('state:custom', custom + 1)
                 }
             })
 
+            var saveCurrent = function () {
+                var content = cs(self, '//' + cs(self, '//tabs').call('getActive')).call('getContent')
+                window.location = 'data:application/octet-stream;base64,' + btoa(content)
+            }
+
             cs(self, 'model').observe({
-                name: 'event:remove', spool: '..:materialized',
+                name: 'event:remove', spool: '..:visible',
                 func: function () {
-                    /* global confirm: true */
+                    var active = cs(self, '//tabs').call('getActive')
+                    if (active === 'standard')
+                        return
                     if (confirm('Do you want to save this constraint set first?')) {
-                        cs(self, 'model/view/tabs').call('saveCurrent')
-                        cs(self, 'model/view/tabs').call('removeConstraintset')
-                    } else {
-                        cs(self, 'model/view/tabs').call('removeConstraintset')
+                        saveCurrent()
                     }
+                    cs(self, '//tabs').call('removeTab', active)
+                    cs(self, '//' + active).destroy()
+                    cs(self,'model').value('data:tabs', _.without(cs(self,'model').value('data:tabs'), active))
                 }
             })
 
             cs(self, 'model').observe({
-                name: 'event:load', spool: '..:materialized',
+                name: 'event:load', spool: '..:visible',
                 func: function () {
                     $('#constraint_upload').trigger('click')
                 }
             })
 
             cs(self, 'model').observe({
-                name: 'event:save', spool: '..:materialized',
+                name: 'event:default', spool: '..:visible',
                 func: function () {
-                    cs(self, 'model/view/tabs').call('saveCurrent')
+                    $.get('static/cjscp_standard_rules.txt', function (content) {
+                        cs(self, '//standard').call('setContent', content)
+                    })
                 }
             })
-        },
-        show: function () {
-            var custom = cs(this, 'model').value('state:custom')
-            cs(this, 'model/view/tabs').call('addConstraintset', { id: 'custom_' + custom, name: 'Custom ' + custom, enabled: false })
-            cs(this, 'model').value('state:custom', custom + 1)
+
+            cs(self, 'model').observe({
+                name: 'event:save', spool: '..:visible',
+                func: function () {
+                    saveCurrent()
+                }
+            })
         }
     }
 })
@@ -128,14 +186,15 @@ app.ui.comp.constraints.peephole.model = cs.clazz({
     mixin: [ cs.marker.model ],
     protos: {
         create: function () {
-            var self = this
-            cs(self).property('ComponentJS:state-auto-increase', true)
-            cs(self).model({
-                'event:add'    : { value: false,       valid: 'boolean', autoreset: true },
-                'event:remove' : { value: false,       valid: 'boolean', autoreset: true },
-                'event:load'   : { value: false,       valid: 'boolean', autoreset: true },
-                'event:save'   : { value: false,       valid: 'boolean', autoreset: true },
-                'state:custom' : { value: 1,           valid: 'number', store: true      }
+            cs(this).property('ComponentJS:state-auto-increase', true)
+            cs(this).model({
+                'event:add'     : { value: false, valid: 'boolean', autoreset: true },
+                'event:remove'  : { value: false, valid: 'boolean', autoreset: true },
+                'event:load'    : { value: false, valid: 'boolean', autoreset: true },
+                'event:default' : { value: false, valid: 'boolean', autoreset: true },
+                'event:save'    : { value: false, valid: 'boolean', autoreset: true },
+                'state:custom'  : { value: 1,     valid: 'number',  store: true     },
+                'data:tabs'     : { value: [],    valid: '[string*]', store: true   }
             })
         }
     }
@@ -147,11 +206,11 @@ app.ui.comp.constraints.peephole.view = cs.clazz({
         render: function () {
             cs(this).property('ComponentJS:state-auto-increase', true)
             var content = $.markup('constraints-content')
+
             cs(this).socket({
                 scope: 'toolbar',
                 ctx: $('.toolbar', content)
             })
-
             cs(this).socket({
                 scope: 'tabs',
                 ctx: $('.vertical-tabs-container', content)

@@ -13,19 +13,20 @@ app.sv = cs.clazz({
         create: function () {
             /*  converts a string containing multiple traces into an array of trace objects  */
             cs(this).register('parseLogfile', function (lines) {
-                var pattern = /^[^<]*< ([^,]*), ([^,]*), ([^,]*), ([^,]*), ([^,]*), ([^,]*), (.*) >/
+                var pattern = /^[^<]*< ([^,]*), ([^,]*), ([^,]*), ([^,]*), ([^,]*), ([^,]*), ([^,]*), (.*) >/
                 var traces = []
                 for (var i = 0; i < lines.length; i++) {
                     var line = lines[i]
                     var matches = line.match(pattern)
-                    var param = JSON.parse(matches[7])
+                    var param = JSON.parse(matches[8])
                     var newTrace = {
-                        time: parseInt(matches[1], 10),
-                        source: matches[2],
-                        sourceType: matches[3],
-                        origin: matches[4],
-                        originType: matches[5],
-                        operation: matches[6],
+                        id: parseInt(matches[1], 10),
+                        time: parseInt(matches[2], 10),
+                        source: matches[3],
+                        sourceType: matches[4],
+                        origin: matches[5],
+                        originType: matches[6],
+                        operation: matches[7],
                         parameters: param
                     }
                     newTrace = app.lib.richTrace.enrich(newTrace)
@@ -35,7 +36,7 @@ app.sv = cs.clazz({
             })
 
             /*  parses a given string using the PEG parser for the constraint grammar  */
-            cs(this).register('parseConstraintset', function (content) {
+            cs(this).register('parsePeepholeConstraintset', function (content) {
                 try {
                     var constraintSet = app.lib.peephole_constraint_parser.parse(content)
                     return { success: true, constraints: constraintSet }

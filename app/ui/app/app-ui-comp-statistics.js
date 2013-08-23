@@ -18,9 +18,25 @@ app.ui.comp.statistics = cs.clazz({
             cs(self).create('model/view/{grid,toolbar}',
                 app.ui.comp.statistics.model,
                 app.ui.comp.statistics.view,
-                new app.ui.widget.grid(false),
+                app.ui.widget.grid,
                 app.ui.widget.toolbar
             )
+
+            var columns = [
+                { label: 'Occurrence',  dataIndex: 'occurence',  width: 70, align: 'center' },
+                { label: 'Source',      dataIndex: 'source'                                 },
+                { label: 'ST',          dataIndex: 'sourceType', width: 20, align: 'center' },
+                { label: 'Origin',      dataIndex: 'origin'                                 },
+                { label: 'OT',          dataIndex: 'originType', width: 20, align: 'center' },
+                { label: 'Operation',   dataIndex: 'operation',  width: 60, align: 'center' },
+                { label: 'Parameters',  dataIndex: 'parameters'                             }
+            ]
+
+            cs(self, 'model/view/grid').call('initialize', {
+                columns: columns,
+                selectable: false,
+                sorting: { dataIndex: 'occurence', direction: 'desc' }
+            })
 
             cs(self).subscribe({
                 name: 'event:new-trace', spool: 'created',
@@ -33,21 +49,13 @@ app.ui.comp.statistics = cs.clazz({
             })
 
             cs(self).subscribe({
-                name: 'event:push', spool: 'rendered',
-                func: function (ev, trace) {
-                    cs(self, 'model/view/grid').call('push', trace)
-                }
-            })
-
-            cs(self).subscribe({
                 name: 'event:update', spool: 'rendered',
                 func: function (ev, trace) {
-                    cs(self, 'model/view/grid').call('update', trace)
+                    cs(self, 'model/view/grid').call('insert', trace)
                 }
             })
         },
         render: function () {
-            var self = this
             var toolbarItems = [{
                 label: 'Record',
                 icon:  'microphone',
@@ -70,7 +78,7 @@ app.ui.comp.statistics = cs.clazz({
                 state: 'state:ignore-params'
             }]
 
-            cs(self, 'model/view/toolbar').call('initialize', toolbarItems)
+            cs(this, 'model/view/toolbar').call('initialize', toolbarItems)
         },
         show: function () {
             var self = this
@@ -109,12 +117,10 @@ app.ui.comp.statistics.model = cs.clazz({
                     if (!data[hash]) {
                         data[hash] = trace
                         trace.occurence = 1
-                        cs(self).publish('event:push', data[hash])
                     }
-                    else {
+                    else
                         data[hash].occurence += 1
-                        cs(self).publish('event:update', data[hash])
-                    }
+                    cs(self).publish('event:update', data[hash])
                 }
             })
         },
@@ -151,19 +157,6 @@ app.ui.comp.statistics.view = cs.clazz({
     protos: {
         create: function () {
             cs(this).property('ComponentJS:state-auto-increase', true)
-        },
-        prepare: function () {
-            var columns = [
-                { label: 'Occurrence',  dataIndex: 'occurence',  width: 70, align: 'center' },
-                { label: 'Source',      dataIndex: 'source'                                 },
-                { label: 'ST',          dataIndex: 'sourceType', width: 20, align: 'center' },
-                { label: 'Origin',      dataIndex: 'origin'                                 },
-                { label: 'OT',          dataIndex: 'originType', width: 20, align: 'center' },
-                { label: 'Operation',   dataIndex: 'operation',  width: 60, align: 'center' },
-                { label: 'Parameters',  dataIndex: 'parameters'                             }
-            ]
-
-            cs(this, 'grid').call('initialize', columns)
         },
         render: function () {
             var self = this

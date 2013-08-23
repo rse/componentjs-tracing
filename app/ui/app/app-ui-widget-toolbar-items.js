@@ -40,7 +40,6 @@ app.ui.widget.toolbar.items.button = cs.clazz({
         show: function () {
             var self = this
             var state = cs(self).property('state')
-
             if (state)
                 cs(self).observe({
                     name: state, spool: 'visible',

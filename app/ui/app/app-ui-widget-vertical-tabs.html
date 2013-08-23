@@ -14,7 +14,7 @@
 		<div class="tab-container">
 			<ul class="vertical-tabs">
 		    	<markup id="vertical-tab">
-		        	<li class="vertical-tab" data-i="{{i}}">
+		        	<li class="vertical-tab {{classes}}" data-i="{{i}}">
 		        		<input class="checkbox" type="checkbox" data-i="{{i}}"/> {{name}}
 		        	</li>
 		    	</markup>
@@ -22,7 +22,7 @@
 		</div>
 		<div class="vertical-contents">
 	    	<markup id="content">
-	        	<div class="vertical-content"></div>
+	        	<div class="vertical-content" data-i="{{i}}"></div>
 	    	</markup>
 		</div>
 	</div>

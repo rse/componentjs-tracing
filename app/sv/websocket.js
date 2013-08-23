@@ -42,6 +42,7 @@ module.exports = {
                     })
                 }
                 var result = '< ' +
+                    req.data.id + ', ' +
                     req.data.time + ', ' +
                     req.data.source + ', ' +
                     req.data.sourceType + ', ' +

@@ -18,7 +18,7 @@ app.ui.comp.tracing = cs.clazz({
                 app.ui.comp.tracing.model,
                 app.ui.comp.tracing.view,
                 app.ui.widget.toolbar,
-                new app.ui.widget.grid(false)
+                app.ui.widget.grid
             )
         },
         prepare: function () {
@@ -90,7 +90,11 @@ app.ui.comp.tracing = cs.clazz({
                 { label: 'Parameters',  dataIndex: 'parameters'                                                     }
             ]
 
-            cs(self, 'model/view/grid').call('initialize', columns)
+            cs(self, 'model/view/grid').call('initialize', {
+                columns: columns,
+                selectable: false,
+                sorting: { dataIndex: 'time', direction: 'desc' }
+            })
 
             cs(self).subscribe({
                 name: 'event:new-trace', spool: 'prepared',
@@ -99,7 +103,7 @@ app.ui.comp.tracing = cs.clazz({
                     if (trace.hidden || !cs(self, 'model').value('state:record'))
                         return;
                     cs(self, 'model').value('data:traces').push(trace)
-                    cs(self, 'model/view/grid').call('unshift', trace)
+                    cs(self, 'model/view/grid').call('insert', trace)
                     if (cs(self, 'model').value('state:continuously'))
                         cs(self).publish('checkTrace', trace)
                 }

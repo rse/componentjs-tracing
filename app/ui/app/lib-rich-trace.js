@@ -134,6 +134,7 @@ var toString = function (ctx) {
     }
 
     return '< ' +
+        ctx.id + ', ' +
         ctx.time + ', ' +
         ctx.source + ', ' +
         ctx.sourceType + ', ' +

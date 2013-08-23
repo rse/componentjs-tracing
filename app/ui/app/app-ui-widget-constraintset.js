@@ -13,7 +13,8 @@ cs.ns('app.ui.widget.constraintset')
 app.ui.widget.constraintset = cs.clazz({
     mixin: [ cs.marker.controller ],
     dynamics: {
-        editor: null
+        editor: null,
+        timer: null
     },
     protos: {
         create: function () {
@@ -34,6 +35,7 @@ app.ui.widget.constraintset = cs.clazz({
 
             cs(self, 'model').observe({
                 name: 'data:constraintset', spool: '..:created',
+                touch: true,
                 func: function (ev, content) {
                     if (self.timer !== null) {
                         /* global clearTimeout: true */
@@ -49,7 +51,7 @@ app.ui.widget.constraintset = cs.clazz({
             cs(self).register({
                 name: 'setContent', spool: 'created',
                 func: function (content) {
-                    cs(self, 'model').value('data:constraintset', content)
+                    cs(self, 'model').value('data:constraintset', content, true)
                 }
             })
 

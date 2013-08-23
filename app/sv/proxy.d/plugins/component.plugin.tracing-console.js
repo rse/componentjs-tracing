@@ -62,6 +62,7 @@ ComponentJS.plugin("tracing-console", function (_cs, $cs, GLOBAL) {
             /*  print the trace to the console  */
             GLOBAL.console.log("TRACING: " +
                 "#" + tracing.id + ": < " +
+                tracing.id + ", " +
                 tracing.timestamp() + ", " +
                 source + ", " +
                 sourceType + ", " +

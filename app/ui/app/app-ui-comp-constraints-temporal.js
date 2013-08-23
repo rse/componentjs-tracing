@@ -99,7 +99,7 @@ app.ui.comp.constraints.temporal = cs.clazz({
                 name: 'event:default', spool: '..:visible',
                 func: function () {
                     $.get('static/cjsct_standard_rules.txt', function (content) {
-                        cs(self, 'model/view/constraintset').call('setContent', content)
+                        cs(self, '//constraintset').call('setContent', content)
                     })
                 }
             })

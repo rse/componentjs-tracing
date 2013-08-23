@@ -6,54 +6,31 @@
 **  License, v. 2.0. If a copy of the MPL was not distributed with this
 **  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-/* globals btoa: false */
 
 app.ui.widget.grid = cs.clazz({
     mixin: [ cs.marker.controller ],
-    dynamics: {
-        selectable: true
-    },
-    cons: function (selectable) {
-        if (selectable === false)
-            this.selectable = selectable
-    },
     protos: {
         create: function () {
             var self = this
             cs(this).property('ComponentJS:state-auto-increase', true)
             cs(self).create('model/view',
                 app.ui.widget.grid.model,
-                new app.ui.widget.grid.view(self.selectable)
+                app.ui.widget.grid.view
             )
 
             cs(self).register({
                 name: 'initialize', spool: 'created',
-                func: function (columns) {
-                    cs(self, 'model').value('data:columns', columns)
+                func: function (cfg) {
+                    cs(self, 'model').value('data:columns', cfg.columns)
+                    cs(self, 'model').value('param:selectable', cfg.selectable)
+                    cs(self, 'model').value('state:sorting', cfg.sorting || null)
                 }
             })
 
             cs(self).register({
-                name: 'unshift', spool: 'created',
+                name: 'insert', spool: 'created',
                 func: function (trace) {
-                    cs(self, 'model').value('state:add-pos', 'top')
-                    cs(self, 'model').value('data:new-item', trace, true)
-                }
-            })
-
-            cs(self).register({
-                name: 'push', spool: 'created',
-                func: function (trace) {
-                    cs(self, 'model').value('state:add-pos', 'bottom')
-                    cs(self, 'model').value('data:new-item', trace, true)
-                }
-            })
-
-            cs(self).register({
-                name: 'update', spool: 'created',
-                func: function (trace) {
-                    cs(self, 'model').value('state:add-pos', 'update')
-                    cs(self, 'model').value('data:new-item', trace, true)
+                    cs(self, 'model').value('data:insert', trace, true)
                 }
             })
 
@@ -61,7 +38,7 @@ app.ui.widget.grid = cs.clazz({
                 name: 'traces' , spool: 'created',
                 func: function (traces) {
                     if (traces)
-                        cs(self, 'model').value('data:rows', traces, true)
+                        _.each(traces, function (trace) { cs(self, 'model').value('data:insert', trace, true) })
                     else
                         return cs(self, 'model').value('data:rows')
                 }
@@ -127,12 +104,90 @@ app.ui.widget.grid.model = cs.clazz({
                 'data:columns'       : { value: [],   valid: '[{ label: string, dataIndex: string, width?: number, align?:string, renderer?:any }*]' },
                 'state:selection'    : { value: -1,   valid: 'number'    },
                 'state:filter'       : { value: '',   valid: 'string', store: true },
-                'state:add-pos'      : { value: 'top',valid: 'string'              },
+                'state:add-pos'      : { value: 'top',valid: '(number|string)'     },
                 'data:selected-obj'  : { value: null, valid: 'object'              },
                 'data:filtered'      : { value: [],   valid: '[object*]'           },
                 'data:rows'          : { value: [],   valid: '[object*]'           },
-                'data:new-item'      : { value: null, valid: 'object'              },
+                'data:insert'        : { value: null, valid: 'object'              },
+                'data:new-item'      : { value: null, valid: '(number|object)'     },
+                'param:selectable'   : { value: true, valid: 'boolean'             },
+                'state:sorting'      : { value: null, valid: 'object'              },
                 'state:visible-rows' : { value: 0,    valid: 'number'              }
+            })
+
+            cs(self).observe({
+                name: 'data:insert', spool: 'created',
+                func: function (ev, item) {
+                    var sorting = cs(self).value('state:sorting')
+                    if (!sorting) {
+                        cs(self).value('state:add-pos', 'top')
+                        cs(self).value('data:new-item', item, true)
+                    }
+                    else {
+                        var filtered = cs(self).value('data:filtered')
+                        var unfiltered = cs(self).value('data:rows')
+                        var passed = self.checkFilter(item)
+                        var compare = function (a, b) {
+                            if (!a || !b)
+                                return 42
+                            var attrA = a[sorting.dataIndex]
+                            var attrB = b[sorting.dataIndex]
+                            if (attrA < attrB)
+                                return -1
+                            else if (attrA > attrB)
+                                return 1
+                            else
+                                return 0
+                        }
+                        var binarySearch = function (ary, item, direction, start, end) {
+                            var mid = Math.floor((start + end) / 2)
+                            var comparison = compare(item, ary[mid])
+                            if (comparison === 0 || mid === start)
+                                return mid + 1/*(direction === 'desc' ? 1 : 0)*/
+                            else if (comparison === (direction === 'desc' ? 1 : -1))
+                                return binarySearch(ary, item, direction, start, mid)
+                            else if (comparison === (direction === 'desc' ? -1 : 1))
+                                return binarySearch(ary, item, direction, mid, end)
+                        }
+                        var sortIn = function (ary, view) {
+                            var oldIdx = _.findIndex(ary, function (itm) {return itm.id === item.id })
+                            if (oldIdx !== -1) {
+                                ary.splice(oldIdx, 1)
+                                if (view) {
+                                    cs(self).value('state:add-pos', 'remove')
+                                    cs(self).value('data:new-item', oldIdx, true)
+                                }
+                            }
+                            var firstCmp = compare(item, ary[0])
+                            var lastCmp = compare(item, ary[ary.length - 1])
+                            if (ary.length === 0 || firstCmp === 0 || firstCmp === (sorting.direction === 'desc' ? 1 : -1 )) {
+                                ary.unshift(item)
+                                if (view) {
+                                    cs(self).value('state:add-pos', 'top')
+                                    cs(self).value('data:new-item', item, true)
+                                }
+                            }
+                            else if (lastCmp === 0 || lastCmp === (sorting.direction === 'desc' ? -1 : 1)) {
+                                ary.push(item)
+                                if (view) {
+                                    cs(self).value('state:add-pos', 'bottom')
+                                    cs(self).value('data:new-item', item, true)
+                                }
+                            }
+                            else {
+                                var idx = binarySearch(ary, item, sorting.direction, 0, ary.length - 1)
+                                ary.splice(idx, 0, item)
+                                if (view) {
+                                    cs(self).value('state:add-pos', idx - 1)
+                                    cs(self).value('data:new-item', item, true)
+                                }
+                            }
+                        }
+                        if (passed)
+                            sortIn(filtered, true)
+                        sortIn(unfiltered, false)
+                    }
+                }
             })
 
             cs(self).observe({
@@ -140,45 +195,6 @@ app.ui.widget.grid.model = cs.clazz({
                 operation: 'changed',
                 func: function () {
                     cs(self).touch('state:filter')
-                }
-            })
-
-            cs(self).observe({
-                name: 'data:new-item', spool: 'created',
-                func: function (ev, item) {
-                    if (!item)
-                        return
-                    var action = cs(self).value('state:add-pos')
-                    var passed = self.checkFilter(item)
-                    if (action === 'top') {
-                        console.log('top@model:' + item.id)
-                        cs(self).value('data:rows').unshift(item)
-                        if (passed)
-                            cs(self).value('data:filtered').unshift(item)
-                    }
-                    else if (action === 'bottom') {
-                        console.log('bottom@model' + item.id)
-                        cs(self).value('data:rows').push(item)
-                        if (passed)
-                            cs(self).value('data:filtered').push(item)
-                    }
-                    else if (action === 'update') {
-                        console.log('update@model' + item.id)
-                        /*  fix position in unfiltered array  */
-                        var unfiltered = cs(self).value('data:rows')
-                        var oldIdx = _.indexOf(unfiltered, item)
-                        _.each(unfiltered, function (trace, idx) {
-                            if (idx === oldIdx)
-                                return false
-                            if (trace.occurence <= item.occurence) {
-                                unfiltered.splice(oldIdx, 1)
-                                unfiltered.splice(idx, 0, item)
-                                return false
-                            }
-                        })
-                    }
-                    if (!passed)
-                        ev.result(null)
                 }
             })
         },
@@ -192,7 +208,7 @@ app.ui.widget.grid.model = cs.clazz({
                 func: function (ev, filter) {
                     var unfiltered = cs(self).value('data:rows')
                     if (filter === '')
-                        cs(self).value('data:filtered', unfiltered)
+                        cs(self).value('data:filtered', unfiltered.concat())
                     else {
                         var result = []
                         result = _.filter(unfiltered, function (trace) {
@@ -208,14 +224,6 @@ app.ui.widget.grid.model = cs.clazz({
 
 app.ui.widget.grid.view = cs.clazz({
     mixin: [ cs.marker.view ],
-    dynamics: {
-        selectable: true,
-        grid: null
-    },
-    cons: function (selectable) {
-        if (selectable === false)
-            this.selectable = selectable
-    },
     protos: {
         render: function () {
             var self = this
@@ -260,7 +268,7 @@ app.ui.widget.grid.view = cs.clazz({
                         vars.style += 'text-align: ' + columns[x].align + ';'
                     $(row).markup('grid/row/data', vars)
                 }
-                if (self.selectable) {
+                if (cs(self).value('param:selectable')) {
                     row.addClass('selectable')
                     row.click(function () {
                         cs(self).value('state:selection', $(this).data('i'))
@@ -301,42 +309,25 @@ app.ui.widget.grid.view = cs.clazz({
 
             cs(self).observe({
                 name: 'data:new-item', spool: 'visible',
-                operation: 'changed',
                 func: function (ev, item) {
-                    if (!item)
-                        return
                     var action = cs(self).value('state:add-pos')
                     var row = $.markup('grid/row', { i: item.id })
                     fillRow(row, item)
                     if (action === 'top') {
-                        console.log('top@view:' + item.id)
                         $('.tbody', self.grid).prepend(row)
                         cs(self).value('state:visible-rows', cs(self).value('state:visible-rows') + 1)
                     }
                     else if (action === 'bottom') {
-                        console.log('bottom@view:' + item.id)
                         $('.tbody', self.grid).append(row)
                         cs(self).value('state:visible-rows', cs(self).value('state:visible-rows') + 1)
                     }
-                    else if (action === 'update') {
-                        console.log('update@view:' + item.id)
-                        $('#statistics-content .tbody > .row[data-i=' + item.id + ']').replaceWith(row)
-/*                        var unfiltered = cs(self).value('data:filtered')
-                        var oldIdx = _.indexOf(unfiltered, item)
-                        var line = $('#statistics-content .tbody > .row').eq(oldIdx)
-                        _.each(unfiltered, function (trace, idx) {
-                            if (idx === oldIdx) {
-                                line.replaceWith(row)
-                                return false
-                            }
-                            if (trace.occurence <= item.occurence) {
-                                $('#statistics-content .tbody > .row').eq(idx).before(row)
-                                unfiltered.splice(oldIdx, 1)
-                                line.remove()
-                                unfiltered.splice(idx, 0, item)
-                                return false
-                            }
-                        })*/
+                    else if (action === 'remove') {
+                        $('#statistics-content .tbody > .row').eq(item).remove() //item.index
+                        cs(self).value('state:visible-rows', cs(self).value('state:visible-rows') - 1)
+                    }
+                    else {
+                        cs(self).value('state:visible-rows', cs(self).value('state:visible-rows') + 1)
+                        $('#statistics-content .tbody > .row').eq(action).after(row)
                     }
                 }
             })

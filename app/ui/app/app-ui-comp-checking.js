@@ -54,7 +54,11 @@ app.ui.comp.checking = cs.clazz({
                 { label: 'OT',        dataIndex: 'originType', width: 20, align: 'center' },
                 { label: 'Operation', dataIndex: 'operation',  width: 60, align: 'center', renderer: linkRenderer }
             ]
-            cs(self, 'model/view/grid').call('initialize', columns)
+            cs(self, 'model/view/grid').call('initialize', {
+                columns: columns,
+                selectable: true,
+                sorting: { dataIndex: 'time', direction: 'desc' }
+            })
 
             cs(self).register({
                 name: 'displayTraces', spool: 'prepared',
@@ -66,7 +70,7 @@ app.ui.comp.checking = cs.clazz({
             cs(self).register({
                 name: 'unshift', spool: 'prepared',
                 func: function (trace) {
-                    cs(self, 'model/view/grid').call('unshift', trace)
+                    cs(self, 'model/view/grid').call('insert', trace)
                 }
             })
 
