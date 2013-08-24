@@ -87,6 +87,7 @@ app.ui.comp.statistics = cs.clazz({
                 name: 'event:clear', spool: '..:visible',
                 func: function () {
                     cs(self, 'model/view/grid').call('clear')
+                    cs(self, 'model').value('data:hashed-traces', {})
                 }
             })
         }
