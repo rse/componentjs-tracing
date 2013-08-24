@@ -13,27 +13,37 @@ app.ui.comp.componentTree = cs.clazz({
     mixin: [ cs.marker.controller ],
     protos: {
         create: function () {
-            cs(this).property('ComponentJS:state-auto-increase', false)
+            var self = this
+            cs(self).property('ComponentJS:state-auto-increase', false)
 
-            cs(this).create('model/view/toolbar',
+            cs(self).create('model/view/toolbar',
                 app.ui.comp.componentTree.model,
                 app.ui.comp.componentTree.view,
                 app.ui.widget.toolbar
             )
+
+            cs(self).register({
+                name: 'getComponent', spool: 'created',
+                func: function (path) {
+                    return self.findInTree(cs(self, 'model').value('data:tree'), path)
+                }
+            })
+        },
+        findInTree: function (tree, path) {
+            var self = this
+            var acc = []
+            if (tree.path === path) {
+                acc.push(tree)
+            }
+            _.each(tree.children, function (child) {
+                acc = acc.concat(self.findInTree(child, path))
+            })
+            return acc
         },
         prepare: function () {
             var self = this
 
-            var findInTree = function (tree, path) {
-                var acc = []
-                if (tree.path === path) {
-                    acc.push(tree)
-                }
-                _.each(tree.children, function (child) {
-                    acc = acc.concat(findInTree(child, path))
-                })
-                return acc
-            }
+
 
             var removeFromTree = function (tree, path) {
                 //  We want to remove the root node
@@ -53,13 +63,13 @@ app.ui.comp.componentTree = cs.clazz({
                     var tree = cs(self, 'model').value('data:tree')
                     var node, list
                     var handleListPropertyAdd = function (path, name, property) {
-                        node = findInTree(tree, path)[0]
+                        node = self.findInTree(tree, path)[0]
                         var list = node[property] || []
                         list.push(name)
                         node[property] = _.uniq(list)
                     }
                     var handleListPropertyRemove = function (path, name, property) {
-                        node = findInTree(tree, path)[0]
+                        node = self.findInTree(tree, path)[0]
                         list = node.list || []
                         node[property] = _.without(list, name)
                     }
@@ -72,7 +82,7 @@ app.ui.comp.componentTree = cs.clazz({
                         cs(self).call('add', insPt, newNode)
                     }
                     else if (trace.operation === 'state') {
-                        node = findInTree(tree, trace.origin)[0]
+                        node = self.findInTree(tree, trace.origin)[0]
                         if (node) {
                             node.state = trace.parameters.state
                             cs(self, 'model').value('data:tree', tree, true)
@@ -92,7 +102,7 @@ app.ui.comp.componentTree = cs.clazz({
                         handleListPropertyRemove(trace.source, trace.parameters.name, 'subscribtions')
                     else if (trace.operation === 'model') {
                         var model = trace.parameters.model
-                        node = findInTree(tree, trace.origin)[0]
+                        node = self.findInTree(tree, trace.origin)[0]
                         node.model = []
                         _.forIn(model, function (value, key) {
                             node.model.push(key)
@@ -107,7 +117,7 @@ app.ui.comp.componentTree = cs.clazz({
                 name: 'remove', spool: 'materialized',
                 func: function (path) {
                     var tree = cs(self, 'model').value('data:tree')
-                    if (findInTree(tree, path).length === 0)
+                    if (self.findInTree(tree, path).length === 0)
                         return
                     removeFromTree(tree, path)
                     cs(self, 'model').value('data:tree', tree, true)
@@ -118,9 +128,9 @@ app.ui.comp.componentTree = cs.clazz({
                 name: 'add', spool: 'materialized',
                 func: function (path, newNode) {
                     var tree = cs(self, 'model').value('data:tree')
-                    var node = findInTree(tree, path)[0]
+                    var node = self.findInTree(tree, path)[0]
                     /*  does the node exist?  */
-                    if (!node || findInTree(tree, newNode.path).length !== 0)
+                    if (!node || self.findInTree(tree, newNode.path).length !== 0)
                         return
                     if (!node.children)
                         node.children = [ newNode ]

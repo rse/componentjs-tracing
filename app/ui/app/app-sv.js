@@ -35,6 +35,13 @@ app.sv = cs.clazz({
                 return traces
             })
 
+            cs(this).register('getState', function (path) {
+                var cmps = cs('//componentTree').call('getComponent', path)
+                if (cmps.length > 0)
+                    return cmps[0].state
+                return
+            })
+
             /*  parses a given string using the PEG parser for the constraint grammar  */
             cs(this).register('parsePeepholeConstraintset', function (content) {
                 try {

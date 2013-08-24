@@ -11,6 +11,7 @@ function
   = "isParent"
   / "distance"
   / "contains"
+  / "state"
 
 field
   = first:id ids:("." id)* _ { var ary = [first]; for(var i = 0; i < ids.length; i++) { ary.push(ids[i][ids[i].length - 1]) }; return ary }

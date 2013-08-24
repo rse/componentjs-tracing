@@ -11,6 +11,13 @@
 
 var evaluateExprInternal = function (ctx, expression, binding) {
     var type = expression.type
+    binding = binding || {}
+    binding.source = ctx.source
+    binding.origin = ctx.origin
+    binding.sourceType = ctx.sourceType
+    binding.originType = ctx.originType
+    binding.operation = ctx.operation
+    binding.parameters = ctx.parameters
 
     if (type === 'true')
         return true
@@ -24,8 +31,9 @@ var evaluateExprInternal = function (ctx, expression, binding) {
         return !evaluateExprInternal(ctx, expression.expression, binding)
     else if (type === 'clasped')
         return evaluateExprInternal(ctx, expression.expression, binding)
-    else if (type === 'term')
+    else if (type === 'term') {
         return evaluateTermInternal(ctx, expression, binding)
+    }
     else if (type === 'function')
         return evaluateFuncInternal(ctx, expression, binding)
 }
@@ -43,17 +51,11 @@ var evaluateFuncInternal = function (ctx, statement, binding) {
             collection = _.keys(collection)
         return _.contains(collection, needle)
     }
+    else if (statement.name === 'state')
+        return cs('/sv').call('getState', eval('binding["' + statement.params[0][0] + '"]'))
 }
 
 var evaluateTermInternal = function (ctx, term, binding) {
-    binding = binding || {}
-    binding.source = ctx.source
-    binding.origin = ctx.origin
-    binding.sourceType = ctx.sourceType
-    binding.originType = ctx.originType
-    binding.operation = ctx.operation
-    binding.parameters = ctx.parameters
-
     var expr
     if (term.field1)
         expr = 'binding["' + term.field1[0] + '"]' + (term.field1.length > 1 ? '.' + _.tail(term.field1).join('.') : '') + ' ' + term.op +
@@ -89,9 +91,10 @@ var stringifyTerm = function (term) {
 }
 
 var stringifyFunc = function (statement) {
-    if (statement.name === 'isParent' || statement.name === 'contains') {
+    if (statement.name === 'isParent' || statement.name === 'contains')
         return statement.name + '(' + statement.params[0].join('.') + ', ' + statement.params[1].join('.') + ')'
-    }
+    else if (statement === 'state')
+        return statement.name + '(' + statement.params[0][0] + ')'
     return 'NaF'
 }
 

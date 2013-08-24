@@ -213,12 +213,10 @@ app.ui.widget.grid.model = cs.clazz({
                     }
 
                     if (sorting.direction === 'asc') {
-                        console.log('asc')
                         filtered.sort(asc)
                         unfiltered.sort(asc)
                     }
                     else {
-                        console.log('desc')
                         filtered.sort(desc)
                         unfiltered.sort(desc)
                     }
