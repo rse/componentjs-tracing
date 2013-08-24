@@ -191,6 +191,43 @@ app.ui.widget.grid.model = cs.clazz({
             })
 
             cs(self).observe({
+                name: 'state:sorting', spool: 'created',
+                func: function (ev, sorting) {
+                    var filtered = cs(self).value('data:filtered')
+                    var unfiltered = cs(self).value('data:rows')
+                    var asc = function (a, b) {
+                        if (a[sorting.dataIndex] < b[sorting.dataIndex])
+                            return -1
+                        else if (a[sorting.dataIndex] > b[sorting.dataIndex])
+                            return 1
+                        else
+                            return 0
+                    }
+                    var desc = function (a, b) {
+                        if (a[sorting.dataIndex] < b[sorting.dataIndex])
+                            return 1
+                        else if (a[sorting.dataIndex] > b[sorting.dataIndex])
+                            return -1
+                        else
+                            return 0
+                    }
+
+                    if (sorting.direction === 'asc') {
+                        console.log('asc')
+                        filtered.sort(asc)
+                        unfiltered.sort(asc)
+                    }
+                    else {
+                        console.log('desc')
+                        filtered.sort(desc)
+                        unfiltered.sort(desc)
+                    }
+                    cs(self).touch('data:filtered')
+                    cs(self).touch('data:rows')
+                }
+            })
+
+            cs(self).observe({
                 name: 'data:rows', spool: 'created',
                 operation: 'changed',
                 func: function () {
@@ -285,8 +322,28 @@ app.ui.widget.grid.view = cs.clazz({
                         var vars = { label: col.label }
                         if (col.width)
                             vars.style = 'width: ' + col.width + 'px;'
-                        $('.thead > .row', self.grid).markup('grid/column', vars)
+                        var column = $('.thead > .row', self.grid).markup('grid/column', vars)
+                        column.click(function () {
+                            var current = cs(self).value('state:sorting')
+                            if (current.dataIndex === col.dataIndex)
+                                cs(self).value('state:sorting', { dataIndex: col.dataIndex, direction: current.direction === 'asc' ? 'desc' : 'asc' })
+                            else
+                                cs(self).value('state:sorting', { dataIndex: col.dataIndex, direction: 'desc' })
+                        })
                     })
+                }
+            })
+
+            cs(self).observe({
+                name: 'state:sorting', spool: 'visible',
+                touch: true,
+                func: function (ev, sorting) {
+                    if (!sorting)
+                        return
+                    var columns = cs(self).value('data:columns')
+                    var idx = _.findIndex(columns, function (item) { return item.dataIndex === sorting.dataIndex })
+                    $('.thead > .row > th', self.grid).removeClass('sorted')
+                    $('.thead > .row > th', self.grid).eq(idx).addClass('sorted')
                 }
             })
 
