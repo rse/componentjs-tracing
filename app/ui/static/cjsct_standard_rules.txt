@@ -1,3 +1,30 @@
+temporal-constraint unused-register {
+    rationale {
+        Register declared that is never used.
+    }
+    
+    sequence {
+        a << b << c
+    }
+    
+    filter a {
+        operation == 'register'
+    }
+    
+    filter b {
+        operation == 'call'
+    }
+    
+    filter c {
+        operation == 'terminate'
+    }
+    
+    link {
+        a.origin == b.origin
+        && a.parameters.name == b.parameters.name
+    }
+}
+
 temporal-constraint observe-value {
 	rationale {
 		Value expects an observe beforehand otherwise it would be useless.
