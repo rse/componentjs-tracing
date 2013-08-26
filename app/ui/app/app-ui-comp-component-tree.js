@@ -215,6 +215,7 @@ app.ui.comp.componentTree.view = cs.clazz({
         idx: 0,
         tooltip: null,
         timer: null,
+        nodes: [],
         legend: null,
         layoutRoot: null,
         tree: null
@@ -233,7 +234,7 @@ app.ui.comp.componentTree.view = cs.clazz({
 
             cs(self).plug({
                 object: content,
-                spool: 'rendered'
+                spool: 'materialized'
             })
 
             self.tooltip = d3.select('#tree').append('div')
@@ -332,8 +333,8 @@ app.ui.comp.componentTree.view = cs.clazz({
                     return
                 }
 
-                var nodes = self.tree.nodes(root)
-                var links = self.tree.links(nodes)
+                self.nodes = self.tree.nodes(root)
+                var links = self.tree.links(self.nodes)
                 var margin = 20
                 var elbow = function (d) {
                   return 'M' + d.source.x + ',' + (-d.source.y + size.height - options.nodeRadius - 40) +
@@ -347,7 +348,7 @@ app.ui.comp.componentTree.view = cs.clazz({
 
                 /*  remove the exiting nodes  */
                 self.layoutRoot.selectAll('g')
-                    .data(nodes, function (d) { return d.path })
+                    .data(self.nodes, function (d) { return d.path })
                     .exit()
                     //.transition()
                     //.duration(400)
@@ -382,7 +383,7 @@ app.ui.comp.componentTree.view = cs.clazz({
 
                 /*  refresh the remaining nodes positions  */
                 self.layoutRoot.selectAll('g')
-                    .data(nodes, function (d) { return d.path })
+                    .data(self.nodes, function (d) { return d.path })
                     //.transition()
                     //.delay(600)
                     .attr('transform', function (d) {
@@ -400,7 +401,7 @@ app.ui.comp.componentTree.view = cs.clazz({
 
                 /*  create groups for the new nodes  */
                 var enterNodes = self.layoutRoot.selectAll('g')
-                    .data(nodes, function (d) { return d.path })
+                    .data(self.nodes, function (d) { return d.path })
                     .enter()
                     .append('svg:g')
                     .attr('class', 'node')
@@ -529,7 +530,7 @@ app.ui.comp.componentTree.view = cs.clazz({
             }
 
             cs(self).observe({
-                name: 'data:tree', spool: 'shown',
+                name: 'data:tree', spool: 'visible',
                 touch: true,
                 func: function (ev, tree) {
                     update(tree)
@@ -547,11 +548,7 @@ app.ui.comp.componentTree.view = cs.clazz({
             setInterval(cursorAnimation, 300)
         },
         hide: function () {
-            cs(this).unspool('shown')
             $('svg').remove()
-        },
-        release: function () {
-            cs(this).unspool('rendered')
         }
     }
 })
