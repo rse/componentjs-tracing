@@ -76,6 +76,15 @@ app.ui.comp.statistics = cs.clazz({
                 id: 'ignoreParams',
                 click: 'event:ignore-params',
                 state: 'state:ignore-params'
+            }, {
+                label: 'Filter:',
+                icon:  'filter',
+                type: 'text'
+            }, {
+                type: 'input',
+                id: 'filterInp',
+                keyup: 'event:filterKeyUp',
+                data: 'state:filter'
             }]
 
             cs(this, 'model/view/toolbar').call('initialize', toolbarItems)
@@ -88,6 +97,13 @@ app.ui.comp.statistics = cs.clazz({
                 func: function () {
                     cs(self, 'model/view/grid').call('clear')
                     cs(self, 'model').value('data:hashed-traces', {})
+                }
+            })
+
+            cs(self, 'model').observe({
+                name: 'data:filter', spool: '..:visible',
+                func: function (ev, filter) {
+                    cs(self, 'model/view/grid').call('filter', filter)
                 }
             })
         }
@@ -105,6 +121,9 @@ app.ui.comp.statistics.model = cs.clazz({
                 'event:clear'         : { value: false, valid: 'boolean', autoreset: true },
                 'event:record'        : { value: false, valid: 'boolean', autoreset: true },
                 'state:record'        : { value: false, valid: 'boolean', store: true     },
+                'event:filterKeyUp'   : { value: -1,    valid: 'number',  autoreset: true },
+                'data:filter'         : { value: '',    valid: 'string', store: true      },
+                'state:filter'        : { value: '',    valid: 'string', store: true      },
                 'event:ignore-params' : { value: false, valid: 'boolean', autoreset: true },
                 'state:ignore-params' : { value: false, valid: 'boolean', store: true     }
             })
@@ -125,18 +144,27 @@ app.ui.comp.statistics.model = cs.clazz({
                 }
             })
         },
-        render: function () {
+        show: function () {
             var self = this
+            cs(self).observe({
+                name: 'event:filterKeyUp', spool: 'visible',
+                func: function (ev, nVal) {
+                    if (nVal === 27 /* ESCAPE */)
+                        cs(self).value('state:filter', '')
+                    if (nVal === 13 /* RETURN */ || nVal === 27 /* ESCAPE */)
+                        cs(self).value('data:filter', cs(self).value('state:filter'))
+                }
+            })
 
             cs(self).observe({
-                name: 'event:record', spool: 'materialized',
+                name: 'event:record', spool: 'visible',
                 func: function () {
                     cs(self).value('state:record', !cs(self).value('state:record'))
                 }
             })
 
             cs(self).observe({
-                name: 'event:ignore-params', spool: 'materialized',
+                name: 'event:ignore-params', spool: 'visible',
                 func: function () {
                     cs(self).value('state:ignore-params', !cs(self).value('state:ignore-params'))
                 }
