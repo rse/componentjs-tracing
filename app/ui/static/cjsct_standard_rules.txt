@@ -13,6 +13,7 @@ temporal-constraint observe-value {
 
 	filter b {
 		operation == 'value'
+		&&  sourceType != 'M' 
 		&&	parameters.value != undefined
 	}
 
