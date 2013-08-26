@@ -91,8 +91,12 @@ app.ui.widget.grid.model = cs.clazz({
                 tmp[0] = 'originType'
             if (tmp[0] === 'ST')
                 tmp[0] = 'sourceType'
-            if (tmp.length === 2 && trace[tmp[0]])
-                return trace[tmp[0]].toLowerCase().indexOf(tmp[1].toLowerCase()) !== -1
+            if (tmp.length === 2 && trace[tmp[0]]) {
+                if (typeof trace[tmp[0]] === 'number')
+                    return trace[tmp[0]] === parseInt(tmp[1], 10)
+                else
+                   return trace[tmp[0]].toLowerCase().indexOf(tmp[1].toLowerCase()) !== -1
+            }
             else
                 return trace.filter(filter)
         },
