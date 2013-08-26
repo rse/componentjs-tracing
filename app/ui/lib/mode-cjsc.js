@@ -46,16 +46,13 @@ var cjscHighlightRules = function() {
             regex: 'temporal-constraint|peephole-constraint|rationale'
         }, {
             token: 'keyword',
-            regex: 'condition|sequence|filter|link'
+            regex: 'condition|sequence|filter|link|isParent|distance|contains|state'
         }, {
             token: 'keyword',
             regex: 'result'
         }, {
             token: 'keyword.operator',
             regex: '==|!=|<=|>=|<|>|=~|!~|!|&&|\\|\\|'
-        }, {
-            token: 'function',
-            regex: 'isParent|distance|contains'
         }, {
             token: 'constant',
             regex: 'sourceType|originType|operation|origin|source|parameters'
