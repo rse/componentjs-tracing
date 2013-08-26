@@ -64,12 +64,16 @@ app.ui.comp.componentTree = cs.clazz({
                     var node, list
                     var handleListPropertyAdd = function (path, name, property) {
                         node = self.findInTree(tree, path)[0]
+                        if (!node)
+                            return
                         var list = node[property] || []
                         list.push(name)
                         node[property] = _.uniq(list)
                     }
                     var handleListPropertyRemove = function (path, name, property) {
                         node = self.findInTree(tree, path)[0]
+                        if (!node)
+                            return
                         list = node.list || []
                         node[property] = _.without(list, name)
                     }
