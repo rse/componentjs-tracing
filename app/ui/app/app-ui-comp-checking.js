@@ -36,6 +36,15 @@ app.ui.comp.checking = cs.clazz({
                 type:  'button',
                 id: 'clearBtn',
                 click: 'event:clear'
+            }, {
+                label: 'Filter:',
+                icon:  'filter',
+                type: 'text'
+            }, {
+                type: 'input',
+                id: 'filterInp',
+                keyup: 'event:filterKeyUp',
+                data: 'state:filter'
             }]
 
             cs(self, 'model/view/toolbar').call('initialize', toolbarItems)
@@ -82,11 +91,11 @@ app.ui.comp.checking = cs.clazz({
                 }
             })
         },
-        render: function () {
+        show: function () {
             var self = this
 
             cs(self, 'model').observe({
-                name: 'event:clear', spool: '..:materialized',
+                name: 'event:clear', spool: '..:visible',
                 func: function () {
                     cs(self, 'model/view/grid').call('clear')
                     cs(self, 'model/view/rationales').call('setRationales', [])
@@ -94,11 +103,18 @@ app.ui.comp.checking = cs.clazz({
             })
 
             cs(self).subscribe({
-                name: 'objectSelected', spool: 'materialized',
+                name: 'objectSelected', spool: 'visible',
                 func: function (ev, nVal) {
                     cs(self, 'model/view/details').call('setTrace', nVal)
                     cs(self, 'model/view/rationales').call('setTrace', nVal)
                     cs(self, 'model/view/rationales').call('setRationales', nVal !== null ? nVal.checks : [])
+                }
+            })
+
+            cs(self, 'model').observe({
+                name: 'data:filter', spool: '..:visible',
+                func: function (ev, filter) {
+                    cs(self, 'model/view/grid').call('filter', filter)
                 }
             })
         }
@@ -111,7 +127,22 @@ app.ui.comp.checking.model = cs.clazz({
         create: function () {
             cs(this).property('ComponentJS:state-auto-increase', true)
             cs(this).model({
-                'event:clear' : { value: false, valid: 'boolean', autoreset: true }
+                'event:clear'          : { value: false, valid: 'boolean', autoreset: true },
+                'event:filterKeyUp'    : { value: -1,    valid: 'number',  autoreset: true },
+                'data:filter'          : { value: '',    valid: 'string', store: true      },
+                'state:filter'         : { value: '',    valid: 'string', store: true      }
+            })
+        },
+        show: function () {
+            var self = this
+            cs(self).observe({
+                name: 'event:filterKeyUp', spool: 'visible',
+                func: function (ev, nVal) {
+                    if (nVal === 27 /* ESCAPE */)
+                        cs(self).value('state:filter', '')
+                    if (nVal === 13 /* RETURN */ || nVal === 27 /* ESCAPE */)
+                        cs(self).value('data:filter', cs(self).value('state:filter'))
+                }
             })
         }
     }
