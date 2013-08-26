@@ -75,7 +75,7 @@ app.ui.comp.componentTree = cs.clazz({
                     }
                     if (trace.operation === 'create') {
                         var matches = trace.origin.match(nameRegex)
-                        var newNode = { name: matches[1], path: trace.origin, type: trace.originType, state: 'created', children: [], markers: _.keys(trace.parameters.markers) }
+                        var newNode = { name: matches[1], path: trace.origin, type: trace.originType, state: 'created', children: [], markers: _.keys(trace.parameters.markers), outgoing: [] }
                         var insPt = trace.origin.substring(0, trace.origin.length - matches[0].length)
                         if (insPt.length === 0)
                             insPt = '/'
@@ -110,6 +110,11 @@ app.ui.comp.componentTree = cs.clazz({
                     }
                     else if (trace.operation === 'destroy')
                         cs(self).call('remove', trace.origin)
+                    if (trace.origin !== trace.source) {
+                        node = self.findInTree(tree, trace.source)[0]
+                        if (node)
+                            node.outgoing.push(self.findInTree(tree, trace.origin)[0])
+                    }
                 }
             })
 
@@ -178,6 +183,7 @@ app.ui.comp.componentTree.model = cs.clazz({
             return {
                 name: '/',
                 path: '/',
+                outgoing: [],
                 children: []
             }
         },
@@ -257,6 +263,11 @@ app.ui.comp.componentTree.view = cs.clazz({
                     .duration(500)
                     .style('opacity', 0)
                     .style('pointer-events', 'none')
+                self.layoutRoot.selectAll('.hover-line')
+                    .transition()
+                    .duration(500)
+                    .style('opacity', 0)
+                    .remove()
             }
 
             var setup = function () {
@@ -329,6 +340,10 @@ app.ui.comp.componentTree.view = cs.clazz({
                         'V' + (-d.source.y + size.height - 40 - margin) + 'H' + d.target.x +
                         'V' + (-d.target.y + size.height - 40 - options.nodeRadius )
                 }
+                var lineFunc = d3.svg.line()
+                                        .x(function (d) { return d.x })
+                                        .y(function (d) { return d.y })
+                                        .interpolate('basis')
 
                 /*  remove the exiting nodes  */
                 self.layoutRoot.selectAll('g')
@@ -422,7 +437,62 @@ app.ui.comp.componentTree.view = cs.clazz({
                         self.tooltip
                             .style('left', x + 'px')
                             .style('top', -y + size.height + 5 + 'px')
+                        self.layoutRoot.selectAll('.hover-line').remove()
+                        _.each(d.outgoing, function (out) {
+                            var isLeft = function () { return d.x > out.x }
+                            var isRight = function () { return d.x < out.x }
+                            var isAbove = function () { return d.y < out.y }
+                            var isBelow = function () { return d.y > out.y }
+                            var hEqual = function () { return d.y === out.y }
+                            var vEqual = function () { return d.x === out.x }
+
+                            /*  set the supporting point to the middle of delta x and delta y => linear curve  */
+                            var xSupp = (d.x + out.x) / 2
+                            var ySupp = -((d.y + out.y) / 2) + size.height - 40
+
+                            if (isAbove() && !vEqual() || hEqual())
+                                ySupp += 25
+                            else if (isBelow() && !vEqual())
+                                ySupp -= 25
+                            if (isLeft() && !hEqual() || vEqual())
+                                xSupp -= 25
+                            else if (isRight() && !hEqual())
+                                xSupp += 25
+
+                            var xStart = d.x
+                            var yStart = (-d.y + size.height - 40)
+                            var xEnd = out.x
+                            var yEnd = (-out.y + size.height - 40)
+                            var offset = options.nodeRadius / 2 + 1
+
+                            if (isLeft())
+                                xEnd += offset
+                            if (isLeft() || vEqual())
+                                xStart -= (offset + 1)
+                            if (isAbove() || hEqual())
+                                yStart -= offset
+                            if (isRight())
+                                xStart += (offset + 1)
+                            else if (isRight() || vEqual())
+                                xEnd -= offset
+                            if (isAbove() && isRight())
+                                yEnd += (offset + 1)
+                            else if (isAbove())
+                                yEnd += offset
+                            else if (isBelow() || hEqual)
+                                yEnd -= offset
+
+                            var lineData = [ { x: xStart, y: yStart },
+                                             { x: xSupp, y: ySupp },
+                                             { x: xEnd, y: yEnd } ]
+                            self.layoutRoot.append('path')
+                                            .attr('d', lineFunc(lineData))
+                                            .attr('class', 'hover-line')
+                                            .transition()
+                                            .duration(200)
+                                            .style('opacity', 1)
                         })
+                    })
                     .on('mouseout', function () {
                         if (!cs(self).value('state:tooltip-sticky'))
                             hideTooltip()

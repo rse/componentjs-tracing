@@ -25,8 +25,8 @@
     }
 
     #tree {
-        height:   ~"calc(100% - 42px)";
-        position: relative;
+        height:             ~"calc(100% - 42px)";
+        position:           relative;
     }
 
     #console {
@@ -43,6 +43,13 @@
     g.node {
         font-size:          @font-size;
         font-weight:        bold;
+    }
+
+    .hover-line {
+        fill:               none;
+        opacity:            0;
+        stroke-width:       1;
+        stroke:             #408edc;
     }
 
     circle {
