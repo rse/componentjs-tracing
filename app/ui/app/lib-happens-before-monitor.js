@@ -79,8 +79,32 @@ var monitor = function (temporalConstraint) {
         return found
     }
 
+    this.processTerminate = function (trace) {
+        var result = []
+        var filter = this.filters[this.sequence[this.sequence.length - 1]]
+        var res = trace.evaluateExpr(filter.condition)
+        if (res) {
+            if (_.filter(self.buffer, function (buf) { return buf.length !== 0 }).length === 0)
+                return
+            if (!predIsAvailable(filter.id) || (isLast(filter.id) && !checkLink(trace))) {
+                _.forIn(self.buffer, function (value) {
+                    _.each(value, function (tr) {
+                        tr.checks = [{
+                            constraint: temporalConstraint,
+                            subs: [],
+                            result: 'FAIL'
+                        }]
+                        result.push(tr)
+                    })
+                })
+            }
+        }
+
+        return result
+    }
+
     this.processTrace = function (trace) {
-        var result
+        var result = null
         /*  push each trace to the matching filters bag  */
         _.each(this.filters, function (filter) {
             var res = trace.evaluateExpr(filter.condition)

@@ -128,6 +128,23 @@ app.ui.comp.panel = cs.clazz({
                 trace = app.lib.richTrace.enrich(trace)
                 cs(self, 'panel/panel').publish({ name : 'event:new-trace', args : [ trace ], capturing : false, bubbling : false, spreading : true })
             })
+
+            cs(self).subscribe({
+                name: 'sendTerminate', spool: 'created',
+                func: function () {
+                    var result = []
+                    var terminate = {id: -1, operation: 'terminate', origin: '/', originType: 'na', parameters: {}, source: '/', sourceType: 'na', time: -1}
+                    terminate = app.lib.richTrace.enrich(terminate)
+                    _.each(self.temporalMonitors, function (monitor) {
+                        result = result.concat(monitor.processTerminate(terminate))
+                    })
+                    if (result.length === 0)
+                        return
+                    _.each(result, function (item) {
+                        cs(self, 'panel/panel/checking').call('unshift', item)
+                    })
+                }
+            })
         },
         prepare: function () {
             cs(this, 'panel').value('data:tabs', [

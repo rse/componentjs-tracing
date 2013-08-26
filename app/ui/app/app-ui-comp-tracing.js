@@ -62,6 +62,12 @@ app.ui.comp.tracing = cs.clazz({
                 click: 'event:continuous',
                 state: 'state:continuously'
             }, {
+                label: 'Send Terminate',
+                icon:  'bullhorn',
+                type: 'button',
+                id: 'terminateBtn',
+                click: 'event:send-terminate'
+            }, {
                 label: 'Filter:',
                 icon:  'filter',
                 type: 'text'
@@ -131,6 +137,13 @@ app.ui.comp.tracing = cs.clazz({
 
                     reader.readAsText(f)
                     $('#tracing_upload').val('')
+                }
+            })
+
+            cs(self, 'model').observe({
+                name: 'event:send-terminate', spool: '..:visible',
+                func: function () {
+                    cs(self).publish('sendTerminate')
                 }
             })
 
@@ -207,24 +220,25 @@ app.ui.comp.tracing.model = cs.clazz({
         create: function () {
             cs(this).property('ComponentJS:state-auto-increase', true)
             cs(this).model({
-                'event:record'        : { value: false, valid: 'boolean', autoreset: true },
-                'event:load'          : { value: false, valid: 'boolean', autoreset: true },
-                'event:save'          : { value: false, valid: 'boolean', autoreset: true },
-                'event:clear'         : { value: false, valid: 'boolean', autoreset: true },
-                'event:filterKeyUp'   : { value: -1,    valid: 'number',  autoreset: true },
-                'event:check-journal' : { value: false, valid: 'boolean', autoreset: true },
-                'state:record'        : { value: true,  valid: 'boolean', store: true     },
-                'event:continuous'    : { value: false, valid: 'boolean', autoreset: true },
-                'state:continuously'  : { value: false, valid: 'boolean', store: true     },
-                'data:filter'         : { value: '',    valid: 'string', store: true      },
-                'state:filter'        : { value: '',    valid: 'string', store: true      },
-                'data:traces'         : { value: [],    valid: '[object*]'                }
+                'event:record'         : { value: false, valid: 'boolean', autoreset: true },
+                'event:load'           : { value: false, valid: 'boolean', autoreset: true },
+                'event:save'           : { value: false, valid: 'boolean', autoreset: true },
+                'event:clear'          : { value: false, valid: 'boolean', autoreset: true },
+                'event:filterKeyUp'    : { value: -1,    valid: 'number',  autoreset: true },
+                'data:filter'          : { value: '',    valid: 'string', store: true      },
+                'state:filter'         : { value: '',    valid: 'string', store: true      },
+                'event:check-journal'  : { value: false, valid: 'boolean', autoreset: true },
+                'event:send-terminate' : { value: false, valid: 'boolean', autoreset: true },
+                'state:record'         : { value: true,  valid: 'boolean', store: true     },
+                'event:continuous'     : { value: false, valid: 'boolean', autoreset: true },
+                'state:continuously'   : { value: false, valid: 'boolean', store: true     },
+                'data:traces'          : { value: [],    valid: '[object*]'                }
             })
         },
-        render: function () {
+        show: function () {
             var self = this
             cs(self).observe({
-                name: 'event:filterKeyUp', spool: 'materialized',
+                name: 'event:filterKeyUp', spool: 'visible',
                 func: function (ev, nVal) {
                     if (nVal === 27 /* ESCAPE */)
                         cs(self).value('state:filter', '')
