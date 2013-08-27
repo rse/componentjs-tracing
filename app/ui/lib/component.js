@@ -3974,8 +3974,7 @@
         _cs.hook("ComponentJS:shutdown", "none");
 
         /*  destroy singleton "<none>" component
-            (its "destroy" method will destroy while component tree!)  */
-         _cs.root.destroy();
+            (its "destroy" method was intentionally killed above!)  */
         _cs.none = null;
 
         /*  destroy singleton "<root>" component
