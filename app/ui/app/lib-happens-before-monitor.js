@@ -79,27 +79,28 @@ var monitor = function (temporalConstraint) {
         return found
     }
 
-    this.processTerminate = function (trace) {
+    this.processTerminate = function () {
         var result = []
-        var filter = this.filters[this.sequence[this.sequence.length - 1]]
-        var res = trace.evaluateExpr(filter.condition)
-        if (res) {
+        var last = _.last(self.sequence)
+        if (last === 'terminate') {
             if (_.filter(self.buffer, function (buf) { return buf.length !== 0 }).length === 0)
                 return
-            if (!predIsAvailable(filter.id) || (isLast(filter.id) && !checkLink(trace))) {
-                _.forIn(self.buffer, function (value) {
-                    _.each(value, function (tr) {
-                        tr.checks = [{
-                            constraint: temporalConstraint,
-                            subs: [],
-                            result: 'FAIL'
-                        }]
-                        result.push(tr)
-                    })
-                })
-            }
+            self.sequence.reverse()
+            self.sequence.splice(0,1)
+            var traces = self.buffer[_.last(self.sequence)]
+            _.each(traces, function (probe) {
+                if (!predIsAvailable(_.last(self.sequence)) || !checkLink(probe)) {
+                    probe.checks = [{
+                        constraint: temporalConstraint,
+                        subs: [],
+                        result: 'FAIL'
+                    }]
+                    result.push(probe)
+                }
+            })
+            self.sequence.reverse()
+            self.sequence.push(last)
         }
-
         return result
     }
 
