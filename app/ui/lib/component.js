@@ -371,8 +371,9 @@
                 target = new RegExp(source.source);
             else if (Object.prototype.toString.call(source) === "[object Array]") {
                 /*  special case: array object  */
+                var len = source.length;
                 target = [];
-                for (var i = 0; i < source.length; i++)
+                for (var i = 0; i < len; i++)
                     target.push(myself(source[i], continue_recursion)); /* RECURSION */
             }
             else {
@@ -873,7 +874,9 @@
                 /*  pass 2: ensure that no unknown fields exist
                     and that all existing fields are valid  */
                 for (var field in value) {
-                    if (!Object.hasOwnProperty.call(value, field))
+                    if (   !Object.hasOwnProperty.call(value, field) ||
+                           !Object.propertyIsEnumerable.call(value, field) ||
+                           (field === "constructor" || field === "prototype"))
                         continue;
                     if (   typeof fields[field] === "undefined" ||
                            !this.exec_spec(value[field], fields[field])) {  /*  RECURSION  */
@@ -3971,11 +3974,12 @@
         _cs.hook("ComponentJS:shutdown", "none");
 
         /*  destroy singleton "<none>" component
-            (its "destroy" method was intentionally killed above!)  */
+            (its "destroy" method will destroy while component tree!)  */
+         _cs.root.destroy();
         _cs.none = null;
 
         /*  destroy singleton "<root>" component
-            (its "destroy" method will destroy while component tree!)  */
+            (its "destroy" method will destroy whole component tree!)  */
         _cs.root.destroy();
         _cs.root = null;
 
