@@ -62,12 +62,6 @@ app.ui.comp.tracing = cs.clazz({
                 click: 'event:continuous',
                 state: 'state:continuously'
             }, {
-                label: 'Send Terminate',
-                icon:  'bullhorn',
-                type: 'button',
-                id: 'terminateBtn',
-                click: 'event:send-terminate'
-            }, {
                 label: 'Filter:',
                 icon:  'filter',
                 type: 'text'
@@ -137,13 +131,6 @@ app.ui.comp.tracing = cs.clazz({
 
                     reader.readAsText(f)
                     $('#tracing_upload').val('')
-                }
-            })
-
-            cs(self, 'model').observe({
-                name: 'event:send-terminate', spool: '..:visible',
-                func: function () {
-                    cs(self).publish('sendTerminate')
                 }
             })
 
@@ -228,7 +215,6 @@ app.ui.comp.tracing.model = cs.clazz({
                 'data:filter'          : { value: '',    valid: 'string', store: true      },
                 'state:filter'         : { value: '',    valid: 'string', store: true      },
                 'event:check-journal'  : { value: false, valid: 'boolean', autoreset: true },
-                'event:send-terminate' : { value: false, valid: 'boolean', autoreset: true },
                 'state:record'         : { value: true,  valid: 'boolean', store: true     },
                 'event:continuous'     : { value: false, valid: 'boolean', autoreset: true },
                 'state:continuously'   : { value: false, valid: 'boolean', store: true     },

@@ -37,6 +37,12 @@ app.ui.comp.checking = cs.clazz({
                 id: 'clearBtn',
                 click: 'event:clear'
             }, {
+                label: 'Send Terminate',
+                icon:  'bullhorn',
+                type: 'button',
+                id: 'terminateBtn',
+                click: 'event:send-terminate'
+            }, {
                 label: 'Filter:',
                 icon:  'filter',
                 type: 'text'
@@ -112,6 +118,13 @@ app.ui.comp.checking = cs.clazz({
             })
 
             cs(self, 'model').observe({
+                name: 'event:send-terminate', spool: '..:visible',
+                func: function () {
+                    cs(self).publish('sendTerminate')
+                }
+            })
+
+            cs(self, 'model').observe({
                 name: 'data:filter', spool: '..:visible',
                 func: function (ev, filter) {
                     cs(self, 'model/view/grid').call('filter', filter)
@@ -128,9 +141,10 @@ app.ui.comp.checking.model = cs.clazz({
             cs(this).property('ComponentJS:state-auto-increase', true)
             cs(this).model({
                 'event:clear'          : { value: false, valid: 'boolean', autoreset: true },
+                'event:send-terminate' : { value: false, valid: 'boolean', autoreset: true },
                 'event:filterKeyUp'    : { value: -1,    valid: 'number',  autoreset: true },
-                'data:filter'          : { value: '',    valid: 'string', store: true      },
-                'state:filter'         : { value: '',    valid: 'string', store: true      }
+                'state:filter'         : { value: '',    valid: 'string', store: true      },
+                'data:filter'          : { value: '',    valid: 'string', store: true      }
             })
         },
         show: function () {
