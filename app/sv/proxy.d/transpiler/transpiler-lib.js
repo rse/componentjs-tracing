@@ -28,10 +28,10 @@
             consume = -1;
 
             /*  comment (block variant)  */
-            if ((m = input.match(/^\/\*.*\*\//)) !== null) {}
+            if ((m = input.match(/^(\/\*(?:.|\r|\n|\r\n)*?\*\/)/)) !== null) {}
 
             /*  comment (EOL variant)  */
-            else if ((m = input.match(/^\/\/[^\r\n]*\r?\n/)) !== null) {}
+            else if ((m = input.match(/^(\/\/[^\r\n]*\r?\n)/)) !== null) {}
 
             /*  string (double-quoted)  */
             else if ((m = input.match(/^"(\\"|[^"])*"/)) !== null) {}
@@ -70,7 +70,7 @@
             }
 
             /*  any other prefix  */
-            else if ((m = input.match(/^([^\/"'f{}]+)/)) !== null) {}
+            else if ((m = input.match(/^([^"'f{}]+)/)) !== null) {}
 
             /*  any other character  */
             else
