@@ -133,10 +133,8 @@ app.ui.comp.panel = cs.clazz({
                 name: 'sendTerminate', spool: 'created',
                 func: function () {
                     var result = []
-                    var terminate = {id: -1, operation: 'terminate', origin: '/', originType: 'na', parameters: {}, source: '/', sourceType: 'na', time: -1}
-                    terminate = app.lib.richTrace.enrich(terminate)
                     _.each(self.temporalMonitors, function (monitor) {
-                        result = result.concat(monitor.processTerminate(terminate))
+                        result = result.concat(monitor.processTerminate())
                     })
                     if (result.length === 0)
                         return
