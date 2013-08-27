@@ -31,6 +31,12 @@ app.ui.comp.tracing = cs.clazz({
                 click: 'event:record',
                 state: 'state:record'
             }, {
+                label: 'Clear',
+                icon:  'remove-sign',
+                type: 'button',
+                id: 'clearBtn',
+                click: 'event:clear'
+            }, {
                 label: 'Load',
                 icon:  'upload-alt',
                 type: 'button',
@@ -42,12 +48,6 @@ app.ui.comp.tracing = cs.clazz({
                 id: 'saveBtn',
                 type: 'button',
                 click: 'event:save'
-            }, {
-                label: 'Clear',
-                icon:  'remove-sign',
-                type: 'button',
-                id: 'clearBtn',
-                click: 'event:clear'
             }, {
                 label: 'Check Once',
                 icon:  'ok-sign',
