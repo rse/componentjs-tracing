@@ -76,17 +76,11 @@ module.exports = {
 
                 /*  which files do we want to be injected?  */
                 var filesToInject = [
+                    path.join(__dirname, "proxy.d/3rdparty/component.js"),
                     path.join(__dirname, "proxy.d/3rdparty/socket.io.js"),
                     path.join(__dirname, "proxy.d/plugins/component.plugin.tracing.js"),
                     path.join(__dirname, "proxy.d/plugins/component.plugin.tracing-remote.js")
                 ]
-
-                /*  should the latest version of ComponentJS be injected as well?  */
-                if (opts.latestcjs) {
-                    ctx.logger.log("info", "proxy: injecting the latest ComponentJS version")
-                    filesToInject.unshift(path.join(__dirname, "proxy.d/3rdparty/component.js"))
-                    remoteResponseBody = ""
-                }
 
                 /*  now inject each file  */
                 for (var i = 0; i < filesToInject.length; i++) {
