@@ -874,7 +874,9 @@
                 /*  pass 2: ensure that no unknown fields exist
                     and that all existing fields are valid  */
                 for (var field in value) {
-                    if (!Object.hasOwnProperty.call(value, field))
+                    if (   !Object.hasOwnProperty.call(value, field) ||
+                           !Object.propertyIsEnumerable.call(value, field) ||
+                           (field === "constructor" || field === "prototype"))
                         continue;
                     if (   typeof fields[field] === "undefined" ||
                            !this.exec_spec(value[field], fields[field])) {  /*  RECURSION  */
@@ -2570,6 +2572,18 @@
             _cs.hook("ComponentJS:state-method-call", "none", info);
             result = info.func.call(info.ctx);
         }
+        if (type === "leave") {
+            for (var i = 0; i < _cs.states.length; i++) {
+                if (_cs.states[i].leave === method) {
+                    var state = _cs.states[i].state;
+                    if (comp.spooled(state)) {
+                        $cs.debug(1, "unspool: " + comp.path("/") + ": automatically unspooled " + comp.__spool[state].length + " operations on " + method);
+                        comp.unspool(state);
+                        break;
+                    }
+                }
+            }
+        }
         return result;
     };
 
@@ -3966,7 +3980,7 @@
         _cs.none = null;
 
         /*  destroy singleton "<root>" component
-            (its "destroy" method will destroy while component tree!)  */
+            (its "destroy" method will destroy whole component tree!)  */
         _cs.root.destroy();
         _cs.root = null;
 
