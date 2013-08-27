@@ -272,6 +272,7 @@ app.ui.comp.componentTree.view = cs.clazz({
                 nodeRadius: 5, fontSize: 12
             })
             var hideTooltip = function () {
+                cs(self).value('state:show-comm', false)
                 self.tooltip.transition()
                     .duration(500)
                     .style('opacity', 0)
@@ -297,10 +298,8 @@ app.ui.comp.componentTree.view = cs.clazz({
                 $(containerName + ' > svg').click(function () {
                     if (cs(self).value('state:tooltip-sticky'))
                         cs(self).value('state:tooltip-sticky', false)
-                    if (!cs(self).value('state:tooltip-sticky')) {
-                        cs(self).value('state:show-comm', false)
+                    if (!cs(self).value('state:tooltip-sticky'))
                         hideTooltip()
-                    }
                 })
 
                 /*  legend circle factory method  */
