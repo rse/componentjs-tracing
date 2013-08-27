@@ -81,6 +81,14 @@ app.sv = cs.clazz({
                 }
                 _.map(constraintSet, function (constraint) {
                     var participants = constraint.constraintBody.sequence
+                    var terminateIdx = _.indexOf(participants, 'terminate')
+                    if (terminateIdx !== -1 && terminateIdx !== participants.length - 1)
+                        result.push({
+                            constraint: constraint,
+                            column: 0,
+                            type: 'error',
+                            message: 'Terminate has to be the last participant in the sequence, if present'
+                        })
                     if (participants.length < 2)
                         result.push({
                             constraint: constraint,
@@ -96,7 +104,7 @@ app.sv = cs.clazz({
                             type: 'error',
                             message: 'The members in the sequence of a temporal constraint have to be diversely named'
                         })
-                    _.map(participants, function (participant) {
+                    _.map(_.without(participants, 'terminate'), function (participant) {
                         var filterIds = _.map(constraint.constraintBody.filters, function (filter) { return filter.id })
                         if (_.indexOf(filterIds, participant) === -1)
                             result.push({
