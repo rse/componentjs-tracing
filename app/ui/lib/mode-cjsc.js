@@ -55,7 +55,7 @@ var cjscHighlightRules = function() {
             regex: '==|!=|<=|>=|<|>|=~|!~|!|&&|\\|\\|'
         }, {
             token: 'constant',
-            regex: 'sourceType|originType|operation|origin|source|parameters'
+            regex: 'sourceType|originType|operation|origin|source|parameters|terminate'
         }, {
             token: 'constant',
             regex: 'last|first|PASS_FINAL|FAIL_FINAL|PASS|FAIL'
