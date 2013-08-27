@@ -162,6 +162,12 @@ app.ui.comp.componentTree = cs.clazz({
                 type: 'button',
                 id: 'clearBtn',
                 click: 'event:clear'
+            }, {
+                label: 'Communications',
+                icon:  'exchange',
+                type: 'button',
+                id: 'commBtn',
+                click: 'event:show-comm'
             }]
 
             cs(this, 'model/view/toolbar').call('initialize', toolbarItems)
@@ -179,6 +185,8 @@ app.ui.comp.componentTree.model = cs.clazz({
                 'state:cmd'            : { value: 'cs(\'/ui\').state(\'created\')', valid: 'string',  store: true     },
                 'state:tooltip-sticky' : { value: false,                            valid: 'boolean'                  },
                 'event:clear'          : { value: false,                            valid: 'boolean', autoreset: true },
+                'event:show-comm'      : { value: false,                            valid: 'boolean', autoreset: true },
+                'state:show-comm'      : { value: false,                            valid: 'boolean'                  },
                 'event:record'         : { value: false,                            valid: 'boolean', autoreset: true },
                 'state:record'         : { value: false,                            valid: 'boolean', store: true     }
             })
@@ -287,8 +295,10 @@ app.ui.comp.componentTree.view = cs.clazz({
                     .attr('transform', 'translate(0,30)')
 
                 $(containerName + ' > svg').click(function () {
-                    if (cs(self).value('state:tooltip-sticky')) {
+                    if (cs(self).value('state:tooltip-sticky'))
                         cs(self).value('state:tooltip-sticky', false)
+                    if (!cs(self).value('state:tooltip-sticky')) {
+                        cs(self).value('state:show-comm', false)
                         hideTooltip()
                     }
                 })
@@ -330,6 +340,68 @@ app.ui.comp.componentTree.view = cs.clazz({
             $('#tree > #legend').html($.markup('component-tree-legend'))
             setup()
 
+            var lineFunc = d3.svg.line()
+                    .x(function (d) { return d.x })
+                    .y(function (d) { return d.y })
+                    .interpolate('basis')
+
+            var showNodeConnectivity = function (node) {
+                _.each(node.outgoing, function (out) {
+                    var isLeft = function () { return node.x > out.x }
+                    var isRight = function () { return node.x < out.x }
+                    var isAbove = function () { return node.y < out.y }
+                    var isBelow = function () { return node.y > out.y }
+                    var hEqual = function () { return node.y === out.y }
+                    var vEqual = function () { return node.x === out.x }
+
+                    /*  set the supporting point to the middle of delta x and delta y => linear curve  */
+                    var xSupp = (node.x + out.x) / 2
+                    var ySupp = -((node.y + out.y) / 2) + size.height - 40
+
+                    if (isAbove() && !vEqual() || hEqual())
+                        ySupp += 25
+                    else if (isBelow() && !vEqual())
+                        ySupp -= 25
+                    if (isLeft() && !hEqual() || vEqual())
+                        xSupp -= 25
+                    else if (isRight() && !hEqual())
+                        xSupp += 25
+
+                    var xStart = node.x
+                    var yStart = (-node.y + size.height - 40)
+                    var xEnd = out.x
+                    var yEnd = (-out.y + size.height - 40)
+                    var offset = options.nodeRadius / 2 + 1
+
+                    if (isLeft())
+                        xEnd += offset
+                    if (isLeft() || vEqual())
+                        xStart -= (offset + 1)
+                    if (isAbove() || hEqual())
+                        yStart -= offset
+                    if (isRight())
+                        xStart += (offset + 1)
+                    else if (isRight() || vEqual())
+                        xEnd -= offset
+                    if (isAbove() && isRight())
+                        yEnd += (offset + 1)
+                    else if (isAbove())
+                        yEnd += offset
+                    else if (isBelow() || hEqual)
+                        yEnd -= offset
+
+                    var lineData = [ { x: xStart, y: yStart },
+                                     { x: xSupp, y: ySupp },
+                                     { x: xEnd, y: yEnd } ]
+                    self.layoutRoot.append('path')
+                                    .attr('d', lineFunc(lineData))
+                                    .attr('class', 'hover-line')
+                                    .transition()
+                                    .duration(200)
+                                    .style('opacity', 1)
+                })
+            }
+
             var update = function (root) {
                 if (!root) {
                     self.layoutRoot.selectAll('g').remove()
@@ -345,10 +417,6 @@ app.ui.comp.componentTree.view = cs.clazz({
                         'V' + (-d.source.y + size.height - 40 - margin) + 'H' + d.target.x +
                         'V' + (-d.target.y + size.height - 40 - options.nodeRadius )
                 }
-                var lineFunc = d3.svg.line()
-                                        .x(function (d) { return d.x })
-                                        .y(function (d) { return d.y })
-                                        .interpolate('basis')
 
                 /*  remove the exiting nodes  */
                 self.layoutRoot.selectAll('g')
@@ -443,60 +511,7 @@ app.ui.comp.componentTree.view = cs.clazz({
                             .style('left', x + 'px')
                             .style('top', -y + size.height + 5 + 'px')
                         self.layoutRoot.selectAll('.hover-line').remove()
-                        _.each(d.outgoing, function (out) {
-                            var isLeft = function () { return d.x > out.x }
-                            var isRight = function () { return d.x < out.x }
-                            var isAbove = function () { return d.y < out.y }
-                            var isBelow = function () { return d.y > out.y }
-                            var hEqual = function () { return d.y === out.y }
-                            var vEqual = function () { return d.x === out.x }
-
-                            /*  set the supporting point to the middle of delta x and delta y => linear curve  */
-                            var xSupp = (d.x + out.x) / 2
-                            var ySupp = -((d.y + out.y) / 2) + size.height - 40
-
-                            if (isAbove() && !vEqual() || hEqual())
-                                ySupp += 25
-                            else if (isBelow() && !vEqual())
-                                ySupp -= 25
-                            if (isLeft() && !hEqual() || vEqual())
-                                xSupp -= 25
-                            else if (isRight() && !hEqual())
-                                xSupp += 25
-
-                            var xStart = d.x
-                            var yStart = (-d.y + size.height - 40)
-                            var xEnd = out.x
-                            var yEnd = (-out.y + size.height - 40)
-                            var offset = options.nodeRadius / 2 + 1
-
-                            if (isLeft())
-                                xEnd += offset
-                            if (isLeft() || vEqual())
-                                xStart -= (offset + 1)
-                            if (isAbove() || hEqual())
-                                yStart -= offset
-                            if (isRight())
-                                xStart += (offset + 1)
-                            else if (isRight() || vEqual())
-                                xEnd -= offset
-                            if (isAbove() && isRight())
-                                yEnd += (offset + 1)
-                            else if (isAbove())
-                                yEnd += offset
-                            else if (isBelow() || hEqual)
-                                yEnd -= offset
-
-                            var lineData = [ { x: xStart, y: yStart },
-                                             { x: xSupp, y: ySupp },
-                                             { x: xEnd, y: yEnd } ]
-                            self.layoutRoot.append('path')
-                                            .attr('d', lineFunc(lineData))
-                                            .attr('class', 'hover-line')
-                                            .transition()
-                                            .duration(200)
-                                            .style('opacity', 1)
-                        })
+                        showNodeConnectivity(d)
                     })
                     .on('mouseout', function () {
                         if (!cs(self).value('state:tooltip-sticky'))
@@ -538,6 +553,17 @@ app.ui.comp.componentTree.view = cs.clazz({
                 touch: true,
                 func: function (ev, tree) {
                     update(tree)
+                }
+            })
+
+            cs(self).observe({
+                name: 'event:show-comm', spool: 'visible',
+                func: function () {
+                    cs(self).value('state:show-comm', !cs(self).value('state:show-comm'))
+                    if (cs(self).value('state:show-comm'))
+                        _.each(self.nodes, function (node) { showNodeConnectivity(node) })
+                    else
+                        hideTooltip()
                 }
             })
 
