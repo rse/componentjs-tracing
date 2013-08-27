@@ -43,6 +43,7 @@
             else if ((m = input.match(/^\/(\\\/|[^\/])*\//)) !== null) {}
 
             /*  life-cycle functions  */
+            //FIXME - take life-cycle methods from _cs.state
             else if (output.match(/(?:prepare|cleanup|create|destroy|render|release|show|hide):\s*$/) !== null) {
                 m = input.match(/^function\s*\(.*?\)\s*\{/)
             }
