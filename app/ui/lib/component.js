@@ -2783,12 +2783,12 @@
                 else
                     /*  automatically unspool actions on spool named like the leaving state  */
                     if (comp.spooled(state)) {
-                        comp.unspool(state);
                         $cs.debug(1,
                             "unspool: " + comp.path("/") + ": automatically unspooled " +
                             comp.__spool[state].length + " operation" +
                             (comp.__spool[state].length > 1 ? "s" : "") + " on " + leave
                         );
+                        comp.unspool(state);
                     }
 
 
