@@ -79,7 +79,7 @@ app.ui.comp.componentTree = cs.clazz({
                     }
                     if (trace.operation === 'create') {
                         var matches = trace.origin.match(nameRegex)
-                        var newNode = { name: matches[1], path: trace.origin, type: trace.originType, state: 'created', children: [], markers: _.keys(trace.parameters.markers), outgoing: [] }
+                        var newNode = { name: matches[1], path: trace.origin, type: trace.originType, state: 'created', children: [], markers: _.keys(trace.parameters.markers), outgoing: {} }
                         var insPt = trace.origin.substring(0, trace.origin.length - matches[0].length)
                         if (insPt.length === 0)
                             insPt = '/'
@@ -116,8 +116,13 @@ app.ui.comp.componentTree = cs.clazz({
                         cs(self).call('remove', trace.origin)
                     if (trace.origin !== trace.source) {
                         node = self.findInTree(tree, trace.source)[0]
-                        if (node)
-                            node.outgoing.push(self.findInTree(tree, trace.origin)[0])
+                        if (node) {
+                            var target = self.findInTree(tree, trace.origin)[0]
+                            if (node.outgoing[target.path])
+                                node.outgoing[target.path].count += 1
+                            else
+                                node.outgoing[target.path] = { node: target, count: 1}
+                        }
                     }
                 }
             })
@@ -345,7 +350,8 @@ app.ui.comp.componentTree.view = cs.clazz({
                     .interpolate('basis')
 
             var showNodeConnectivity = function (node) {
-                _.each(node.outgoing, function (out) {
+                _.forIn(node.outgoing, function (value) {
+                    var out = value.node
                     var isLeft = function () { return node.x > out.x }
                     var isRight = function () { return node.x < out.x }
                     var isAbove = function () { return node.y < out.y }
@@ -392,9 +398,11 @@ app.ui.comp.componentTree.view = cs.clazz({
                     var lineData = [ { x: xStart, y: yStart },
                                      { x: xSupp, y: ySupp },
                                      { x: xEnd, y: yEnd } ]
+                    var strokeWidth = Math.min(Math.ceil(value.count / 10), 10)
                     self.layoutRoot.append('path')
                                     .attr('d', lineFunc(lineData))
                                     .attr('class', 'hover-line')
+                                    .attr('stroke-width', strokeWidth)
                                     .transition()
                                     .duration(200)
                                     .style('opacity', 1)
