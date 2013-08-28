@@ -98,8 +98,6 @@ var options = [
         help: "Regex matching the urls of the components files of the SPA", helpArg: "REGEX" },
     {   names: [ "proxyaddr", "A" ], type: "string", "default": "127.0.0.1",
         help: "IP address to listen", helpArg: "ADDRESS" },
-    {   names: [ "latestcjs", "lcjs" ], type: "bool", "default": false,
-        help: "Overwrites applications ComponentJS file", helpArg: "BOOL" },
     {   names: [ "proxyport", "P" ], type: "integer", "default": 8129,
         help: "TCP port to listen", helpArg: "PORT" },
     {   names: [ "proxyfwd", "F" ], type: "string", "default": "",

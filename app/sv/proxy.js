@@ -76,7 +76,6 @@ module.exports = {
 
                 /*  which files do we want to be injected?  */
                 var filesToInject = [
-                    path.join(__dirname, "proxy.d/3rdparty/component.js"),
                     path.join(__dirname, "proxy.d/3rdparty/socket.io.js"),
                     path.join(__dirname, "proxy.d/plugins/component.plugin.tracing.js"),
                     path.join(__dirname, "proxy.d/plugins/component.plugin.tracing-remote.js")
