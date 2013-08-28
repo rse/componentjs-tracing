@@ -2572,18 +2572,6 @@
             _cs.hook("ComponentJS:state-method-call", "none", info);
             result = info.func.call(info.ctx);
         }
-        if (type === "leave") {
-            for (var i = 0; i < _cs.states.length; i++) {
-                if (_cs.states[i].leave === method) {
-                    var state = _cs.states[i].state;
-                    if (comp.spooled(state)) {
-                        $cs.debug(1, "unspool: " + comp.path("/") + ": automatically unspooled " + comp.__spool[state].length + " operations on " + method);
-                        comp.unspool(state);
-                        break;
-                    }
-                }
-            }
-        }
         return result;
     };
 
@@ -2750,8 +2738,8 @@
                             $cs.debug(1,
                                 "state: " + comp.path("/") + ": transition (decrease) " +
                                 "REJECTED BY CHILD COMPONENT (" + children[i].path("/") + "): " +
-                                "@" + _cs.states[comp.__state - 1].state + " <--(" + leave + ")-- " +
-                                "@" + _cs.states[comp.__state].state + ": SUSPENDING CURRENT TRANSITION RUN"
+                                "@" + state_lower + " <--(" + leave + ")-- " +
+                                "@" + state + ": SUSPENDING CURRENT TRANSITION RUN"
                             );
                             return;
                         }
@@ -2762,22 +2750,22 @@
                 if (_cs.isdefined(comp.__state_guards[leave])) {
                     $cs.debug(1,
                         "state: " + comp.path("/") + ": transition (decrease) REJECTED BY LEAVE GUARD: " +
-                        "@" + _cs.states[comp.__state - 1].state + " <--(" + leave + ")-- " +
-                        "@" + _cs.states[comp.__state].state + ": SUSPENDING CURRENT TRANSITION RUN"
+                        "@" + state_lower + " <--(" + leave + ")-- " +
+                        "@" + state + ": SUSPENDING CURRENT TRANSITION RUN"
                     );
                     return;
                 }
                 comp.__state--;
                 $cs.debug(1,
                     "state: " + comp.path("/") + ": transition (decrease): " +
-                    "@" + _cs.states[comp.__state].state + " <--(" + leave + ")-- " +
-                    "@" + _cs.states[comp.__state + 1].state
+                    "@" + state_lower + " <--(" + leave + ")-- " +
+                    "@" + state
                 );
                 _cs.hook("ComponentJS:state-invalidate", "none", "states");
                 _cs.hook("ComponentJS:state-change", "none");
 
                 /*  execute pending spooled actions  */
-                name = "ComponentJS:state:" + _cs.states[comp.__state + 1].state + ":leave";
+                name = "ComponentJS:state:" + state + ":leave";
                 if (comp.spooled(name))
                     comp.unspool(name);
 
@@ -2786,12 +2774,23 @@
                     /*  FULL STOP: state leave method rejected state transition  */
                     $cs.debug(1,
                         "state: " + comp.path("/") + ": transition (decrease) REJECTED BY LEAVE METHOD: " +
-                        "@" + _cs.states[comp.__state].state + " <--(" + leave + ")-- " +
-                        "@" + _cs.states[comp.__state + 1].state + ": SUSPENDING CURRENT TRANSITION RUN"
+                        "@" + state_lower + " <--(" + leave + ")-- " +
+                        "@" + state + ": SUSPENDING CURRENT TRANSITION RUN"
                     );
                     comp.__state++;
                     return;
                 }
+                else
+                    /*  automatically unspool actions on spool named like the leaving state  */
+                    if (comp.spooled(state)) {
+                        comp.unspool(state);
+                        $cs.debug(1,
+                            "unspool: " + comp.path("/") + ": automatically unspooled " +
+                            comp.__spool[state].length + " operation" +
+                            (comp.__spool[state].length > 1 ? "s" : "") + " on " + leave
+                        );
+                    }
+
 
                 /*  notify subscribers about new state  */
                 comp.publish({
@@ -2809,8 +2808,8 @@
                 if (_direction === "upward-and-downward" || _direction === "upward") {
                     if (comp.parent() !== null) {
                         if (comp.parent().state_compare(state_lower) > 0) {
-                            if (   comp.parent().state_auto_decrease() ||
-                                   comp.parent().property("ComponentJS:state-auto-decrease") === true) {
+                            if (   comp.parent().state_auto_decrease()
+                                || comp.parent().property("ComponentJS:state-auto-decrease") === true) {
                                 _cs.state_progression_run(comp.parent(), state_lower, "upward"); /*  RECURSION  */
                                 if (comp.parent().state_compare(state_lower) > 0) {
                                     /*  enqueue state transition for parent  */
