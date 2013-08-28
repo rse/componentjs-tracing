@@ -58,8 +58,8 @@ $(document).ready(function () {
         /*  fire up application components  */
         cs.create('/sv', app.sv)
         cs('/sv').state('visible', function () {
-            cs.create('/ui/panel', {}, app.ui.comp.panel)
-            cs('/ui/panel').state(typeof document !== 'undefined' ? 'visible' : 'prepared')
+            cs.create('/panel', app.ui.comp.panel)
+            cs('/panel').state(typeof document !== 'undefined' ? 'visible' : 'prepared')
         })
     })
 })
