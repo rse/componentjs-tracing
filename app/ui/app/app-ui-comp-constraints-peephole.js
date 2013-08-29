@@ -28,12 +28,25 @@ app.ui.comp.constraints.peephole = cs.clazz({
                     var result = cs('/sv').call('parsePeepholeConstraintset', content)
                     if (result.success) {
                         ev.target().call('displaySyntacticError', [])
+                        cs(self, 'model').value('state:status', '')
 
                         /*  check for semantic correctness in temporal constraints  */
                         var errors = cs('/sv').call('validatePeepholeConstraints', result.constraints)
 
-                        if (errors.length !== 0)
+                        if (errors.length !== 0) {
                             ev.target().call('displaySemanticError', errors)
+                            var warningCnt = 0
+                            var errorCnt = 0
+                            _.each(errors, function (err) {
+                                if (err.type === 'error')
+                                    errorCnt++
+                                else
+                                    warningCnt++
+                            })
+                            var message = 'You have ' + (errorCnt > 0 ? errorCnt + ' semantic error' + (errorCnt > 1 ? 's' : '') : '')
+                            message += (warningCnt > 0 ? ' and ' + warningCnt + ' semantic warning' + (warningCnt > 1 ? 's' : '') : '')
+                            cs(self, 'model').value('state:status', message)
+                        }
                         else {
                             var constraints = []
                             _.each(['standard'].concat(cs(self, 'model').value('data:tabs')), function (tab) {
@@ -47,6 +60,7 @@ app.ui.comp.constraints.peephole = cs.clazz({
                         result.error.type = 'error'
                         result.error.message = 'Expected ' + result.error.expected.join(' or ') + ' but "' + result.error.found + '" found.'
                         ev.target().call('displaySyntacticError', [ result.error ])
+                        cs(self, 'model').value('state:status', result.error.message)
                     }
                 }
             })
@@ -194,7 +208,8 @@ app.ui.comp.constraints.peephole.model = cs.clazz({
                 'event:default' : { value: false, valid: 'boolean', autoreset: true },
                 'event:save'    : { value: false, valid: 'boolean', autoreset: true },
                 'state:custom'  : { value: 1,     valid: 'number',  store: true     },
-                'data:tabs'     : { value: [],    valid: '[string*]', store: true   }
+                'data:tabs'     : { value: [],    valid: '[string*]', store: true   },
+                'state:status'  : { value: '',    valid: 'string',                  }
             })
         }
     }
@@ -219,6 +234,15 @@ app.ui.comp.constraints.peephole.view = cs.clazz({
             cs(this).plug({
                 object: content,
                 spool: 'materialized'
+            })
+        },
+        show: function () {
+            var self = this
+            cs(self).observe({
+                name: 'sate:status', spool: 'visible',
+                func: function (ev, status) {
+                    cs(self).publish('event:status-message', status)
+                }
             })
         }
     }

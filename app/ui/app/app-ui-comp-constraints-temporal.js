@@ -29,12 +29,25 @@ app.ui.comp.constraints.temporal = cs.clazz({
                     var result = cs('/sv').call('parseTemporalConstraintset', content)
                     if (result.success) {
                         cs(self, 'model/view/constraintset').call('displaySyntacticError', [])
+                        cs(self, 'model').value('state:status', '')
 
                         /*  check for semantic correctness in temporal constraints  */
                         var errors = cs('/sv').call('validateTemporalConstraints', result.constraints)
 
-                        if (errors.length !== 0)
+                        if (errors.length !== 0) {
                             cs(self, 'model/view/constraintset').call('displaySemanticError', errors)
+                            var warningCnt = 0
+                            var errorCnt = 0
+                            _.each(errors, function (err) {
+                                if (err.type === 'error')
+                                    errorCnt++
+                                else
+                                    warningCnt++
+                            })
+                            var message = 'You have ' + (errorCnt > 0 ? errorCnt + ' semantic error' + (errorCnt > 1 ? 's' : '') : '')
+                            message += (warningCnt > 0 ? ' and ' + warningCnt + ' semantic warning' + (warningCnt > 1 ? 's' : '') : '')
+                            cs(self, 'model').value('state:status', message)
+                        }
                         else
                             cs(self).publish('temporalConstraintSetChanged', result.constraints)
                     }
@@ -43,6 +56,7 @@ app.ui.comp.constraints.temporal = cs.clazz({
                         result.error.type = 'error'
                         result.error.message = 'Expected ' + result.error.expected.join(' or ') + ' but "' + result.error.found + '" found.'
                         cs(self, 'model/view/constraintset').call('displaySyntacticError', [ result.error ])
+                        cs(self, 'model').value('state:status', result.error.message)
                     }
                 }
             })
@@ -132,7 +146,8 @@ app.ui.comp.constraints.temporal.model = cs.clazz({
             cs(self).model({
                 'event:load'    : { value: false, valid: 'boolean', autoreset: true },
                 'event:default' : { value: false, valid: 'boolean', autoreset: true },
-                'event:save'   :  { value: false, valid: 'boolean', autoreset: true }
+                'event:save'    : { value: false, valid: 'boolean', autoreset: true },
+                'state:status'  : { value: '',    valid: 'string',                  }
             })
         }
     }
@@ -157,6 +172,15 @@ app.ui.comp.constraints.temporal.view = cs.clazz({
             cs(this).plug({
                 object: content,
                 spool: 'materialized'
+            })
+        },
+        show: function () {
+            var self = this
+            cs(self).observe({
+                name: 'sate:status', spool: 'visible',
+                func: function (ev, status) {
+                    cs(self).publish('event:status-message', status)
+                }
             })
         }
     }
