@@ -434,6 +434,7 @@ app.ui.comp.componentTree.view = cs.clazz({
             }
 
             var update = function (root) {
+                hideTooltip()
                 if (!root) {
                     self.layoutRoot.selectAll('g').remove()
                     self.layoutRoot.selectAll('path').remove()
