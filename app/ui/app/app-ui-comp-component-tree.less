@@ -48,7 +48,14 @@
     .hover-line {
         fill:               none;
         opacity:            0;
-        stroke:             #408edc;
+
+        &.default {
+            stroke:         #408edc;
+        }
+
+        &.error {
+            stroke:         #cc3333;        
+        }
     }
 
     circle {
@@ -71,16 +78,21 @@
         }
 
         &.service {
-            stroke:         #ffffff;
+            stroke:         #4a4a4a;
             fill:           #666666;
+        }
+
+        &.error {
+            stroke:         #8f2424;
+            fill:           #cc3333;
         }
     }
 
     #legend {
-        height:             73px;
+        height:             90px;
         width:              80px;
         position:           absolute;
-        bottom:             30px;
+        bottom:             5px;
         padding:            5px;
         border:             1px solid;
         right:              5px;
@@ -102,6 +114,7 @@
         position:           absolute;
         text-align:         left;
         width:              auto;
+        z-index:            999;
         max-width:          600px;
         height:             auto;
         padding:            5px;

@@ -28,6 +28,26 @@ app.ui.comp.componentTree = cs.clazz({
                     return self.findInTree(cs(self, 'model').value('data:tree'), path)
                 }
             })
+
+            cs(self).register({
+                name: 'forbiddenCom', spool: 'created',
+                func: function (trace) {
+                    var tree = cs(self, 'model').value('data:tree')
+                    var node = self.findInTree(tree, trace.source)[0]
+                    if (trace.origin !== trace.source) {
+                        if (node) {
+                            var target = self.findInTree(tree, trace.origin)[0]
+                            if (node.outgoing[target.path])
+                                node.outgoing[target.path].count += 1
+                            else
+                                node.outgoing[target.path] = { node: target, count: 1, forbidden: true}
+                        }
+                    }
+                    else
+                        node.type = 'E'
+                    cs(self, 'model').value('data:tree', tree, true)
+                }
+            })
         },
         findInTree: function (tree, path) {
             var self = this
@@ -79,7 +99,9 @@ app.ui.comp.componentTree = cs.clazz({
                     }
                     if (trace.operation === 'create') {
                         var matches = trace.origin.match(nameRegex)
-                        var newNode = { name: matches[1], path: trace.origin, type: trace.originType, state: 'created', children: [], markers: _.keys(trace.parameters.markers), outgoing: {} }
+                        var newNode = { name: matches[1], path: trace.origin, type: trace.originType, state: 'created',
+                            children: [], markers: _.keys(trace.parameters.markers), outgoing: {}
+                        }
                         var insPt = trace.origin.substring(0, trace.origin.length - matches[0].length)
                         if (insPt.length === 0)
                             insPt = '/'
@@ -121,7 +143,7 @@ app.ui.comp.componentTree = cs.clazz({
                             if (node.outgoing[target.path])
                                 node.outgoing[target.path].count += 1
                             else
-                                node.outgoing[target.path] = { node: target, count: 1}
+                                node.outgoing[target.path] = { node: target, count: 1, forbidden: false}
                         }
                     }
                 }
@@ -259,7 +281,6 @@ app.ui.comp.componentTree.view = cs.clazz({
                 .style('opacity', 0)
             self.legend = d3.select('#tree').append('div')
                 .attr('id', 'legend')
-                .style('opacity', 1)
 
             $('#console', content).click(function () {
                 var cmd = prompt('Please enter a command', cs(self).value('state:cmd'))
@@ -321,6 +342,7 @@ app.ui.comp.componentTree.view = cs.clazz({
                 drawLegendItems('controller')
                 drawLegendItems('model')
                 drawLegendItems('service')
+                drawLegendItems('error')
             }
 
             var handleResize = function () {
@@ -359,9 +381,15 @@ app.ui.comp.componentTree.view = cs.clazz({
                     var hEqual = function () { return node.y === out.y }
                     var vEqual = function () { return node.x === out.x }
 
+                    var xStart = 0//node.x
+                    var yStart = 0//(-node.y + size.height - 40)
+                    var xEnd = out.x - node.x
+                    var yEnd = node.y - out.y //(-out.y + size.height - 40)
+                    var offset = options.nodeRadius / 2 + 1
+
                     /*  set the supporting point to the middle of delta x and delta y => linear curve  */
-                    var xSupp = (node.x + out.x) / 2
-                    var ySupp = -((node.y + out.y) / 2) + size.height - 40
+                    var xSupp = (xStart + xEnd) / 2
+                    var ySupp = ((yStart + yEnd) / 2)// + size.height - 40
 
                     if (isAbove() && !vEqual() || hEqual())
                         ySupp += 25
@@ -371,12 +399,6 @@ app.ui.comp.componentTree.view = cs.clazz({
                         xSupp -= 25
                     else if (isRight() && !hEqual())
                         xSupp += 25
-
-                    var xStart = node.x
-                    var yStart = (-node.y + size.height - 40)
-                    var xEnd = out.x
-                    var yEnd = (-out.y + size.height - 40)
-                    var offset = options.nodeRadius / 2 + 1
 
                     if (isLeft())
                         xEnd += offset
@@ -399,13 +421,15 @@ app.ui.comp.componentTree.view = cs.clazz({
                                      { x: xSupp, y: ySupp },
                                      { x: xEnd, y: yEnd } ]
                     var strokeWidth = Math.min(Math.ceil(value.count / 10), 10)
-                    self.layoutRoot.append('path')
-                                    .attr('d', lineFunc(lineData))
-                                    .attr('class', 'hover-line')
-                                    .attr('stroke-width', strokeWidth)
-                                    .transition()
-                                    .duration(200)
-                                    .style('opacity', 1)
+                    self.layoutRoot.selectAll('g')
+                        .data([node], function (d) { return d.path })
+                        .insert('path', 'circle')
+                            .attr('d', lineFunc(lineData))
+                            .attr('class', 'hover-line ' + (value.forbidden ? 'error' : 'default'))
+                            .attr('stroke-width', strokeWidth)
+                            .transition()
+                            .duration(200)
+                            .style('opacity', 1)
                 })
             }
 
@@ -417,6 +441,7 @@ app.ui.comp.componentTree.view = cs.clazz({
                 }
 
                 self.nodes = self.tree.nodes(root)
+                cs(self).publish('event:status-message', self.nodes.length + ' component' + (self.nodes.length > 1 ? 's' : ''))
                 var links = self.tree.links(self.nodes)
                 var margin = 20
                 var elbow = function (d) {
@@ -429,8 +454,8 @@ app.ui.comp.componentTree.view = cs.clazz({
                 self.layoutRoot.selectAll('g')
                     .data(self.nodes, function (d) { return d.path })
                     .exit()
-                    //.transition()
-                    //.duration(400)
+                    .transition()
+                    .duration(500)
                     .style('opacity', 0)
                     .remove()
 
@@ -438,8 +463,8 @@ app.ui.comp.componentTree.view = cs.clazz({
                 self.layoutRoot.selectAll('path.link')
                     .data(links, function (d) { return d.source.path + '#' + d.target.path })
                     .exit()
-                    //.transition()
-                    //.duration(400)
+                    .transition()
+                    .duration(500)
                     .style('opacity', 0)
                     .remove()
 
@@ -454,7 +479,7 @@ app.ui.comp.componentTree.view = cs.clazz({
                 self.layoutRoot.selectAll('path.link')
                     .data(links, function (d) { return d.source.path + '#' + d.target.path })
                     .enter()
-                    .append('svg:path')
+                    .insert('svg:path', 'g')
                     //.transition()
                     //.delay(700)
                     .attr('class', 'link')
@@ -465,6 +490,19 @@ app.ui.comp.componentTree.view = cs.clazz({
                     .data(self.nodes, function (d) { return d.path })
                     //.transition()
                     //.delay(600)
+                    .attr('class', function (d) {
+                        if (!d.type)
+                            return 'default'
+                        else if (d.type === 'V')
+                            return 'view'
+                        else if (d.type === 'M')
+                            return 'model'
+                        else if (d.type === 'S')
+                            return 'service'
+                        else if (d.type === 'E')
+                            return 'error'
+                        return 'default'
+                    })
                     .attr('transform', function (d) {
                         return 'translate(' + d.x + ',' + (-d.y + size.height - 40) + ')'
                     })
@@ -539,6 +577,8 @@ app.ui.comp.componentTree.view = cs.clazz({
                             return 'model'
                         else if (d.type === 'S')
                             return 'service'
+                        else if (d.type === 'E')
+                            return 'error'
                         return 'default'
                     })
                     .attr('r', options.nodeRadius)
@@ -559,6 +599,8 @@ app.ui.comp.componentTree.view = cs.clazz({
                 name: 'data:tree', spool: 'visible',
                 touch: true,
                 func: function (ev, tree) {
+                    if (tree.children.length === 0)
+                        hideTooltip()
                     update(tree)
                 }
             })

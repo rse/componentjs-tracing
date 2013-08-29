@@ -87,6 +87,8 @@ app.ui.comp.panel = cs.clazz({
                     if (resTraces.length === 0)
                         return
                     cs(self, 'panel/panel/checking').call('unshift', resTraces[0])
+                    //FIXME - cs(self, 'panel/panel/componentTree').call('forbiddenCom', item) here, too? only if not(UNCLASSIFIED) ?
+                    //FIXME - should the result be one trace? why push in line 85? -> monitors should just add new checks in the single trace object
                 }
             })
 
@@ -136,10 +138,9 @@ app.ui.comp.panel = cs.clazz({
                     _.each(self.temporalMonitors, function (monitor) {
                         result = result.concat(monitor.processTerminate())
                     })
-                    if (result.length === 0)
-                        return
                     _.each(result, function (item) {
                         cs(self, 'panel/panel/checking').call('unshift', item)
+                        cs(self, 'panel/panel/componentTree').call('forbiddenCom', item)
                     })
                 }
             })
