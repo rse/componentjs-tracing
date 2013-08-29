@@ -401,8 +401,8 @@ app.ui.comp.componentTree.view = cs.clazz({
                         xSupp += 25
 
                     if (isLeft())
-                        xEnd += offset
-                    if (isLeft() || vEqual())
+                        xEnd += (offset + 1)
+                    if ((isLeft() && !hEqual()) || vEqual())
                         xStart -= (offset + 1)
                     if (isAbove() || hEqual())
                         yStart -= offset
@@ -414,7 +414,7 @@ app.ui.comp.componentTree.view = cs.clazz({
                         yEnd += (offset + 1)
                     else if (isAbove())
                         yEnd += offset
-                    else if (isBelow() || hEqual)
+                    else if (isBelow() || hEqual())
                         yEnd -= offset
 
                     var lineData = [ { x: xStart, y: yStart },
@@ -550,7 +550,7 @@ app.ui.comp.componentTree.view = cs.clazz({
                             .style('opacity', 0.9)
                             .style('pointer-events', 'all')
                         var x = d.x + tooltipWidth + 10 < size.width ? d.x + 7 : d.x - tooltipWidth - 7
-                        var y = d.y - tooltipHeight - 10 > 0 ? d.y - 10 : d.y + tooltipHeight - 50
+                        var y = d.y - tooltipHeight - 10 > 0 ? d.y - 5 : d.y + tooltipHeight + 25
 
                         self.tooltip
                             .style('left', x + 'px')
