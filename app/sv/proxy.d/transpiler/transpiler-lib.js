@@ -43,7 +43,7 @@
             else if ((m = input.match(/^\/(\\\/|[^\/])*\//)) !== null) {}
 
             /*  life-cycle functions  */
-            //FIXME - take life-cycle methods from _cs.state
+            //FIXME - take life-cycle methods from _cs.state : RSE - define these methods in the componentjs-tracing.ini
             else if (output.match(/(?:prepare|cleanup|create|destroy|render|release|show|hide):\s*$/) !== null) {
                 m = input.match(/^function\s*\(.*?\)\s*\{/)
             }

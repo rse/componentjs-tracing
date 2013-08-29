@@ -177,7 +177,7 @@ app.ui.comp.constraints.temporal.view = cs.clazz({
         show: function () {
             var self = this
             cs(self).observe({
-                name: 'sate:status', spool: 'visible',
+                name: 'state:status', spool: 'visible',
                 func: function (ev, status) {
                     cs(self).publish('event:status-message', status)
                 }

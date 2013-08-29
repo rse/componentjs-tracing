@@ -194,6 +194,7 @@ app.ui.comp.componentTree = cs.clazz({
                 icon:  'exchange',
                 type: 'button',
                 id: 'commBtn',
+                state: 'state:show-comm',
                 click: 'event:show-comm'
             }]
 
@@ -206,16 +207,24 @@ app.ui.comp.componentTree.model = cs.clazz({
     mixin: [ cs.marker.model ],
     protos: {
         create: function () {
-            cs(this).property('ComponentJS:state-auto-increase', true)
-            cs(this).model({
+            var self = this
+            cs(self).property('ComponentJS:state-auto-increase', true)
+            cs(self).model({
                 'data:tree'            : { value: null,                             valid: 'object'                   },
                 'state:cmd'            : { value: 'cs(\'/ui\').state(\'created\')', valid: 'string',  store: true     },
                 'state:tooltip-sticky' : { value: false,                            valid: 'boolean'                  },
                 'event:clear'          : { value: false,                            valid: 'boolean', autoreset: true },
                 'event:show-comm'      : { value: false,                            valid: 'boolean', autoreset: true },
-                'state:show-comm'      : { value: false,                            valid: 'boolean'                  },
+                'state:show-comm'      : { value: false,                            valid: 'boolean', store: true     },
                 'event:record'         : { value: false,                            valid: 'boolean', autoreset: true },
                 'state:record'         : { value: false,                            valid: 'boolean', store: true     }
+            })
+
+            cs(self).observe({
+                name: 'event:show-comm', spool: 'created',
+                func: function () {
+                    cs(self).value('state:show-comm', !cs(self).value('state:show-comm'))
+                }
             })
         },
         root: function () {
@@ -298,17 +307,30 @@ app.ui.comp.componentTree.view = cs.clazz({
                 nodeRadius: 5, fontSize: 12
             })
             var hideTooltip = function () {
-                cs(self).value('state:show-comm', false)
                 self.tooltip.transition()
                     .duration(500)
                     .style('opacity', 0)
                     .style('pointer-events', 'none')
-                self.layoutRoot.selectAll('.hover-line')
-                    .transition()
-                    .duration(500)
-                    .style('opacity', 0)
-                    .remove()
+                if (!cs(self).value('state:show-comm'))
+                    self.layoutRoot.selectAll('.hover-line').remove()
             }
+
+            cs(self).observe({
+                name: 'state:show-comm', spool: 'visible',
+                touch: true,
+                func: function (ev, show) {
+                    if (!self.layoutRoot)
+                        return
+                    if (show)
+                        _.each(self.nodes, function (n) { showNodeConnectivity(n) })
+                    else
+                        self.layoutRoot.selectAll('.hover-line')
+                            .transition()
+                            .duration(500)
+                            .style('opacity', 0)
+                            .remove()
+                }
+            })
 
             var setup = function () {
                 self.tree = d3.layout.tree()
@@ -434,7 +456,9 @@ app.ui.comp.componentTree.view = cs.clazz({
             }
 
             var update = function (root) {
-                hideTooltip()
+                /*  remove existing communication lines  */
+                self.layoutRoot.selectAll('.hover-line')
+                    .remove()
                 if (!root) {
                     self.layoutRoot.selectAll('g').remove()
                     self.layoutRoot.selectAll('path').remove()
@@ -556,8 +580,10 @@ app.ui.comp.componentTree.view = cs.clazz({
                         self.tooltip
                             .style('left', x + 'px')
                             .style('top', -y + size.height + 5 + 'px')
-                        self.layoutRoot.selectAll('.hover-line').remove()
-                        showNodeConnectivity(d)
+                        if (!cs(self).value('state:show-comm')) {
+                            self.layoutRoot.selectAll('.hover-line').remove()
+                            showNodeConnectivity(d)
+                        }
                     })
                     .on('mouseout', function () {
                         if (!cs(self).value('state:tooltip-sticky'))
@@ -594,6 +620,8 @@ app.ui.comp.componentTree.view = cs.clazz({
                     .text(function (d) {
                         return d.name
                     })
+                if (cs(self).value('state:show-comm'))
+                    _.each(self.nodes, function (n) { showNodeConnectivity(n) })
             }
 
             cs(self).observe({
@@ -603,17 +631,6 @@ app.ui.comp.componentTree.view = cs.clazz({
                     if (tree.children.length === 0)
                         hideTooltip()
                     update(tree)
-                }
-            })
-
-            cs(self).observe({
-                name: 'event:show-comm', spool: 'visible',
-                func: function () {
-                    cs(self).value('state:show-comm', !cs(self).value('state:show-comm'))
-                    if (cs(self).value('state:show-comm'))
-                        _.each(self.nodes, function (node) { showNodeConnectivity(node) })
-                    else
-                        hideTooltip()
                 }
             })
 
