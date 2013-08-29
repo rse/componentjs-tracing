@@ -38,7 +38,7 @@ var monitor = function (temporalConstraint) {
         return true
     }
 
-    var cartesian = function (arrays, callback) {
+    var cartesian = function (arrays, names, callback) {
         var result = [], max = arrays.length - 1
         var finished = false
         function helper (acc, i) {
@@ -46,7 +46,9 @@ var monitor = function (temporalConstraint) {
                 return
             for (var x = 0; x < arrays[i].length; x++) {
                 var newAry = acc.slice(0)
-                newAry.push(arrays[i][x])
+                var trace = arrays[i][x]
+                trace.member = names[i]
+                newAry.push(trace)
                 if (i === max) {
                     if (callback(newAry)) {
                         finished = true
@@ -65,10 +67,11 @@ var monitor = function (temporalConstraint) {
     var checkLink = function (trace) {
         var found = false
         var bags = _.values(self.buffer)
-        cartesian(bags, function (permutation) {
+        var names = _.keys(self.buffer)
+        cartesian(bags, names, function (permutation) {
             var ctx = {}
-            _.each(permutation, function (trace) {
-                ctx[trace.member] = trace
+            _.each(permutation, function (tr) {
+                ctx[tr.member] = tr
             })
             ctx[_.last(self.sequence)] = trace
             if (trace.evaluateExpr(self.link.condition, ctx)) {
@@ -121,7 +124,6 @@ var monitor = function (temporalConstraint) {
                 }
                 else {
                     if (!isLast(filter.id)) {
-                        trace.member = filter.id
                         this.buffer[filter.id].push(trace)
                     }
                 }
