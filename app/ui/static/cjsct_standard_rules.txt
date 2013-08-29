@@ -4,7 +4,7 @@ temporal-constraint unused-register {
     }
     
     sequence {
-        a << b << c
+        a << b << terminate
     }
     
     filter a {
@@ -15,13 +15,31 @@ temporal-constraint unused-register {
         operation == 'call'
     }
     
-    filter c {
-        operation == 'terminate'
-    }
-    
     link {
         a.origin == b.origin
         && a.parameters.name == b.parameters.name
+    }
+}
+
+temporal-constraint unused-subscribes {
+    rationale {
+        Register declared that is never used.
+    }
+    
+    sequence {
+        a << b << terminate
+    }
+    
+    filter a {
+        operation == 'subscribe'
+    }
+    
+    filter b {
+        operation == 'publish'
+    }
+    
+    link {
+        a.parameters.name == b.parameters.name
     }
 }
 
@@ -138,7 +156,7 @@ temporal-constraint subscribe-basic {
 
 	link {
 			a.parameters.name == b.parameters.name
-		&&	isParent(a, b)
+		&&	isParent(a.origin, b.origin)
 	}
 }
 
