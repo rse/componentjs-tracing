@@ -98,7 +98,7 @@ module.exports = {
             else if (remoteResponse.req.path.match(cmpFiles) !== null) {
                 /*  read original remoteResponseBody, instrument it and write instrumented remoteResponseBody  */
                 remoteResponseBody = remoteResponseBody.toString("utf8")
-                remoteResponseBody = tracing.instrument(opts.symbol, remoteResponseBody)
+                remoteResponseBody = tracing.instrument(opts.symbol, opts.methods, remoteResponseBody)
                 ctx.logger.log("info", "proxy: transpiled component file: " + request.url)
                 finishResponse()
             }

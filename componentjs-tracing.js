@@ -96,6 +96,8 @@ var options = [
         help: "Regex matching the url of the ComponentJS file", helpArg: "REGEX" },
     {   names: [ "components", "cmps" ], type: "string", "default": ".*/app/.*",
         help: "Regex matching the urls of the components files of the SPA", helpArg: "REGEX" },
+    {   names: [ "methods", "m" ], type: "string", "default": "prepare|cleanup|create|destroy|render|release|show|hide",
+        help: "ComponentJS life-cycle methods defined in the transitions", helpArg: "method0|method1|...|methodn" },
     {   names: [ "proxyaddr", "A" ], type: "string", "default": "127.0.0.1",
         help: "IP address to listen", helpArg: "ADDRESS" },
     {   names: [ "proxyport", "P" ], type: "integer", "default": 8129,

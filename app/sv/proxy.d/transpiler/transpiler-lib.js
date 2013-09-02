@@ -18,7 +18,8 @@
 })(function () {
     var api = {};
 
-    api.instrument = function (symbol, source) {
+    api.instrument = function (symbol, methods, source) {
+        methods = methods || 'prepare|cleanup|create|destroy|render|release|show|hide'
         var input = source;
         var output = "";
 
@@ -43,8 +44,7 @@
             else if ((m = input.match(/^\/(\\\/|[^\/])*\//)) !== null) {}
 
             /*  life-cycle functions  */
-            //FIXME - take life-cycle methods from _cs.state
-            else if (output.match(/(?:prepare|cleanup|create|destroy|render|release|show|hide):\s*$/) !== null) {
+            else if (output.match(new RegExp('/(?:' + methods + '):\\s*$/')) !== null) {
                 m = input.match(/^function\s*\(.*?\)\s*\{/)
             }
 
