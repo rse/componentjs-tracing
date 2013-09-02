@@ -1,4 +1,4 @@
-# ComponentJS Tracing
+# <img src="https://raw.github.com/rse/componentjs-tracing/master/app/ui/static/img/logo.png"/> ComponentJS Tracing
 
 Run-Time Tracing for ComponentJS
 
