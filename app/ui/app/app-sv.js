@@ -53,7 +53,11 @@ app.sv = cs.clazz({
                 name: 'parsePeepholeConstraintset', spool: 'created',
                 func: function (content) {
                     try {
-                        var constraintSet = app.lib.peephole_constraint_parser.parse(content)
+                        var constraintSet
+                        if (content.length === 0)
+                            constraintSet = []
+                        else
+                            constraintSet = app.lib.peephole_constraint_parser.parse(content)
                         return { success: true, constraints: constraintSet }
                     }
                     catch (err) {
@@ -67,7 +71,11 @@ app.sv = cs.clazz({
                 name: 'parseTemporalConstraintset', spool: 'created',
                 func: function (content) {
                     try {
-                        var constraintSet = app.lib.temporal_constraint_parser.parse(content)
+                        var constraintSet
+                        if (content.length === 0)
+                            constraintSet = []
+                        else
+                            constraintSet = app.lib.temporal_constraint_parser.parse(content)
                         return { success: true, constraints: constraintSet }
                     }
                     catch (err) {
