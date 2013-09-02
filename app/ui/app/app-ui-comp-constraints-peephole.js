@@ -22,6 +22,13 @@ app.ui.comp.constraints.peephole = cs.clazz({
                 app.ui.widget.vertical.tabs.controller
             )
 
+            cs(self, 'model').observe({
+                name: 'state:status', spool: 'created',
+                func: function (ev, status) {
+                    cs(self).publish('event:status-message', status)
+                }
+            })
+
             cs(self).subscribe({
                 name: 'setChanged', spool: 'created',
                 func: function (ev, content) {
@@ -192,6 +199,9 @@ app.ui.comp.constraints.peephole = cs.clazz({
                     saveCurrent()
                 }
             })
+        },
+        hide: function () {
+            cs(this, 'model').value('state:status', '')
         }
     }
 })
@@ -234,15 +244,6 @@ app.ui.comp.constraints.peephole.view = cs.clazz({
             cs(this).plug({
                 object: content,
                 spool: 'materialized'
-            })
-        },
-        show: function () {
-            var self = this
-            cs(self).observe({
-                name: 'sate:status', spool: 'visible',
-                func: function (ev, status) {
-                    cs(self).publish('event:status-message', status)
-                }
             })
         }
     }

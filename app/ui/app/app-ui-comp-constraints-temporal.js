@@ -23,6 +23,14 @@ app.ui.comp.constraints.temporal = cs.clazz({
                 app.ui.widget.constraintset
             )
 
+
+            cs(self, 'model').observe({
+                name: 'state:status', spool: 'created',
+                func: function (ev, status) {
+                    cs(self).publish('event:status-message', status)
+                }
+            })
+
             cs(self).subscribe({
                 name: 'setChanged', spool: 'created',
                 func: function (ev, content) {
@@ -133,6 +141,9 @@ app.ui.comp.constraints.temporal = cs.clazz({
                     window.location = 'data:application/octet-stream;base64,' + btoa(content)
                 }
             })
+        },
+        hide: function () {
+            cs(this, 'model').value('state:status', '')
         }
     }
 })
@@ -172,15 +183,6 @@ app.ui.comp.constraints.temporal.view = cs.clazz({
             cs(this).plug({
                 object: content,
                 spool: 'materialized'
-            })
-        },
-        show: function () {
-            var self = this
-            cs(self).observe({
-                name: 'sate:status', spool: 'visible',
-                func: function (ev, status) {
-                    cs(self).publish('event:status-message', status)
-                }
             })
         }
     }
