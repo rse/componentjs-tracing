@@ -63,8 +63,6 @@ app.ui.comp.componentTree = cs.clazz({
         prepare: function () {
             var self = this
 
-
-
             var removeFromTree = function (tree, path) {
                 //  We want to remove the root node
                 if (tree.path === path)
@@ -78,8 +76,6 @@ app.ui.comp.componentTree = cs.clazz({
                 name: 'event:new-trace', spool: 'materialized',
                 spreading : true, capturing : false, bubbling : false,
                 func: function (ev, trace) {
-                    if (!cs(self, 'model').value('state:record'))
-                        return
                     var tree = cs(self, 'model').value('data:tree')
                     var node, list
                     var handleListPropertyAdd = function (path, name, property) {
@@ -177,19 +173,6 @@ app.ui.comp.componentTree = cs.clazz({
             })
 
             var toolbarItems = [{
-                label: 'Record',
-                icon:  'microphone',
-                type: 'button',
-                id: 'recordBtn',
-                click: 'event:record',
-                state: 'state:record'
-            }, {
-                label: 'Clear',
-                icon:  'remove-sign',
-                type: 'button',
-                id: 'clearBtn',
-                click: 'event:clear'
-            }, {
                 label: 'Communications',
                 icon:  'exchange',
                 type: 'button',
@@ -211,11 +194,8 @@ app.ui.comp.componentTree.model = cs.clazz({
                 'data:tree'            : { value: null,                             valid: 'object'                   },
                 'state:cmd'            : { value: 'cs(\'/ui\').state(\'created\')', valid: 'string',  store: true     },
                 'state:tooltip-sticky' : { value: false,                            valid: 'boolean'                  },
-                'event:clear'          : { value: false,                            valid: 'boolean', autoreset: true },
                 'event:show-comm'      : { value: false,                            valid: 'boolean', autoreset: true },
-                'state:show-comm'      : { value: false,                            valid: 'boolean'                  },
-                'event:record'         : { value: false,                            valid: 'boolean', autoreset: true },
-                'state:record'         : { value: false,                            valid: 'boolean', store: true     }
+                'state:show-comm'      : { value: false,                            valid: 'boolean'                  }
             })
         },
         root: function () {
@@ -228,22 +208,6 @@ app.ui.comp.componentTree.model = cs.clazz({
         },
         prepare: function () {
             cs(this).value('data:tree', this.root())
-        },
-        show: function () {
-            var self = this
-            cs(self).observe({
-                name: 'event:record', spool: 'visible',
-                func: function () {
-                    cs(self).value('state:record', !cs(self).value('state:record'))
-                }
-            })
-
-            cs(self).observe({
-                name: 'event:clear', spool: 'visible',
-                func: function () {
-                    cs(self).value('data:tree', self.root())
-                }
-            })
         }
     }
 })
@@ -434,6 +398,7 @@ app.ui.comp.componentTree.view = cs.clazz({
             }
 
             var update = function (root) {
+                self.layoutRoot.selectAll('.hover-line').remove()
                 hideTooltip()
                 if (!root) {
                     self.layoutRoot.selectAll('g').remove()
