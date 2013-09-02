@@ -32,6 +32,8 @@ var evaluateExprInternal = function (ctx, expression, binding) {
     else if (type === 'clasped')
         return evaluateExprInternal(ctx, expression.expression, binding)
     else if (type === 'term') {
+        if (expression.function)
+            expression.funcRes = evaluateFuncInternal(ctx, expression, binding)
         return evaluateTermInternal(ctx, expression, binding)
     }
     else if (type === 'function')
@@ -51,13 +53,25 @@ var evaluateFuncInternal = function (ctx, statement, binding) {
             collection = _.keys(collection)
         return _.contains(collection, needle)
     }
+    else if (statement.name === 'distance') {
+        var compA = eval('binding["' + statement.params[0][0] + '"]' + (statement.params[0].length > 1 ? '.' + _.tail(statement.params[0]).join('.') : ''))
+        var compB = eval('binding["' + statement.params[1][0] + '"]' + (statement.params[1].length > 1 ? '.' + _.tail(statement.params[1]).join('.') : ''))
+
+        if (compB.indexOf(compA) !== -1)
+            return compB.replace(compA, '').split('/').length - 1
+        else if (compB.indexOf(compA) !== -1)
+            return compA.replace(compB, '').split('/').length - 1
+        return -1
+    }
     else if (statement.name === 'state')
-        return cs('/sv').call('getState', eval('binding["' + statement.params[0][0] + '"]'))
+        return '"' + cs('/sv').call('getState', eval('binding["' + statement.params[0][0] + '"]' + (statement.params[0].length > 1 ? '.' + _.tail(statement.params[0]).join('.') : ''))) + '"'
 }
 
 var evaluateTermInternal = function (ctx, term, binding) {
     var expr
-    if (term.field1)
+    if (term.funcRes)
+        expr = term.value + term.op + term.funcRes
+    else if (term.field1)
         expr = 'binding["' + term.field1[0] + '"]' + (term.field1.length > 1 ? '.' + _.tail(term.field1).join('.') : '') + ' ' + term.op +
                 ' ' + 'binding["' + term.field2[0] + '"]' + (term.field2.length > 1 ? '.' + _.tail(term.field2).join('.') : '')
     else
