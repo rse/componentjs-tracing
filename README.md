@@ -66,20 +66,21 @@ The diagram below illustrates the underlying architecture of the ComponentJS tra
 The following command-line options can either be supplied on the
 command line or in the included [server.ini](server.ini) file.
 
-* **--version, --v:** Print tool version and exit
-* **--help, --h:** Print this help and exit
-* **--addr, --a:** IP address to listen
-* **--port, --p:** TCP port to listen
-* **--backlog, --b:** TCP socket connection backlog
-* **--componentjs, --cjs:** Regex matching the url of the ComponentJS file
-* **--components, --cmps:** Regex matching the urls of the components files of the SPA
-* **--proxyaddr, --A:** IP address to bind to
-* **--proxyport, --P:** TCP port to listen in on
-* **--latestcjs, --lcjs:** Overwrites applications ComponentJS file with the supplied version
-* **--proxyfwd, --F:** Host and port of forwarding proxy (eg when you are behind a corporate proxy)
+* **--version, -v:** Print tool version and exit
+* **--help, -h:** Print this help and exit
+* **--addr, -a:** IP address to listen
+* **--port, -p:** TCP port to listen
+* **--backlog, -b:** TCP socket connection backlog
+* **--componentjs, -cjs:** Regex matching the url of the ComponentJS file
+* **--components, -cmps:** Regex matching the urls of the components files of the SPA
+* **--proxyaddr, -A:** IP address to bind to
+* **--proxyport, -P:** TCP port to listen in on
+* **--latestcjs, -lcjs:** Overwrites applications ComponentJS file with the supplied version
+* **--proxyfwd, -F:** Host and port of forwarding proxy (eg when you are behind a corporate proxy)
 * **--config=&lt;cfg&gt;:** Adds the specified section of the ini file to overwrite defaults
-* **--runfile, --rf:** Directs the traces to a separate runfile bypassing the websocket logic and thus the user interface
-* **--symbol, --s:** Defines the symbol that makes ComponentJS available
+* **--runfile, -rf:** Directs the traces to a separate runfile bypassing the websocket logic and thus the user interface
+* **--symbol, -s:** Defines the symbol that makes ComponentJS available
+* **--methods, -m:** ComponentJS life-cycle methods defined in the transitions
 * **--console:** Display logfile also on console
 
 ## Recommended setup
