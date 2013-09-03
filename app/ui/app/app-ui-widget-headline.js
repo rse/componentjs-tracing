@@ -13,7 +13,7 @@ cs.ns('app.ui.widget.headline')
 app.ui.widget.headline.view = cs.clazz({
     mixin: [ cs.marker.view ],
     protos: {
-        render: function () {
+        show: function () {
             cs(this).plug($.markup('widget-headline'))
         }
     }

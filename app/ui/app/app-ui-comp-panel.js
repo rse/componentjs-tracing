@@ -160,8 +160,8 @@ app.ui.comp.panel = cs.clazz({
             cs(this).socket({ spool: 'materialized', ctx: ui, type: 'jquery' })
             cs(this).spool('materialized', this, function () { $(ui).remove() })
 
-            var headline = $('.headline', ui)
-            cs(this).socket({ scope: 'headline', spool: 'materialized', ctx: headline, type: 'jquery' })
+            var headline = $('#headline', ui)
+            cs(this).socket({ scope: 'panel/panel/headline', spool: 'materialized', ctx: headline, type: 'jquery' })
             cs(this).spool('materialized', this, function () { $(headline).remove() })
         }
     }
