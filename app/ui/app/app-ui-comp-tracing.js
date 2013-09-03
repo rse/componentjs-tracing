@@ -59,6 +59,7 @@ app.ui.comp.tracing = cs.clazz({
                 icon: 'repeat',
                 type: 'button',
                 id: 'continuousBtn',
+                stateClass: 'icon-spin',
                 click: 'event:continuous',
                 state: 'state:continuously'
             }, {

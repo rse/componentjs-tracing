@@ -44,7 +44,7 @@ app.ui.widget.toolbar.model = cs.clazz({
             /*  presentation model for items  */
             cs(this).model({
                 'data:items': { value: [], valid: '[{ label?: string, icon?: string, type: string, id?: string,' +
-                    ' click?:string, data?:string, keyup?:string, state?:string }*]' },
+                    ' click?:string, data?:string, keyup?:string, state?:string, stateClass?:string }*]' },
                 'data:rendered': { value: [], valid: '[string*]' }
             })
         }
@@ -78,7 +78,7 @@ app.ui.widget.toolbar.view = cs.clazz({
                             if (!item.id)
                                 item.id = 'button-' + i
                             cmp = cs(self).create(item.id, app.ui.widget.toolbar.items.button)
-                            cmp.call('initialize', { label: item.label, icon: item.icon })
+                            cmp.call('initialize', { label: item.label, icon: item.icon, stateClass: item.stateClass })
                         }
                         else if (item.type === 'input') {
                             if (!item.id)

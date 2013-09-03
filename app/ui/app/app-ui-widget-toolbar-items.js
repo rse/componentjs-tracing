@@ -15,7 +15,8 @@ app.ui.widget.toolbar.items.button = cs.clazz({
     dynamics: {
         label: null,
         icon: null,
-        btn: null
+        btn: null,
+        stateClass: null
     },
     protos: {
         create: function () {
@@ -25,6 +26,7 @@ app.ui.widget.toolbar.items.button = cs.clazz({
                 func: function (cfg) {
                     self.label = cfg.label
                     self.icon = cfg.icon
+                    self.stateClass = cfg.stateClass
                 }
             })
         },
@@ -45,10 +47,16 @@ app.ui.widget.toolbar.items.button = cs.clazz({
                     name: state, spool: 'visible',
                     touch: true,
                     func: function (ev, nVal) {
-                        if (nVal)
+                        if (nVal) {
+                            if (self.stateClass)
+                                $('.icon', self.btn).addClass(self.stateClass)
                             $(self.btn).addClass('pressed')
-                        else
+                        }
+                        else {
+                            if (self.stateClass)
+                                $('.icon', self.btn).removeClass(self.stateClass)
                             $(self.btn).removeClass('pressed')
+                        }
                     }
                 })
 
