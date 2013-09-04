@@ -58,8 +58,8 @@ var evaluateFuncInternal = function (ctx, statement, binding) {
         var compB = eval('binding["' + statement.params[1][0] + '"]' + (statement.params[1].length > 1 ? '.' + _.tail(statement.params[1]).join('.') : ''))
 
         if (compB.indexOf(compA) !== -1)
-            return compB.replace(compA, '').split('/').length - 1
-        else if (compB.indexOf(compA) !== -1)
+            return -1 * (compB.replace(compA, '').split('/').length - 1)
+        else if (compA.indexOf(compB) !== -1)
             return compA.replace(compB, '').split('/').length - 1
         return -1
     }
