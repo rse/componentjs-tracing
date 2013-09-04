@@ -19,7 +19,7 @@ app.ui.comp.panel = cs.clazz({
             var self = this
             cs(self).property('ComponentJS:state-auto-increase', true)
             cs(self).create(
-                'panel/panel/' +
+                'model/view/' +
                 '{tracing,checking,peepholeConstraints,temporalConstraints,componentTree,statistics,statusbar,headline}',
                 app.ui.widget.panel.model,
                 app.ui.widget.panel.view,
@@ -86,8 +86,8 @@ app.ui.comp.panel = cs.clazz({
                     })
                     if (resTraces.length === 0)
                         return
-                    cs(self, 'panel/panel/checking').call('unshift', resTraces[0])
-                    //FIXME - cs(self, 'panel/panel/componentTree').call('forbiddenCom', item) here, too? only if not(UNCLASSIFIED) ?
+                    cs(self, 'model/view/checking').call('unshift', resTraces[0])
+                    //FIXME - cs(self, 'model/view/componentTree').call('forbiddenCom', item) here, too? only if not(UNCLASSIFIED) ?
                     //FIXME - should the result be one trace? why push in line 85? -> monitors should just add new checks in the single trace object
                 }
             })
@@ -95,28 +95,28 @@ app.ui.comp.panel = cs.clazz({
             cs(self).subscribe({
                 name: 'event:status-message', spool: 'created',
                 func: function (ev, status) {
-                    cs(self, 'panel/panel/statusbar').publish('status', status)
+                    cs(self, 'model/view/statusbar').publish('status', status)
                 }
             })
 
             /*  handle the websocket state and push it to the statusbar  */
-            cs(self, 'panel/panel/statusbar').publish('message', 'Connecting ...')
-            cs(self, 'panel/panel/statusbar').publish('color', 'yellow')
+            cs(self, 'model/view/statusbar').publish('message', 'Connecting ...')
+            cs(self, 'model/view/statusbar').publish('color', 'yellow')
 
             /* global io: true */
             var socket = io.connect()
             socket.on('connect', function () {
                 socket.emit('join')
-                cs(self, 'panel/panel/statusbar').publish('message', 'Connected')
-                cs(self, 'panel/panel/statusbar').publish('color', 'black')
+                cs(self, 'model/view/statusbar').publish('message', 'Connected')
+                cs(self, 'model/view/statusbar').publish('color', 'black')
             })
             socket.on('reconnect', function () {
-                cs(self, 'panel/panel/statusbar').publish('message', 'Reconnected')
-                cs(self, 'panel/panel/statusbar').publish('color', 'black')
+                cs(self, 'model/view/statusbar').publish('message', 'Reconnected')
+                cs(self, 'model/view/statusbar').publish('color', 'black')
             })
             socket.on('disconnect', function () {
-                cs(self, 'panel/panel/statusbar').publish('message', 'Trying to reconnect ...')
-                cs(self, 'panel/panel/statusbar').publish('color', 'red')
+                cs(self, 'model/view/statusbar').publish('message', 'Trying to reconnect ...')
+                cs(self, 'model/view/statusbar').publish('color', 'red')
             })
 
             cs(self).subscribe({
@@ -128,7 +128,7 @@ app.ui.comp.panel = cs.clazz({
 
             socket.on('newTrace', function (trace) {
                 trace = app.lib.richTrace.enrich(trace)
-                cs(self, 'panel/panel').publish({ name : 'event:new-trace', args : [ trace ], capturing : false, bubbling : false, spreading : true })
+                cs(self, 'model/view').publish({ name : 'event:new-trace', args : [ trace ], capturing : false, bubbling : false, spreading : true })
             })
 
             cs(self).subscribe({
@@ -139,14 +139,14 @@ app.ui.comp.panel = cs.clazz({
                         result = result.concat(monitor.processTerminate())
                     })
                     _.each(result, function (item) {
-                        cs(self, 'panel/panel/checking').call('unshift', item)
-                        cs(self, 'panel/panel/componentTree').call('forbiddenCom', item)
+                        cs(self, 'model/view/checking').call('unshift', item)
+                        cs(self, 'model/view/componentTree').call('forbiddenCom', item)
                     })
                 }
             })
         },
         prepare: function () {
-            cs(this, 'panel').value('data:tabs', [
+            cs(this, 'model').value('data:tabs', [
                 { id: 'tracing',             name: 'Tracing',              icon: 'gears'                                  },
                 { id: 'checking',            name: 'Checking',             icon: 'thumbs-down'                            },
                 { id: 'peepholeConstraints', name: 'Peephole Constraints', icon: 'screenshot'                             },
@@ -161,7 +161,7 @@ app.ui.comp.panel = cs.clazz({
             cs(this).spool('materialized', this, function () { $(ui).remove() })
 
             var headline = $('#headline', ui)
-            cs(this).socket({ scope: 'panel/panel/headline', spool: 'materialized', ctx: headline, type: 'jquery' })
+            cs(this).socket({ scope: 'model/view/headline', spool: 'materialized', ctx: headline, type: 'jquery' })
             cs(this).spool('materialized', this, function () { $(headline).remove() })
         }
     }
