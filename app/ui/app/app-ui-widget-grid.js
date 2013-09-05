@@ -94,12 +94,11 @@ app.ui.widget.grid.model = cs.clazz({
                 tmp[0] = 'originType'
             if (tmp[0] === 'ST')
                 tmp[0] = 'sourceType'
-            if (tmp.length === 2 && trace[tmp[0]]) {
+            if (tmp.length === 2 && trace[tmp[0]])
                 if (typeof trace[tmp[0]] === 'number')
                     return trace[tmp[0]] === parseInt(tmp[1], 10)
                 else
                    return trace[tmp[0]].toLowerCase().indexOf(tmp[1].toLowerCase()) !== -1
-            }
             else
                 return trace.filter(filter)
         },
@@ -109,17 +108,17 @@ app.ui.widget.grid.model = cs.clazz({
             /*  presentation model for items  */
             cs(self).model({
                 'data:columns'       : { value: [],   valid: '[{ label: string, dataIndex: string, width?: number, align?:string, renderer?:any }*]' },
-                'state:selection'    : { value: -1,   valid: 'number'    },
-                'state:filter'       : { value: '',   valid: 'string', store: true },
-                'state:add-pos'      : { value: 'top',valid: '(number|string)'     },
-                'data:selected-obj'  : { value: null, valid: 'object'              },
-                'data:filtered'      : { value: [],   valid: '[object*]'           },
-                'data:rows'          : { value: [],   valid: '[object*]'           },
-                'data:insert'        : { value: null, valid: 'object'              },
-                'data:new-item'      : { value: null, valid: '(number|object)'     },
-                'param:selectable'   : { value: true, valid: 'boolean'             },
-                'state:sorting'      : { value: null, valid: 'object'              },
-                'state:visible-rows' : { value: 0,    valid: 'number'              }
+                'state:selection'    : { value: -1,   valid: 'number'                                                                                },
+                'state:filter'       : { value: '',   valid: 'string', store: true                                                                   },
+                'state:add-pos'      : { value: 'top',valid: '(number|string)'                                                                       },
+                'data:selected-obj'  : { value: null, valid: 'object'                                                                                },
+                'data:filtered'      : { value: [],   valid: '[object*]'                                                                             },
+                'data:rows'          : { value: [],   valid: '[object*]'                                                                             },
+                'data:insert'        : { value: null, valid: 'object'                                                                                },
+                'data:new-item'      : { value: null, valid: '(number|object)'                                                                       },
+                'param:selectable'   : { value: true, valid: 'boolean'                                                                               },
+                'state:sorting'      : { value: null, valid: 'object'                                                                                },
+                'state:visible-rows' : { value: 0,    valid: 'number'                                                                                }
             })
 
             cs(self).observe({
