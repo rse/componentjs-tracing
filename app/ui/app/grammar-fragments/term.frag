@@ -1,5 +1,6 @@
 term
   = f:field _ o:op _ v:value { return { type: 'term', op: o, field: f, value: v } }
+  / v:value _ o:op _ f:function _ "(" _ p:params _ ")" _ { return { type: 'term', op: o, function: f, name: f, params: p, value: v } }
   / v:value _ o:op _ f:field { return { type: 'term', op: o, field: f, value: v } }
   / f1:field _ o:op _ f2:field { return { type: 'term', op: o, field1: f1, field2: f2 } }
   / f:function _ "(" _ p:params _ ")" _ o:op _ v:value _ { return { type: 'term', op: o, function: f, name: f, params: p, value: v } }
