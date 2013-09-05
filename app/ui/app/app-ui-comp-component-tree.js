@@ -437,8 +437,6 @@ app.ui.comp.componentTree.view = cs.clazz({
                 /*  refresh the remaining links  */
                 self.layoutRoot.selectAll('path.link')
                     .data(links, function (d) { return d.source.path + '#' + d.target.path })
-                    //.transition()
-                    //.delay(600)
                     .attr('d', elbow)
 
                 /*  display the new links  */
@@ -446,16 +444,12 @@ app.ui.comp.componentTree.view = cs.clazz({
                     .data(links, function (d) { return d.source.path + '#' + d.target.path })
                     .enter()
                     .insert('svg:path', 'g')
-                    //.transition()
-                    //.delay(700)
                     .attr('class', 'link')
                     .attr('d', elbow)
 
                 /*  refresh the remaining nodes positions  */
                 self.layoutRoot.selectAll('g')
                     .data(self.nodes, function (d) { return d.path })
-                    //.transition()
-                    //.delay(600)
                     .attr('class', function (d) {
                         if (!d.type)
                             return 'default'
@@ -476,8 +470,6 @@ app.ui.comp.componentTree.view = cs.clazz({
                 /* refresh the remaining nodes names  */
                 self.layoutRoot.selectAll('g')
                     .select('text')
-                    //.transition()
-                    //.delay(700)
                     .text(function (d) {
                         return d.name
                     })
@@ -532,8 +524,6 @@ app.ui.comp.componentTree.view = cs.clazz({
                         d3.event.stopImmediatePropagation()
                         cs(self).value('state:tooltip-sticky', !cs(self).value('state:tooltip-sticky'))
                     }, true)
-                    //.transition()
-                    //.delay(700)
                     .attr('class', function (d) {
                         if (!d.type)
                             return 'default'
@@ -551,8 +541,6 @@ app.ui.comp.componentTree.view = cs.clazz({
 
                 /*  add text to the new nodes  */
                 enterNodes.append('svg:text')
-                    //.transition()
-                    //.delay(700)
                     .attr('text-anchor','start')
                     .attr('dx',2 * options.nodeRadius)
                     .attr('dy', -5)
