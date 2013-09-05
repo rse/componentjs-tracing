@@ -23,14 +23,6 @@ app.ui.comp.constraints.temporal = cs.clazz({
                 app.ui.widget.constraintset
             )
 
-
-            cs(self, 'model').observe({
-                name: 'state:status', spool: 'created',
-                func: function (ev, status) {
-                    cs(self).publish('event:status-message', status)
-                }
-            })
-
             cs(self).subscribe({
                 name: 'setChanged', spool: 'created',
                 func: function (ev, content) {
@@ -141,9 +133,17 @@ app.ui.comp.constraints.temporal = cs.clazz({
                     window.location = 'data:application/octet-stream;base64,' + btoa(content)
                 }
             })
+
+            cs(self, 'model').observe({
+                name: 'state:status', spool: 'created',
+                touch: true,
+                func: function (ev, status) {
+                    cs(self).publish('event:status-message', status)
+                }
+            })
         },
         hide: function () {
-            cs(this, 'model').value('state:status', '')
+            cs(this).publish('event:status-message', '')
         }
     }
 })

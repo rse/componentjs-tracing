@@ -76,6 +76,9 @@ app.ui.widget.grid = cs.clazz({
                     cs(self).publish('event:status-message', nVal + ' items')
                 }
             })
+        },
+        hide: function () {
+            cs(this).publish('event:status-message', '')
         }
     }
 })
