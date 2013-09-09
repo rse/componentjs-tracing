@@ -20,16 +20,6 @@ app.ui.widget.toolbar = cs.clazz({
             cs(self).register({
                 name: 'initialize', spool: 'created',
                 func: function (items) {
-                    _.each(items, function (item) {
-                        if (item.click)
-                            cs(self).property({ name: 'click', scope: 'model/view/' + item.id, value: item.click })
-                        if (item.keyup)
-                            cs(self).property({ name: 'keyup', scope: 'model/view/' + item.id, value: item.keyup })
-                        if (item.data)
-                            cs(self).property({ name: 'data', scope: 'model/view/' + item.id, value: item.data })
-                        if (item.state)
-                            cs(self).property({ name: 'state', scope: 'model/view/' + item.id, value: item.state })
-                    })
                     cs(self, 'model').value('data:items', items)
                 }
             })
@@ -41,11 +31,28 @@ app.ui.widget.toolbar.model = cs.clazz({
     mixin: [ cs.marker.model ],
     protos: {
         create: function () {
+            var self = this
             /*  presentation model for items  */
-            cs(this).model({
+            cs(self).model({
                 'data:items': { value: [], valid: '[{ label?: string, icon?: string, type: string, id?: string,' +
                     ' click?:string, data?:string, keyup?:string, state?:string, stateClass?:string }*]' },
                 'data:rendered': { value: [], valid: '[string*]' }
+            })
+
+            cs(self).observe({
+                name: 'data:items', spool: 'created',
+                func: function (ev, items) {
+                    _.each(items, function (item) {
+                        if (item.click)
+                            cs(self).property({ name: 'click', scope: 'view/' + item.id, value: item.click })
+                        if (item.keyup)
+                            cs(self).property({ name: 'keyup', scope: 'view/' + item.id, value: item.keyup })
+                        if (item.data)
+                            cs(self).property({ name: 'data', scope: 'view/' + item.id, value: item.data })
+                        if (item.state)
+                            cs(self).property({ name: 'state', scope: 'view/' + item.id, value: item.state })
+                    })
+                }
             })
         }
     }
