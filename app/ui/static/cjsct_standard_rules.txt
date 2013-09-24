@@ -1,6 +1,6 @@
 temporal-constraint unused-register {
     rationale {
-        Register declared that is never used.
+        Register declared that was never used.
     }
     
     sequence {
@@ -23,7 +23,7 @@ temporal-constraint unused-register {
 
 temporal-constraint unused-subscribes {
     rationale {
-        Register declared that is never used.
+        Subscribe declared that was never used.
     }
     
     sequence {
