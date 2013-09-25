@@ -68,6 +68,9 @@ app.ui.widget.constraintset = cs.clazz({
                     cs(self, 'model').value('state:semantic-errors', errors)
                 }
             })
+        },
+        destroy: function () {
+            clearTimeout(this.timer)
         }
     }
 })
