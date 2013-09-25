@@ -10,10 +10,7 @@ term
   = first:field _ fields:("," _ field)* _ { var tmp = [first];for (var i = 0; i < fields.length; i++) { if (i % 2 == 0) { tmp.push(fields[i][fields[i].length-1])} }; return tmp }
 
 function
-  = "isParent"
-  / "distance"
-  / "contains"
-  / "state"
+  = name:([^(]*) { return name.join('') }
 
 field
   = first:id ids:("." id)* _ { var ary = [first]; for(var i = 0; i < ids.length; i++) { ary.push(ids[i][ids[i].length - 1]) }; return ary }

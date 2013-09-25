@@ -7,6 +7,8 @@
 **  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
+/* global param0: false, param1: false, alert: false, console: false */
+
 (function () {
 
 var evaluateExprInternal = function (ctx, expression, binding) {
@@ -41,30 +43,44 @@ var evaluateExprInternal = function (ctx, expression, binding) {
 }
 
 var evaluateFuncInternal = function (ctx, statement, binding) {
-    if (statement.name === 'isParent') {
-        var child = eval('binding["' + statement.params[1][0] + '"]' + (statement.params[1].length > 1 ? '.' + _.tail(statement.params[1]).join('.') : ''))
-        var parent = eval('binding["' + statement.params[0][0] + '"]' + (statement.params[0].length > 1 ? '.' + _.tail(statement.params[0]).join('.') : ''))
-        return child.indexOf(parent) !== -1
+    /*  function to register helper functions  */
+    var registerHelper = function (name, func, location) {
+        location[name] = func
     }
-    else if (statement.name === 'contains') {
-        var collection = eval('binding["' + statement.params[0][0] + '"]' + (statement.params[0].length > 1 ? '.' + _.tail(statement.params[0]).join('.') : ''))
-        var needle = eval('binding["' + statement.params[1][0] + '"]' + (statement.params[1].length > 1 ? '.' + _.tail(statement.params[1]).join('.') : ''))
-        if (!_.isArray(collection))
-            collection = _.keys(collection)
-        return _.contains(collection, needle)
-    }
-    else if (statement.name === 'distance') {
-        var compA = eval('binding["' + statement.params[0][0] + '"]' + (statement.params[0].length > 1 ? '.' + _.tail(statement.params[0]).join('.') : ''))
-        var compB = eval('binding["' + statement.params[1][0] + '"]' + (statement.params[1].length > 1 ? '.' + _.tail(statement.params[1]).join('.') : ''))
 
-        if (compB.indexOf(compA) !== -1)
-            return -1 * (compB.replace(compA, '').split('/').length - 1)
-        else if (compA.indexOf(compB) !== -1)
-            return compA.replace(compB, '').split('/').length - 1
+    /*  make the arguments available labeled according to their index i.e. param0, param1, ..., paramN  */
+    _.each(statement.params, function (param, idx) {
+        eval('this.param' + idx + ' = binding["' + param[0] + '"]' + (param.length > 1 ? '.' + _.tail(param).join('.') : ''))
+    }, this)
+
+    registerHelper('isParent', function () {
+        return param1.indexOf(param0) !== -1
+    }, this)
+
+    registerHelper('contains', function () {
+        if (!_.isArray(param0))
+            param0 = _.keys(param0)
+        return _.contains(param0, param1)
+    }, this)
+
+    registerHelper('distance', function () {
+        if (param1.indexOf(param0) !== -1)
+            return -1 * (param1.replace(param0, '').split('/').length - 1)
+        else if (param0.indexOf(param1) !== -1)
+            return param0.replace(param1, '').split('/').length - 1
         return -1
+    }, this)
+
+    registerHelper('state', function () {
+        return '"' + cs('/sv').call('getState', param0) + '"'
+    }, this)
+
+    try {
+        return eval(statement.name + '()')
+    } catch (e) {
+        alert('Unknown helper function "' + statement.name + '" (see console for exception)')
+        console.log(e)
     }
-    else if (statement.name === 'state')
-        return '"' + cs('/sv').call('getState', eval('binding["' + statement.params[0][0] + '"]' + (statement.params[0].length > 1 ? '.' + _.tail(statement.params[0]).join('.') : ''))) + '"'
 }
 
 var evaluateTermInternal = function (ctx, term, binding) {
