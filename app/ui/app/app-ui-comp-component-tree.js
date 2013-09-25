@@ -37,8 +37,10 @@ app.ui.comp.componentTree = cs.clazz({
                     if (trace.origin !== trace.source) {
                         if (node) {
                             var target = self.findInTree(tree, trace.origin)[0]
-                            if (node.outgoing[target.path])
+                            if (node.outgoing[target.path]) {
                                 node.outgoing[target.path].count += 1
+                                node.outgoing[target.path].forbidden = true
+                            }
                             else
                                 node.outgoing[target.path] = { node: target, count: 1, forbidden: true}
                         }

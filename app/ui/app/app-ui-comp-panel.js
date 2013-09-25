@@ -78,17 +78,17 @@ app.ui.comp.panel = cs.clazz({
             cs(self).subscribe({
                 name: 'checkTrace', spool: 'created',
                 func: function (ev, trace) {
-                    var resTraces = cs('/sv').call('checkTraces', [ trace ], self.peepholeConstraintSet)
+                    var resTrace = _.first(cs('/sv').call('checkTraces', [ trace ], self.peepholeConstraintSet))
                     _.each(self.temporalMonitors, function (monitor) {
                         var res = monitor.processTrace(trace)
-                        if (res)
-                            resTraces.push(res)
+                        if (!resTrace)
+                            resTrace = res
                     })
-                    if (resTraces.length === 0)
+                    if (!resTrace)
                         return
-                    cs(self, 'model/view/checking').call('unshift', resTraces[0])
-                    //FIXME - cs(self, 'model/view/componentTree').call('forbiddenCom', item) here, too? only if not(UNCLASSIFIED) ?
-                    //FIXME - should the result be one trace? why push in line 85? -> monitors should just add new checks in the single trace object
+                    cs(self, 'model/view/checking').call('unshift', resTrace)
+                    if (resTrace.result === 'FAIL' || resTrace.result === 'FAIL_FINAL')
+                        cs(self, 'model/view/componentTree').call('forbiddenCom', resTrace)
                 }
             })
 
