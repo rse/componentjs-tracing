@@ -1339,7 +1339,7 @@
                     hooks:  _cs.hooks[name].length, /*  total number of hooks latched  */
                     _cs:    _cs,                    /*  internal ComponentJS API  */
                     $cs:    $cs                     /*  external ComponentJS API  */
-                },  args);                          /*  hook arguments  */
+                }, args);                           /*  hook arguments  */
 
                 /*  process/merge results  */
                 result = _cs.hook_proc[proc].step.call(null, result, r);
@@ -1807,17 +1807,17 @@
                 return;
             },
 
-            /*  check whether actions are spooled  */
+            /*  return number of actions which are spooled  */
             spooled: function () {
                 /*  determine parameters  */
                 var params = $cs.params("spooled", arguments, {
                     name: { pos: 0, req: true }
                 });
 
-                /*  return whether actions are spooled  */
+                /*  return number of actions which are spooled  */
                 return (
-                       _cs.isdefined(this.__spool[params.name]) &&
-                       this.__spool[params.name].length > 0
+                    _cs.isdefined(this.__spool[params.name]) ?
+                    this.__spool[params.name].length : 0
                 );
             },
 
@@ -1926,10 +1926,10 @@
                 /*  optionally set new configuration value
                     (on current node only)  */
                 if (typeof params.value !== "undefined")
-                    if (typeof params.scope === "undefined")
-                        this.cfg("ComponentJS:property:" + params.name, params.value);
-                    else
+                    if (typeof params.scope !== "undefined")
                         this.cfg("ComponentJS:property:" + params.name + "@" + params.scope, params.value);
+                    else
+                        this.cfg("ComponentJS:property:" + params.name, params.value);
 
                 /*  return result (either the old configuration
                     value or the owning component)  */
@@ -2618,7 +2618,7 @@
     /*  perform a single synchronous progression run for a particular component  */
     _cs.state_progression_run = function (comp, arg, _direction) {
         var i, children;
-        var name, state, enter, leave;
+        var state, enter, leave, spooled;
 
         /*  handle optional argument (USED INTERNALLY ONLY)  */
         if (typeof _direction === "undefined")
@@ -2670,11 +2670,6 @@
                 );
                 _cs.hook("ComponentJS:state-invalidate", "none", "states");
                 _cs.hook("ComponentJS:state-change", "none");
-
-                /*  execute pending spooled actions  */
-                name = "ComponentJS:state:" + _cs.states[comp.__state].state + ":enter";
-                if (comp.spooled(name))
-                    comp.unspool(name);
 
                 /*  execute enter method  */
                 if (_cs.state_method_call("enter", comp, enter) === false) {
@@ -2738,8 +2733,8 @@
                             $cs.debug(1,
                                 "state: " + comp.path("/") + ": transition (decrease) " +
                                 "REJECTED BY CHILD COMPONENT (" + children[i].path("/") + "): " +
-                                "@" + state_lower + " <--(" + leave + ")-- " +
-                                "@" + state + ": SUSPENDING CURRENT TRANSITION RUN"
+                                "@" + _cs.states[comp.__state - 1].state + " <--(" + leave + ")-- " +
+                                "@" + _cs.states[comp.__state].state + ": SUSPENDING CURRENT TRANSITION RUN"
                             );
                             return;
                         }
@@ -2750,47 +2745,39 @@
                 if (_cs.isdefined(comp.__state_guards[leave])) {
                     $cs.debug(1,
                         "state: " + comp.path("/") + ": transition (decrease) REJECTED BY LEAVE GUARD: " +
-                        "@" + state_lower + " <--(" + leave + ")-- " +
-                        "@" + state + ": SUSPENDING CURRENT TRANSITION RUN"
+                        "@" + _cs.states[comp.__state - 1].state + " <--(" + leave + ")-- " +
+                        "@" + _cs.states[comp.__state].state + ": SUSPENDING CURRENT TRANSITION RUN"
                     );
                     return;
                 }
                 comp.__state--;
                 $cs.debug(1,
                     "state: " + comp.path("/") + ": transition (decrease): " +
-                    "@" + state_lower + " <--(" + leave + ")-- " +
-                    "@" + state
+                    "@" + _cs.states[comp.__state].state + " <--(" + leave + ")-- " +
+                    "@" + _cs.states[comp.__state + 1].state
                 );
                 _cs.hook("ComponentJS:state-invalidate", "none", "states");
                 _cs.hook("ComponentJS:state-change", "none");
-
-                /*  execute pending spooled actions  */
-                name = "ComponentJS:state:" + state + ":leave";
-                if (comp.spooled(name))
-                    comp.unspool(name);
 
                 /*  execute leave method  */
                 if (_cs.state_method_call("leave", comp, leave) === false) {
                     /*  FULL STOP: state leave method rejected state transition  */
                     $cs.debug(1,
                         "state: " + comp.path("/") + ": transition (decrease) REJECTED BY LEAVE METHOD: " +
-                        "@" + state_lower + " <--(" + leave + ")-- " +
-                        "@" + state + ": SUSPENDING CURRENT TRANSITION RUN"
+                        "@" + _cs.states[comp.__state].state + " <--(" + leave + ")-- " +
+                        "@" + _cs.states[comp.__state + 1].state + ": SUSPENDING CURRENT TRANSITION RUN"
                     );
                     comp.__state++;
                     return;
                 }
-                else
-                    /*  automatically unspool actions on spool named like the leaving state  */
-                    if (comp.spooled(state)) {
-                        $cs.debug(1,
-                            "unspool: " + comp.path("/") + ": automatically unspooled " +
-                            comp.__spool[state].length + " operation" +
-                            (comp.__spool[state].length > 1 ? "s" : "") + " on " + leave
-                        );
-                        comp.unspool(state);
-                    }
 
+                /*  automatically unspool still pending actions
+                    on spool named exactly like the left state  */
+                spooled = comp.spooled(state);
+                if (spooled > 0) {
+                    $cs.debug(1, "state: " + comp.path("/") + ": auto-unspooling " + spooled + " operation(s)");
+                    comp.unspool(state);
+                }
 
                 /*  notify subscribers about new state  */
                 comp.publish({
@@ -2808,8 +2795,8 @@
                 if (_direction === "upward-and-downward" || _direction === "upward") {
                     if (comp.parent() !== null) {
                         if (comp.parent().state_compare(state_lower) > 0) {
-                            if (   comp.parent().state_auto_decrease()
-                                || comp.parent().property("ComponentJS:state-auto-decrease") === true) {
+                            if (   comp.parent().state_auto_decrease() ||
+                                   comp.parent().property("ComponentJS:state-auto-decrease") === true) {
                                 _cs.state_progression_run(comp.parent(), state_lower, "upward"); /*  RECURSION  */
                                 if (comp.parent().state_compare(state_lower) > 0) {
                                     /*  enqueue state transition for parent  */
@@ -3264,8 +3251,9 @@
                         if (id !== null)
                             throw _cs.exception("link:plug: cannot plug, you have to unplug first");
                         id = $cs(params.target).plug({
-                            name:   params.socket,
-                            object: obj
+                            name:      params.socket,
+                            object:    obj,
+                            targeting: true
                         });
                         _cs.annotation(obj, "link", id);
                     },
@@ -3273,7 +3261,10 @@
                         var id = _cs.annotation(obj, "link");
                         if (id === null)
                             throw _cs.exception("link:unplug: cannot unplug, you have to plug first");
-                        $cs(params.target).unplug(id);
+                        $cs(params.target).unplug({
+                            id: id,
+                            targeting: true
+                        });
                         _cs.annotation(obj, "link", null);
                     }
                 });
@@ -3293,9 +3284,10 @@
             plug: function () {
                 /*  determine parameters  */
                 var params = $cs.params("plug", arguments, {
-                    name:     {         def: "default" },
-                    object:   { pos: 0, req: true      },
-                    spool:    {         def: null      }
+                    name:      {         def: "default" },
+                    object:    { pos: 0, req: true      },
+                    spool:     {         def: null      },
+                    targeting: {         def: false     }
                 });
 
                 /*  remember plug operation  */
@@ -3303,7 +3295,7 @@
                 this.__plugs[id] = params;
 
                 /*  pass-though operation to common helper function  */
-                _cs.plugger("plug", this, params.name, params.object);
+                _cs.plugger("plug", this, params.name, params.object, params.targeting);
 
                 /*  optionally spool reverse operation  */
                 if (params.spool !== null) {
@@ -3318,7 +3310,8 @@
             unplug: function () {
                 /*  determine parameters  */
                 var params = $cs.params("unplug", arguments, {
-                    id: { pos: 0, req: true }
+                    id:        { pos: 0, req: true  },
+                    targeting: {         def: false }
                 });
 
                 /*  determine plugging information  */
@@ -3328,7 +3321,7 @@
                 var object = this.__plugs[params.id].object;
 
                 /*  pass-though operation to common helper function  */
-                _cs.plugger("unplug", this, name, object);
+                _cs.plugger("unplug", this, name, object, params.targeting);
 
                 /*  remove plugging  */
                 delete this.__plugs[params.id];
@@ -3338,7 +3331,7 @@
     });
 
     /*  internal "plug/unplug to socket" helper functionality  */
-    _cs.plugger = function (op, origin, name, object) {
+    _cs.plugger = function (op, origin, name, object, targeting) {
         /*  resolve the socket property on the parents components
             NOTICE 1: we explicitly skip the origin component here as
                       resolving the socket property also on the origin
@@ -3348,20 +3341,20 @@
                       resolve on the parent component as we want to take
                       scoped sockets (on the parent component) into account!  */
         var property = "ComponentJS:socket:" + name;
-        var socket = origin.property({ name: property, targeting: false });
+        var socket = origin.property({ name: property, targeting: targeting });
         if (!_cs.isdefined(socket))
             throw _cs.exception(op, "no socket found on parent component(s)");
 
         /*  determine the actual component owning the socket (for logging purposes only)  */
-        var owner = origin.property({ name: property, targeting: false, returnowner: true });
+        var owner = origin.property({ name: property, targeting: targeting, returnowner: true });
         $cs.debug(1, "socket: " + owner.path("/") + ": " + name +
             " <--(" + op + ")-- " + origin.path("/"));
 
         /*  perform plug/unplug operation  */
         if (_cs.istypeof(socket[op]) === "string")
-            socket.ctx[socket[op]].call(socket.ctx, object);
+            socket.ctx[socket[op]].call(socket.ctx, object, origin);
         else if (_cs.istypeof(socket[op]) === "function")
-            socket[op].call(socket.ctx, object);
+            socket[op].call(socket.ctx, object, origin);
         else
             throw _cs.exception(op, "failed to perform \"" + op + "\" operation");
     };
@@ -4290,12 +4283,15 @@
         /*  debug hint  */
         $cs.debug(1, "component: " + comp.path("/") + ": created component [" + comp.id() + "]");
 
+        /*  give plugins a chance to react (before creation of a component)  */
+        _cs.hook("ComponentJS:comp-created", "none", comp);
+
         /*  switch state from "dead" to "created"
             (here synchronously as one expects that after a creation of a
             component, the state is really already "created", of course)  */
         comp.state({ state: "created", sync: true });
 
-        /*  give plugins a chance to react  */
+        /*  give plugins a chance to react (after creation of a component)  */
         _cs.hook("ComponentJS:state-invalidate", "none", "components");
         _cs.hook("ComponentJS:state-change", "none");
 
@@ -4321,6 +4317,9 @@
             component, the state is really already "dead", of course)  */
         comp.state({ state: "dead", sync: true });
 
+        /*  give plugins a chance to react (before final destruction of a component)  */
+        _cs.hook("ComponentJS:comp-destroyed", "none", comp);
+
         /*  detach component from component tree  */
         comp._detach();
 
@@ -4330,7 +4329,7 @@
         /*  debug hint  */
         $cs.debug(1, "component: " + comp.path("/") + ": destroyed component [" + comp.id() + "]");
 
-        /*  give plugins a chance to react  */
+        /*  give plugins a chance to react (after final destruction of a component)  */
         _cs.hook("ComponentJS:state-invalidate", "none", "components");
         _cs.hook("ComponentJS:state-change", "none");
 
