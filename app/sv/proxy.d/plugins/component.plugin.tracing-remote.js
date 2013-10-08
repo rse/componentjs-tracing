@@ -8,7 +8,7 @@
 */
 
 /*
- *  This is a small ComponentJS plugin which sends all
+ *  This is a small ComponentJS plug-in which sends all
  *  captured traces to the server using websockets.
  */
 
@@ -30,7 +30,7 @@ ComponentJS.plugin("tracing-remote", function (_cs, $cs, GLOBAL) {
     })
 
     /*  notify the developer, when the websocket connection is re-established  */
-    websocket.on('reconnect', function () {
+    websocket.on("reconnect", function () {
         alert("Re-established connection with debugging server!")
     })
 
@@ -40,7 +40,7 @@ ComponentJS.plugin("tracing-remote", function (_cs, $cs, GLOBAL) {
     })
 
     /*  log the tracing information to the console  */
-    _cs.latch("ComponentJS:tracing", function (tracing) {
+    _cs.latch("ComponentJS:tracing", function (trace) {
         if (   typeof GLOBAL.console     !== "undefined" &&
                typeof GLOBAL.console.log !== "undefined") {
 
@@ -51,8 +51,8 @@ ComponentJS.plugin("tracing-remote", function (_cs, $cs, GLOBAL) {
                 else                            comp = comp.path("/")
                 return comp
             }
-            var source = nameofcomp(tracing.source())
-            var origin = nameofcomp(tracing.origin())
+            var source = nameofcomp(trace.source())
+            var origin = nameofcomp(trace.origin())
 
             /*  stringify component type(s)  */
             var typeofcomp = function (type) {
@@ -64,11 +64,11 @@ ComponentJS.plugin("tracing-remote", function (_cs, $cs, GLOBAL) {
                 if (txt === "")      txt =  "-"
                 return txt
             }
-            var sourceType = typeofcomp(tracing.sourceType())
-            var originType = typeofcomp(tracing.originType())
+            var sourceType = typeofcomp(trace.sourceType())
+            var originType = typeofcomp(trace.originType())
 
             var seen = []
-            var params = JSON.stringify(tracing.parameters(), function(key, val) {
+            var params = JSON.stringify(trace.parameters(), function(key, val) {
                if (typeof val === "object") {
                     if (seen.indexOf(val) >= 0)
                         return
@@ -79,14 +79,14 @@ ComponentJS.plugin("tracing-remote", function (_cs, $cs, GLOBAL) {
 
             /*  create transferable trace object  */
             var trace = {
-                id: tracing.id,
-                time: tracing.timestamp(),
+                id: trace.id,
+                time: trace.timestamp(),
                 source: source,
                 sourceType: sourceType,
                 origin: origin,
-                hidden: tracing.hidden,
+                hidden: trace.hidden,
                 originType: originType,
-                operation: tracing.operation(),
+                operation: trace.operation(),
                 parameters: JSON.parse(params)
             }
 
