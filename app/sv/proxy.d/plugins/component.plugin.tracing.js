@@ -145,27 +145,6 @@ ComponentJS.plugin("tracing", function (_cs, $cs, GLOBAL) {
         tracing.flush();
     })
 
-    /*_cs.latch("ComponentJS:state-change", function (req) {
-        if (!req)
-            return
-        var tracing = new Tracing();
-        //*  on-the-fly make an implicit tracing source  *
-        var source = resolve("tracing:source");
-
-        //*  act on all non-internal sources  *
-        if (source && source !== _cs.internal)
-            tracing.source(source);
-        else
-            tracing.source(_cs.none);
-        tracing.sourceType('');
-        tracing.origin(req.comp);
-        tracing.originType(compType(req.comp));
-        tracing.operation('state');
-        tracing.parameters({ state: req.state });
-        tracing.hidden = true;
-        tracing.flush();
-    })*/
-
     _cs.latch("ComponentJS:comp-created", function (comp) {
         var markers = comp.__obj.__ComponentJS_marker__
         var tracing = new Tracing();
