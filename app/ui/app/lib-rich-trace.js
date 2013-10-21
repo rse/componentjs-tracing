@@ -75,6 +75,10 @@ var evaluateFuncInternal = function (ctx, statement, binding) {
         return '"' + cs('/sv').call('getState', param0) + '"'
     }, this)
 
+    registerHelper('startsWith', function () {
+        return param0.indexOf(param1) === 0
+    }, this)
+
     try {
         return eval(statement.name + '()')
     } catch (e) {
