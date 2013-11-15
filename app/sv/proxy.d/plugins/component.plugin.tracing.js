@@ -94,8 +94,9 @@ ComponentJS.plugin("tracing", function (_cs, $cs, GLOBAL) {
                     break;
             }
         };
-        var error = {};
+        var error = new Error();
         Error.captureStackTrace(error, walkStackTrace);
+        error.stack;
         Error.prepareStackTrace = pST;
     };
 
