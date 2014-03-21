@@ -61,7 +61,7 @@ The diagram below illustrates the underlying architecture of the ComponentJS tra
 
 ## Usage
 
-	$ component-tracing [options]
+	$ componentjs-tracing [options]
 
 The following command-line options can either be supplied on the
 command line or in the included [server.ini](server.ini) file.
@@ -82,6 +82,7 @@ command line or in the included [server.ini](server.ini) file.
 * **--symbol, -s:** Defines the symbol that makes ComponentJS available
 * **--methods, -m:** ComponentJS life-cycle methods defined in the transitions
 * **--console:** Display logfile also on console
+* **--app, -X:** url:dir of application
 
 ## Recommended setup
 
