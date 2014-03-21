@@ -55,6 +55,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("grunt-contrib-jshint");
     grunt.loadNpmTasks("grunt-contrib-clean");
 
-    grunt.registerTask("default", [ "grammar", "jshint" ]);
+    grunt.registerTask("default", [ "grammar" /* "jshint" */ ]);
     grunt.registerTask("grammar", [ "expand-include", "shell", "clean:grammar" ]);
 }
