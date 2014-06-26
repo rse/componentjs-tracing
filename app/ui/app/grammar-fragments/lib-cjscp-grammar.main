@@ -8,6 +8,7 @@ constraint
 constraintBody
   = after:after? before:before? rat:rationale cond:condition res:result { var obj = { dependencies: { before: before === '' ? [] : before, after: after === '' ? [] : after }, rationale : rat, condition: cond, result: res }; return obj }
   / after:after? before:before? rat:rationale cond:condition subs:constraintset { var obj = { dependencies: { before: before === '' ? [] : before, after: after === '' ? [] : after }, rationale : rat, condition: cond, constraints: subs }; return obj }
+
 condition
   = "condition" _ "{" _ ex:expr _ "}" _ { return ex }
 

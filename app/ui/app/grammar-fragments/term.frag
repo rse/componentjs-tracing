@@ -6,7 +6,7 @@ term
   / f:function _ "(" _ p:params _ ")" _ o:op _ v:value _ { return { type: 'term', op: o, function: f, name: f, params: p, value: v } }
   / f:function _ "(" _ p:params _ ")" _ { return { type: 'function', name: f, params: p } }
 
- params
+params
   = first:field _ fields:("," _ field)* _ { var tmp = [first];for (var i = 0; i < fields.length; i++) { if (i % 2 == 0) { tmp.push(fields[i][fields[i].length-1])} }; return tmp }
 
 function
