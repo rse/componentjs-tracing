@@ -48,7 +48,7 @@
   "dependencies": {
     "node-ini": "*",
     "dashdash": "*",
-    "express": "*",
+    "express": "3.12.0",
     "express-api-helper": "*",
     "express-winston": "*",
     "express.io": "*",
@@ -72,6 +72,6 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "prepublish": "make"
+    "prepublish": "grunt"
   }
 }
