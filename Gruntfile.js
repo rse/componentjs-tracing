@@ -23,12 +23,26 @@ module.exports = function(grunt) {
                 "app/ui/app/app-*.js"
             ]
         },
-        shell: {
+        peg: {
             peephole: {
-                command: "pegjs -e app.lib.peephole_constraint_parser app/ui/app/lib-cjscp-grammar.peg app/ui/app/lib-cjscp-grammar.js"
+                src:  "app/ui/app/lib-cjscp-grammar.peg",
+                dest: "app/ui/app/lib-cjscp-grammar.js",
+                options: {
+                    exportVar: "module.exports",
+                    allowedStartRules: [ "spec", "binding" ],
+                    optimize: "speed",
+                    cache: true
+                }
             },
             temporal: {
-                command: "pegjs -e app.lib.temporal_constraint_parser app/ui/app/lib-cjsct-grammar.peg app/ui/app/lib-cjsct-grammar.js"
+                src:  "app/ui/app/lib-cjsct-grammar.peg",
+                dest: "app/ui/app/lib-cjsct-grammar.js",
+                options: {
+                    exportVar: "module.exports",
+                    allowedStartRules: [ "spec", "binding" ],
+                    optimize: "speed",
+                    cache: true
+                }
             }
         },
         clean: {
@@ -48,13 +62,11 @@ module.exports = function(grunt) {
                 directiveSyntax: "js"
             }
         }
-    });
+    });                                     grunt
 
-    grunt.loadNpmTasks("grunt-expand-include");
-    grunt.loadNpmTasks("grunt-shell");
-    grunt.loadNpmTasks("grunt-contrib-jshint");
-    grunt.loadNpmTasks("grunt-contrib-clean");
+    /*  load foreign tasks  */
+    require("load-grunt-tasks")(grunt, { pattern: "grunt-*" });
 
     grunt.registerTask("default", [ "grammar" /* "jshint" */ ]);
-    grunt.registerTask("grammar", [ "expand-include", "shell", "clean:grammar" ]);
+    grunt.registerTask("grammar", [ "expand-include", "peg", "clean:grammar" ]);
 }
