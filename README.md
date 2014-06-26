@@ -50,7 +50,7 @@ The diagram below illustrates the underlying architecture of the ComponentJS tra
 2. Use Node.js's [NPM](https://npmjs.org/) to install ComponentJS Tracing:
 
         $ npm install -g componentjs-tracing
-        
+
 ## Update Existing Installation
 
     $ npm update -g componentjs-tracing
@@ -125,4 +125,5 @@ You can obtain one at http://mozilla.org/MPL/2.0/.
 
 * Ralf S. Engelschall (rse@engelschall.com)
 * Christian Vaas (christianvaas@auspex.eu)
+* Jochen Hörtreiter (jochen.hoertreiter@googlemail.com)
 
